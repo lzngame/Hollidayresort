@@ -93,7 +93,7 @@ function addPool(itemnode){
 		case NodeTypeClass.bg:
 			layoutBgPool[name] = itemnode;
 			break;
-		case NodeTypeClass.group:
+		case NodeTypeClass.icongroup:
 			groupPool[name] = itemnode;
 			break;
 		case NodeTypeClass.icon:
@@ -112,6 +112,7 @@ function IconNodeGroup(name,x,y,w,h,bgclr,borderclr,icons){
 	this.bgclr = bgclr;
 	this.borderclr = borderclr;
 	this.icons = icons;
+	this.ntype = NodeTypeClass.icongroup;
 }
 
 IconNodeGroup.prototype.draw = function(ctx){
@@ -121,7 +122,7 @@ IconNodeGroup.prototype.draw = function(ctx){
 	ctx.roundRect(this.x,this.y,this.w,this.h,3).stroke();
 	for(var i=0;i<this.icons.length;i++){
 		var iconnode = this.icons[i];
-		iconnode.draw();
+		iconnode.draw(ctx);
 	}
 }
 

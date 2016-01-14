@@ -7,22 +7,25 @@ function updateDraw(ctx){
 					drawPool.push(dataObj);
 				}
 			}
-			
 			if(drawPool.length > 0)
 				drawPool.sort(orderDepthNode);
-			
 			for(var i=0;i<drawPool.length;i++){
 				var data = drawPool[i];
 				drawJsonImg(ctx,data.name,data.x,data.y,true,true);
 			}
+			
+			
 			for(var name in layoutBgPool){
 				var itemnode = layoutBgPool[name];
 				
 				itemnode.draw(ctx);
 			}
-			
 			for(var name in iconPool){
 				var itemnode = iconPool[name];
+				itemnode.draw(ctx);
+			}
+			for(var name in groupPool){
+				var itemnode = groupPool[name];
 				itemnode.draw(ctx);
 			}
 			

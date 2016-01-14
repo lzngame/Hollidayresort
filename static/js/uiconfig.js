@@ -54,8 +54,4 @@ var NodeTypeClass ={
 	bg:'LAYOUT_BG_ENTITY',
 };
 
-var PoolClass = {
-	icon:'ICON_POOL_NAME',
-	bg:'BG_POOL_NAME',
-	group:'GROUP_POOL_NAME'
-}
+

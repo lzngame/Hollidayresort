@@ -42,7 +42,7 @@ function getRoundTiles(xpos,ypos){
 }
 
 //取得点击最近中心的图块整数坐标
-function getClosedTile(tapx,tapy){
+function getCloseTile(tapx,tapy){
 	var ctapx = tapx+baseRhombusHeight;
 	var ctapy = tapy+baseRhombusHeight/2;
 				
