@@ -69,6 +69,8 @@ function ShapeNode(name,shapetype,clr,borderclr,x,y,data){
 }
 
 ShapeNode.prototype.draw = function(ctx){
+	ctx.fillStyle = this.clr;
+	ctx.strokeStyle = this.borderclr;
 	switch(this.ntype){
 		case NodeTypeClass.rect:
 			ctx.fillRect(this.x,this.y,this.data.w,this.data.h);
@@ -84,19 +86,43 @@ ShapeNode.prototype.draw = function(ctx){
 		}
 }
 
-function addBgPool(shapenode){
-	var name = shapenode.name;
-	layoutBgPool[name] = shapenode;
-	return shapenode;
+function addPool(itemnode){
+	var name = itemnode.name;
+	var pooltype = itemnode.ntype;
+	switch(pooltype){
+		case NodeTypeClass.bg:
+			layoutBgPool[name] = itemnode;
+			break;
+		case NodeTypeClass.group:
+			groupPool[name] = itemnode;
+			break;
+		case NodeTypeClass.icon:
+			iconPool[name] = itemnode;
+			break;
+	}
+	return itemnode;
 }
 
-function IconNodeGroup(name,x,y,w,h,bgclr){
+function IconNodeGroup(name,x,y,w,h,bgclr,borderclr,icons){
 	this.name = name;
 	this.x = x;
 	this.y = y;
 	this.w = w;
 	this.h = h;
 	this.bgclr = bgclr;
+	this.borderclr = borderclr;
+	this.icons = icons;
+}
+
+IconNodeGroup.prototype.draw = function(ctx){
+	ctx.fillStyle = this.bgclr;
+	ctx.strokeStyle = this.borderclr;
+	ctx.roundRect(this.x,this.y,this.w,this.h,3).fill();
+	ctx.roundRect(this.x,this.y,this.w,this.h,3).stroke();
+	for(var i=0;i<this.icons.length;i++){
+		var iconnode = this.icons[i];
+		iconnode.draw();
+	}
 }
 
 
@@ -107,13 +133,24 @@ function IconNode(name,iconname,x,y,w,h,defaultBgclr,activeBgclr,handler){
 	this.x = x;
 	this.y = y;
 	this.w = w;
-	this.y = y;
+	this.h = h;
 	this.ntype = NodeTypeClass.icon;
 	this.defaultBgclr = defaultBgclr;
 	this.activeBgclr = activeBgclr;
 	this.handler = handler;
 	this.depth = 1000;
 	this.isVisble = true;
+}
+
+IconNode.prototype.draw = function(ctx){
+	var iconobj = getPngSize(this.iconname);
+	var w = iconobj.w;
+	var h = iconobj.h;
+	ctx.fillStyle = this.defaultBgclr;
+	ctx.roundRect(this.x,this.y,this.w,this.h,3).fill();
+	var xp = this.x + (this.w/2 - w/2);
+	var yp = this.y + (this.h/2 - h/2);
+	drawImg(ctx,this.iconname,xp,yp);
 }
 
 IconNode.prototype.getDrawData = function(){

@@ -1,5 +1,5 @@
 function updateDraw(ctx){
-			ctx.clearRect(0,0,stageWidth,stageHeight);
+			
 			for(var id in entitys){
 				var entity = entitys[id];
 				if(entity.isVisble){
@@ -17,8 +17,12 @@ function updateDraw(ctx){
 			}
 			for(var name in layoutBgPool){
 				var itemnode = layoutBgPool[name];
-				ctx.fillStyle = itemnode.clr;
-				ctx.strokeStyle = itemnode.borderclr;
+				
+				itemnode.draw(ctx);
+			}
+			
+			for(var name in iconPool){
+				var itemnode = iconPool[name];
 				itemnode.draw(ctx);
 			}
 			
@@ -68,6 +72,11 @@ function drawScaleImg(context,name,x,y,scale){
 				context.restore();
 			}
 		};
+		
+function drawImg(context,name,x,y){
+	drawJsonImg(context,name,x,y,true,false);
+}
+
 function drawJsonImg(context,name,x,y,init,border,boxoffsetX,boxoffsetY){
 			if(!boxoffsetX)
 				boxoffsetX = 0;
@@ -310,3 +319,5 @@ function drawText(ctx,x,y,fontDis,txtArray){
 				ctx.fillText(txtArray[i],x,y+i*fontDis);
 			}
 		}
+
+
