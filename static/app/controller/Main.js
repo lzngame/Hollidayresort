@@ -1,3 +1,6 @@
+var tapStatus = 'normal';
+var currentBuildTileIconName = '';
+
 Ext.define('Resort.controller.Main',{
 	extend:'Ext.app.Controller',
 	init:function(this_initialconfig){
@@ -41,23 +44,30 @@ Ext.define('Resort.controller.Main',{
 		console.log('mainview activate');
 		initCanvas();
 		touch.on($(CANVASID),'tap',panelTap);
+		touch.on($(CANVASID),'drag dragstart dragend',panelDrag);
 		var ctx = $(CANVASID).getContext('2d');
 		
-		addEntityNode(new EntityNode('tmp',[['image 282','image 283']],200,50,50,200));
+		addEntityNode(new EntityNode('tmp',NodeTypeClass.entityitem,[['image 282','image 283']],200,50,50,200));
 		
 		addPool(
 			new IconNodeGroup('tmptest',2,50,60,260,'green','blue',
 			[
-				new IconNode('temp1','image 3923',2,55,50,50,'red','blue',function(name){
-					console.log(this.name);
+				new IconNode('temp1','image 400',2,55,50,50,'red','blue',function(name){
+					console.log(this.iconname);
+					currentBuildTileIconName = this.iconname;
+					groupBack();
 				}),
-				new IconNode('temp2','image 3923',2,110,50,50,'red','blue',function(name){
+				new IconNode('temp2','image 694',2,110,50,50,'red','blue',function(name){
 					console.log(this.name);
+					currentBuildTileIconName = this.iconname;
+					groupBack();
 				}),
-				new IconNode('temp3','image 3923',2,165,50,50,'red','blue',function(name){
+				new IconNode('temp3','image 692',2,165,50,50,'red','blue',function(name){
 					console.log(this.name);
+					currentBuildTileIconName = this.iconname;
+					groupBack();
 				})
-			]
+			],false
 		));
 		
 		addPool(new IconNode('temp222','image 690',2,100,50,50,'white','blue',function(name){
@@ -81,7 +91,7 @@ Ext.define('Resort.controller.Main',{
 		
 		initUpdate(1,function(){
 			ctx.clearRect(0,0,stageWidth,stageHeight);
-			drawRhombusMap(ctx,4,'blue','red');
+			drawRhombusMap(ctx,screenTiles,'blue','red');
 			updateDraw(ctx)
 		},15);
 		
@@ -98,21 +108,8 @@ Ext.define('Resort.controller.Main',{
 		this.redirectTo('login');
 	},
 	on_btntest_tap:function(thisself,e,eopts){
-		console.log('btntest tap');
-		var group = getTypNode('tmptest',NodeTypeClass.icongroup);
-		//group.setPos(90,90);
-		//group.swiperight();
-		group.disable = true;
-	},
-	on_btntest2_tap:function(thisself,e,eopts){
-		console.log('btntest2 tap');
-		var group = getTypNode('tmptest',NodeTypeClass.icongroup);
-		group.swipe(Direct.right);
-	},
-	on_btntest3_tap:function(thisself,e,eopts){
-		console.log('btntest3 tap');
-		var group = getTypNode('tmptest',NodeTypeClass.icongroup);
-		group.swipe(Direct.left);
+		zeroX++;
+		zeroY++;
 	},
 	showMainview:function(){
 		console.log('routes-login-showMainview');
@@ -131,9 +128,32 @@ function initCanvas(){
 	var ctx = canvas.getContext('2d');
 	
 }
+var dragzerox = 0;
+var dragzeroy = 0;
+function panelDrag(ev){
+	//debugger;
+	//console.log(ev.type);
+	//console.log(ev.position.x);
+	
+	if(ev.type == 'dragstart'){
+		dragzerox = ev.position.x -zeroX;
+		dragzeroy = ev.position.y -zeroY;
+		console.log('%d:%d',dragzerox,dragzerox);
+	}
+	if(ev.type == 'drag'){
+		//var dX = (dragzerox -ev.position.x);
+		//var dY = (dragzeroy -ev.position.y);
+		zeroX = ev.position.x-dragzerox;
+		zeroY = ev.position.y-dragzerox;
+	}
+	
+	if(ev.type == 'dragend'){
+		//dragzerox = ev.position.x;
+		//dragzeroy = ev.position.y;
+	}
+}
 
 function panelTap(ev){
-	console.log('the event done:',ev.type);
 	var tapx = ev.position.x;
 	var tapy = ev.position.y;
 	for(var name in iconPool){
@@ -159,7 +179,25 @@ function panelTap(ev){
 			return;
 		}
 	}
-	var obj = getCloseTile(tapx,tapy);
+	
+	if(tapStatus == 'buildtile'){
+		var obj = getCloseTile(tapx,tapy);
+		var posobj = getPixelByPos(obj[0],obj[1]);
+		var x = posobj.xpix -baseRhombusHeight;
+		var y = posobj.ypix -baseRhombusHeight/2;
+		addEntityNode(new EntityNode('tile',NodeTypeClass.tile,[[currentBuildTileIconName]],x,y,50,200));
+	}
+}
+
+function groupBack(){
+	var group = getTypNode('tmptest',NodeTypeClass.icongroup);
+	group.swipe(Direct.left);
+	tapStatus = 'buildtile';
+	addPool(new IconNode('cancle','image 2997',100,5,50,50,'white','blue',function(name){
+			console.log(this.name);
+			this.deleteSelf();
+			tapStatus = 'normal';
+		}));
 }
 
 

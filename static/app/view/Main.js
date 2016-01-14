@@ -15,11 +15,11 @@ Ext.define('Resort.view.Main',{
 			{
 				id:'btn_login',
 				xtype:'button',
-				text:bigfourgame.uiconfig.btn_login_txt,
+				text:'Back',
 				width:'30%',
-				height:50,
-				top:'50%',
-				left:'30%'
+				height:25,
+				top:'1%',
+				left:'70%'
 			},
 			{
 				id:'btn_test',
@@ -28,24 +28,6 @@ Ext.define('Resort.view.Main',{
 				width:'30%',
 				height:20,
 				top:'60%',
-				left:'30%'
-			},
-			{
-				id:'btn_test1',
-				xtype:'button',
-				text:'test2',
-				width:'30%',
-				height:20,
-				top:'70%',
-				left:'30%'
-			},
-			{
-				id:'btn_test2',
-				xtype:'button',
-				text:'test3',
-				width:'30%',
-				height:20,
-				top:'80%',
 				left:'30%'
 			}
 		]

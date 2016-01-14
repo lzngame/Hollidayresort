@@ -21,6 +21,10 @@ var stageHeight = 0;
 
 var baseRhombusWidth = 0;
 var baseRhombusHeight = 0;
+var screenTiles = 5;
+
+var zeroX = 0;
+var zeroY = 0;
 
 var btnGoplayTxt = '前往<br\>游戏';
 var btnGologinTxt = '返回<br\>注册';
@@ -32,7 +36,7 @@ bigfourgame.uiconfig = new function(){
 	var self = this;
 	var txttmp = 'hello';
 	self.btn_play_txt = '进入<br\>游戏';
-	self.btn_login_txt = '返回<br\>注册';
+	self.btn_login_txt = 'back';
 	self.getBtntxt = function(){
 		return 'temptxt';
 	}
@@ -52,6 +56,7 @@ var NodeTypeClass ={
 	roundrect:'NODE_SHPE_ROUND_RECT',
 	circle:'NODE_SHAPE_CIRCLE',
 	bg:'LAYOUT_BG_ENTITY',
+	tile:'NODE_TILE',
 };
 
 var Direct ={

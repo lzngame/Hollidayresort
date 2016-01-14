@@ -1,5 +1,4 @@
 function updateDraw(ctx){
-			
 			for(var id in entitys){
 				var entity = entitys[id];
 				if(entity.isVisble){
@@ -11,7 +10,12 @@ function updateDraw(ctx){
 				drawPool.sort(orderDepthNode);
 			for(var i=0;i<drawPool.length;i++){
 				var data = drawPool[i];
-				drawJsonImg(ctx,data.name,data.x,data.y,true,true);
+				if(data.type == NodeTypeClass.tile){
+					drawJsonImg3(ctx,data.name,data.x,data.y,baseRhombusWidth,baseRhombusHeight,true,true);
+				}else{
+					drawJsonImg(ctx,data.name,data.x,data.y,true,true);
+				}
+				
 			}
 			
 			
@@ -22,12 +26,14 @@ function updateDraw(ctx){
 			}
 			
 			for(var name in groupPool){
-				var itemnode = groupPool[name];
-				itemnode.draw(ctx);
+				var groupnode = groupPool[name];
+				if(groupnode.isvisible){
+					groupnode.draw(ctx);
+				}
 			}
 			for(var name in iconPool){
-				var itemnode = iconPool[name];
-				itemnode.draw(ctx);
+				var iconnode = iconPool[name];
+				iconnode.draw(ctx);
 			}
 			while(drawPool.length >0){
 				drawPool.pop();
@@ -119,8 +125,6 @@ function drawJsonImg(context,name,x,y,init,border,boxoffsetX,boxoffsetY){
 				drawPoint(context,x,y,initW,initH);
 		};
 
-
-
 function drawJsonImg2(name,x,y,init,border,boxoffsetX,boxoffsetY){
 			var data = jsonObj[name];
 			var d1 = data[0];
@@ -159,7 +163,7 @@ function drawJsonImg2(name,x,y,init,border,boxoffsetX,boxoffsetY){
 				context.restore();
 			}
 			if(border)
-				drawPoint(x,y,initW,initH);
+				drawPoint(context,x,y,initW,initH);
 		};
 		
 function drawJsonImg3(context,name,x,y,mw,mh,init,border,boxoffsetX,boxoffsetY){
@@ -198,7 +202,7 @@ function drawJsonImg3(context,name,x,y,mw,mh,init,border,boxoffsetX,boxoffsetY){
 				context.restore();
 			}
 			if(border)
-				drawPoint(x,y,initW,initH);
+				drawPoint(context,x,y,mw,mh);
 		};
 		
 function drawImgCenter(context,name,x,y){
@@ -215,7 +219,7 @@ function drawPoint(context,x,y,w,h){
 		}
 
 
-function drawCircle(x,y,r){
+function drawCircle(context,x,y,r){
 	context.fillStyle = "yellow";
 	context.beginPath();
 	context.arc(x,y,r,0,Math.PI*2,true);

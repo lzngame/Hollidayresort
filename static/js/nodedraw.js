@@ -9,6 +9,8 @@ function drawLeftMenu(ctx){
 
 //绘制菱形，x,y :中心点
 function drawRhombusCenter(ctx,x,y,w,h,clr,clrborder){
+	x = x+zeroX;
+	y = y+zeroY;
 	ctx.beginPath();
 	ctx.moveTo(x-w/2,y);
 	ctx.lineTo(x,y-h/2);
@@ -96,7 +98,7 @@ function drawRhombusMap(ctx,wn,clr,clrborder){
 	baseRhombusWidth = stageWidth/wn;
 	baseRhombusHeight = baseRhombusWidth/2;
 	var hn = stageHeight/baseRhombusHeight;
-	for(var i=0;i<=wn*2;i++){
+	for(var i=0;i<=wn*4;i++){
 		for(var j=0;j<=hn;j++){
 			drawRhombusPos(ctx,baseRhombusHeight,i,j);
 		}

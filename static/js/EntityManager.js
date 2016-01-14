@@ -1,4 +1,4 @@
-function EntityNode(name,data,x,y,depth,frameFps){
+function EntityNode(name,type,data,x,y,depth,frameFps){
 	this.depth = depth || DEFAULT_DEPTH;
 	this.frameFps = frameFps || DEFAULT_FPS;
 	this.isVisble = true;
@@ -13,7 +13,7 @@ function EntityNode(name,data,x,y,depth,frameFps){
 	this.frameIndex = 0;
 	this.frameSumTick = 0;
 	this.currentAction = 0;
-	this.type = NodeTypeClass.entityitem;
+	this.ntype = type;
 }
 EntityNode.prototype.setVisible = function(isVisible){
 	this.isVisble = isVisible;
@@ -48,7 +48,7 @@ EntityNode.prototype.getFrame = function(){
 };
 
 EntityNode.prototype.getDrawData = function(){
-	var objdata = {name:this.getFrame(),x:this.x,y:this.y,type:this.type,depth:this.depth};
+	var objdata = {name:this.getFrame(),x:this.x,y:this.y,type:this.ntype,depth:this.depth};
 	return objdata;
 };
 
@@ -114,7 +114,7 @@ function addPool(itemnode){
 	return itemnode;
 }
 
-function IconNodeGroup(name,x,y,w,h,bgclr,borderclr,icons){
+function IconNodeGroup(name,x,y,w,h,bgclr,borderclr,icons,isvisible){
 	this.name = name;
 	this.x = x;
 	this.y = y;
@@ -128,8 +128,10 @@ function IconNodeGroup(name,x,y,w,h,bgclr,borderclr,icons){
 	this.inity = y;
 	this.swipingRight = false;
 	this.swipingLeft = false;
-	this.targetRight = x + 100;
+	this.targetRight = x + 55;
 	this.disable = false;
+	this.isvisible = isvisible;
+	this.swipespeed = 12;
 }
 
 IconNodeGroup.prototype.draw = function(ctx){
@@ -139,15 +141,16 @@ IconNodeGroup.prototype.draw = function(ctx){
 			this.swipingRight = false;
 			this.swipingLeft = false;
 		}else{
-			this.setPos(this.x + 1,this.inity);
+			this.setPos(this.x + this.swipespeed,this.inity);
 		}
 	}else if(this.swipingLeft){
 		if(this.x <= this.initx){
 			this.x = this.initx;
 			this.swipingRight = false;
 			this.swipingLeft = false;
+			this.isvisible = false;
 		}else{
-			this.setPos(this.x -1,this.inity)
+			this.setPos(this.x -this.swipespeed,this.inity)
 		}
 	}
 	ctx.fillStyle = this.bgclr;
@@ -165,6 +168,7 @@ IconNodeGroup.prototype.checkTap = function(tapx,tapy){
 };
 
 IconNodeGroup.prototype.swipe = function(direct){
+	this.isvisible = true;
 	switch(direct){
 		case Direct.left:
 			this.swipingLeft = true;
@@ -227,4 +231,8 @@ IconNode.prototype.checkTap = function(tapx,tapy){
 
 IconNode.prototype.getDrawData = function(){
 	return {name:this.iconname,x:this.x,y:this.y,type:this.type,depth:this.depth};
-}
+};
+
+IconNode.prototype.deleteSelf = function(){
+	delete iconPool[this.name];
+};
