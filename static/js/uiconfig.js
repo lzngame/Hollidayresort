@@ -54,4 +54,8 @@ var NodeTypeClass ={
 	bg:'LAYOUT_BG_ENTITY',
 };
 
+var Direct ={
+	left:'DIRECT_LEFT',
+	right:'DIRECT_RIGHT'
+};
 

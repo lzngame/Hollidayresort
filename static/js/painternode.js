@@ -20,15 +20,15 @@ function updateDraw(ctx){
 				
 				itemnode.draw(ctx);
 			}
-			for(var name in iconPool){
-				var itemnode = iconPool[name];
-				itemnode.draw(ctx);
-			}
+			
 			for(var name in groupPool){
 				var itemnode = groupPool[name];
 				itemnode.draw(ctx);
 			}
-			
+			for(var name in iconPool){
+				var itemnode = iconPool[name];
+				itemnode.draw(ctx);
+			}
 			while(drawPool.length >0){
 				drawPool.pop();
 			}

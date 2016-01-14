@@ -45,7 +45,7 @@ EntityNode.prototype.getFrame = function(){
 		this.frameIndex = 0;
 	
 	return this.data[this.currentAction][this.frameIndex];
-}
+};
 
 EntityNode.prototype.getDrawData = function(){
 	var objdata = {name:this.getFrame(),x:this.x,y:this.y,type:this.type,depth:this.depth};
@@ -56,6 +56,17 @@ function addEntityNode(entityitem){
 	var id = entityitem.id;
 	entitys[id] = entityitem;
 	return id;
+}
+
+function getTypNode(name,typeclass){
+	switch(typeclass){
+		case NodeTypeClass.icon:
+			return iconPool[name];
+			break;
+		case NodeTypeClass.icongroup:
+			return groupPool[name];
+			brek;
+	}
 }
 
 function ShapeNode(name,shapetype,clr,borderclr,x,y,data){
@@ -84,7 +95,7 @@ ShapeNode.prototype.draw = function(ctx){
 			drawCircle(ctx,this.x,this.y,this.data.r);
 			break;
 		}
-}
+};
 
 function addPool(itemnode){
 	var name = itemnode.name;
@@ -113,9 +124,32 @@ function IconNodeGroup(name,x,y,w,h,bgclr,borderclr,icons){
 	this.borderclr = borderclr;
 	this.icons = icons;
 	this.ntype = NodeTypeClass.icongroup;
+	this.initx = x;
+	this.inity = y;
+	this.swipingRight = false;
+	this.swipingLeft = false;
+	this.targetRight = x + 100;
+	this.disable = false;
 }
 
 IconNodeGroup.prototype.draw = function(ctx){
+	if(this.swipingRight){
+		if(this.x >= this.targetRight){
+			this.x = this.targetRight;
+			this.swipingRight = false;
+			this.swipingLeft = false;
+		}else{
+			this.setPos(this.x + 1,this.inity);
+		}
+	}else if(this.swipingLeft){
+		if(this.x <= this.initx){
+			this.x = this.initx;
+			this.swipingRight = false;
+			this.swipingLeft = false;
+		}else{
+			this.setPos(this.x -1,this.inity)
+		}
+	}
 	ctx.fillStyle = this.bgclr;
 	ctx.strokeStyle = this.borderclr;
 	ctx.roundRect(this.x,this.y,this.w,this.h,3).fill();
@@ -124,7 +158,35 @@ IconNodeGroup.prototype.draw = function(ctx){
 		var iconnode = this.icons[i];
 		iconnode.draw(ctx);
 	}
-}
+};
+
+IconNodeGroup.prototype.checkTap = function(tapx,tapy){
+	return checkPointInBox(tapx,tapy,this.x,this.y,this.w,this.h);	
+};
+
+IconNodeGroup.prototype.swipe = function(direct){
+	switch(direct){
+		case Direct.left:
+			this.swipingLeft = true;
+			this.swipingRight = false;
+			break;
+		case Direct.right:
+			this.swipingRight = true;
+			this.swipingLeft = false;
+			break;
+	}
+};
+
+IconNodeGroup.prototype.setPos = function(x,y){
+	var dx = x -this.x;
+	var dy = y -this.y;
+	this.x = x;
+	this.y = y;
+	for(var i=0;i<this.icons.length;i++){
+		var iconnode = this.icons[i];
+		iconnode.setPos(iconnode.x+dx,iconnode.y+dy);
+	}
+};
 
 
 function IconNode(name,iconname,x,y,w,h,defaultBgclr,activeBgclr,handler){
@@ -152,7 +214,16 @@ IconNode.prototype.draw = function(ctx){
 	var xp = this.x + (this.w/2 - w/2);
 	var yp = this.y + (this.h/2 - h/2);
 	drawImg(ctx,this.iconname,xp,yp);
-}
+};
+
+IconNode.prototype.setPos= function(x,y){
+	this.x = x;
+	this.y = y;
+};
+
+IconNode.prototype.checkTap = function(tapx,tapy){
+	return checkPointInBox(tapx,tapy,this.x,this.y,this.w,this.h);	
+};
 
 IconNode.prototype.getDrawData = function(){
 	return {name:this.iconname,x:this.x,y:this.y,type:this.type,depth:this.depth};
