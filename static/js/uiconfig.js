@@ -1,4 +1,4 @@
-var CANVASID = 'CANVASID_MAIN';
+﻿var CANVASID = 'CANVASID_MAIN';
 var DEFAULT_DEPTH = 100;
 var DEFAULT_FPS = 100;
 var increaseId = 1000;
@@ -18,7 +18,7 @@ var zeroX = 0;
 var zeroY = 0;
 
 var mapWTiles = 30;
-var mapHTiles = 20;
+var mapHTiles = 30;
 
 var rightEdge = 0;
 var bottomEdge = 0;
@@ -72,10 +72,12 @@ var IconNameTxts ={
 var buildTypes ={
 	houselv1:1001,
 	houselv2:1002,
+	houselv3:1003,
 }
 
 var builddata = {
-	1001:{'img764':[0,0],'img1680':[-10,-50],'img1397':[12,30]},
-	1002:{'img764':[0,0],'img1254':[-10,-50],'img1397':[12,30]}
+	1001:{'img764':[0,0],'img1563':[0,-25],'img1564':[50,-25],'img1566':[5,-15]},
+	1002:{'img788':[0,0],'img1568':[0,-25],'img1567':[50,-25],'img2275':[5,-15]},
+	1003:{'img821':[0,0],'img1555':[0,-25],'img1554':[50,-25],'img1570':[5,-15]},
 }
 

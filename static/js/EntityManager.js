@@ -38,6 +38,10 @@ BuildNode.prototype.setPos = function(x,y){
 	this.y = y;
 };
 
+BuildNode.prototype.setDepth = function(zindex){
+	this.depth = zindex;
+};
+
 function getSizeToMap(initw,inith){
 	var nw = Math.round(initw/initTileSize);
 	var nh = Math.round(inith/initTileSize);

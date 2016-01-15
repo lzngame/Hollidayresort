@@ -6,6 +6,7 @@ var handleStatus = {
 var currentHandleStatus = -1;
 var currentBuildTileIconName = '';
 var currentBuildIconName = '';
+var currentBuildType = -1;
 var tmpnode = null; 
 Ext.define('Resort.controller.Main',{
 	extend:'Ext.app.Controller',
@@ -52,12 +53,12 @@ Ext.define('Resort.controller.Main',{
 		touch.on($(CANVASID),'tap',panelTap);
 		touch.on($(CANVASID),'drag dragstart dragend',panelDrag);
 		var ctx = $(CANVASID).getContext('2d');
+		currentHandleStatus = handleStatus.normal;
+		addEntityNode(new EntityNode('tmp',NodeTypeClass.entityitem,[['img432','img434','img436','img438']],10,10,50,30));
 		
-		addEntityNode(new EntityNode('tmp',NodeTypeClass.entityitem,[['img282','img283']],200,50,50,200));
-		addEntityNode(new BuildNode('house1',NodeTypeClass.build,buildTypes.houselv1,200,300,60));
 		
 		addPool(
-			new IconNodeGroup('tmptest',2,50,60,260,'green','blue',
+			new IconNodeGroup('tmptest',2,50,60,335,'green','blue',
 			[
 				new IconNode('temp1','img400',2,55,50,50,'red','blue',function(name){
 					console.log(this.iconname);
@@ -81,6 +82,21 @@ Ext.define('Resort.controller.Main',{
 					console.log(this.name);
 					currentBuildIconName = this.name;
 					currentHandleStatus = handleStatus.dragingbuild;
+					currentBuildType = buildTypes.houselv1;
+					groupBack();
+				}),
+				new IconNode('img766','img3036',2,275,50,50,'red','blue',function(name){
+					console.log(this.name);
+					currentBuildIconName = this.name;
+					currentHandleStatus = handleStatus.dragingbuild;
+					currentBuildType = buildTypes.houselv2;
+					groupBack();
+				}),
+				new IconNode('img766','img2740',2,330,50,50,'red','blue',function(name){
+					console.log(this.name);
+					currentBuildIconName = this.name;
+					currentHandleStatus = handleStatus.dragingbuild;
+					currentBuildType = buildTypes.houselv3;
 					groupBack();
 				})
 			],false
@@ -99,7 +115,11 @@ Ext.define('Resort.controller.Main',{
 			}else{
 				group.swipe(Direct.left);
 			}
-			
+		}));
+		addPool(new IconNode('backlogin','img3368',stageWidth - 50,355,50,50,'yellow','blue',function(name){
+					console.log(this.iconname);
+					Ext.Viewport.animateActiveItem(this.getMainview(),{type:'slide',direction:'left'});
+					this.redirectTo('login');
 		}));
 		//addPool(new ShapeNode('test',NodeTypeClass.bg,'blue','red',100,100,{w:100,h:120}));
 		//addBgPool(new ShapeNode('temp',NodeTypeClass.roundrect,'white','green',30,200,{w:100,h:120,r:10}));
@@ -182,13 +202,14 @@ function panelDrag(ev) {
 		var obj = getCloseTile(tapx-zeroX,tapy-zeroY);
 		var posobj = getPixelByPos(obj[0],obj[1]);
 		var x = posobj.xpix -baseRhombusHeight;
-		var y = posobj.ypix -baseRhombusHeight/2;
+		var y = posobj.ypix +baseRhombusHeight;
 		
 		
 		if (ev.type == 'dragstart') {
-			tmpnode = new  BuildNode('img1605',NodeTypeClass.build,0,0,true);
+			tmpnode = new BuildNode('house1',NodeTypeClass.build,currentBuildType,200,300,60);
 			//tmpnode = new EntityNode('tile',NodeTypeClass.tile,[[currentBuildTileIconName]],0,0,50,200);
 			tmpnode.setPos(x,y);
+			tmpnode.setDepth(y);
 			addEntityNode(tmpnode);
 		}
 		if (ev.type == 'drag') {
@@ -197,15 +218,18 @@ function panelDrag(ev) {
 			obj = getCloseTile(tapx-zeroX,tapy-zeroY);
 			posobj = getPixelByPos(obj[0],obj[1]);
 			x = posobj.xpix -baseRhombusHeight;
-			y = posobj.ypix -baseRhombusHeight/2;
+			y = posobj.ypix +baseRhombusHeight;
 			//debugger;
 			console.log('x:%s y:%s  -- %s:%s ',obj[0],obj[1],tapx,tapy);
 			tmpnode.setPos(x,y);
+			tmpnode.setDepth(y);
 		}
 		if (ev.type == 'dragend') {
 			currentHandleStatus = handleStatus.normal;	
 			delete entitys[tmpnode.id];
 			tmpnode = null;
+			
+			addEntityNode(new BuildNode('house1',NodeTypeClass.build,currentBuildType,x,y,y));
 		}
 	}
 }

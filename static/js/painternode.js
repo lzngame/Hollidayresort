@@ -23,7 +23,6 @@ function updateDraw(ctx){
 						var item = databuild[name];
 						var x = data.x + item[0];
 						var y = data.y + item[1];
-						console.log('%d %d %s',x,y,name);
 						drawJsonImg(ctx,name,x,y,true,true);
 					}
 				}
