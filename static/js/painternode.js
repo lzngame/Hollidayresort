@@ -10,15 +10,15 @@ function updateDraw(ctx){
 				drawPool.sort(orderDepthNode);
 			for(var i=0;i<drawPool.length;i++){
 				var data = drawPool[i];
+
+				data.x = data.x + zeroX;
+				data.y = data.y + zeroY;
 				if(data.type == NodeTypeClass.tile){
 					drawJsonImg3(ctx,data.name,data.x,data.y,baseRhombusWidth,baseRhombusHeight,true,true);
 				}else{
 					drawJsonImg(ctx,data.name,data.x,data.y,true,true);
 				}
-				
 			}
-			
-			
 			for(var name in layoutBgPool){
 				var itemnode = layoutBgPool[name];
 				

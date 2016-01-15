@@ -16,19 +16,19 @@ Ext.define('Resort.view.Main',{
 				id:'btn_login',
 				xtype:'button',
 				text:'Back',
-				width:'30%',
-				height:25,
+				width:'20%',
+				height:20,
 				top:'1%',
-				left:'70%'
+				left:'80%'
 			},
 			{
 				id:'btn_test',
 				xtype:'button',
 				text:'test1',
-				width:'30%',
+				width:'20%',
 				height:20,
-				top:'60%',
-				left:'30%'
+				top:'10%',
+				left:'80%'
 			}
 		]
 	},

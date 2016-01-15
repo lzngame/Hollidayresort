@@ -1,5 +1,6 @@
 var tapStatus = 'normal';
 var currentBuildTileIconName = '';
+var currentBuildIconName = '';
 
 Ext.define('Resort.controller.Main',{
 	extend:'Ext.app.Controller',
@@ -66,6 +67,11 @@ Ext.define('Resort.controller.Main',{
 					console.log(this.name);
 					currentBuildTileIconName = this.iconname;
 					groupBack();
+				}),
+				new IconNode('image 766','image 2200',2,220,50,50,'red','blue',function(name){
+					console.log(this.name);
+					currentBuildIconName = this.name;
+					groupBack();
 				})
 			],false
 		));
@@ -91,7 +97,7 @@ Ext.define('Resort.controller.Main',{
 		
 		initUpdate(1,function(){
 			ctx.clearRect(0,0,stageWidth,stageHeight);
-			drawRhombusMap(ctx,screenTiles,'blue','red');
+			drawRhombusMap(ctx,mapWTiles,mapHTiles,'blue','red');
 			updateDraw(ctx)
 		},15);
 		
@@ -126,30 +132,37 @@ function initCanvas(){
 	canvas.width = stageWidth;
 	canvas.height = stageHeight;
 	var ctx = canvas.getContext('2d');
+	baseRhombusWidth = stageWidth/screenTiles;
+	baseRhombusHeight = baseRhombusWidth/2;
 	
+	rightEdge = baseRhombusHeight* mapWTiles -stageWidth;
+	bottomEdge = baseRhombusHeight * mapHTiles -stageHeight;
+	console.log('tileWidth:%s tileHeight:%s',baseRhombusWidth.toString(),baseRhombusHeight.toString())
 }
 var dragzerox = 0;
 var dragzeroy = 0;
 function panelDrag(ev){
-	//debugger;
-	//console.log(ev.type);
-	//console.log(ev.position.x);
-	
 	if(ev.type == 'dragstart'){
 		dragzerox = ev.position.x -zeroX;
 		dragzeroy = ev.position.y -zeroY;
-		console.log('%d:%d',dragzerox,dragzerox);
 	}
 	if(ev.type == 'drag'){
-		//var dX = (dragzerox -ev.position.x);
-		//var dY = (dragzeroy -ev.position.y);
 		zeroX = ev.position.x-dragzerox;
-		zeroY = ev.position.y-dragzerox;
+		zeroY = ev.position.y-dragzeroy;
+		if(zeroX>=0)
+			zeroX = 0;
+		if(zeroY>=0)
+			zeroY = 0;
+		
+		if(zeroX <= -rightEdge)
+		    zeroX = -rightEdge;
+		if(zeroY <= -bottomEdge)
+			zeroY = -bottomEdge;
 	}
 	
 	if(ev.type == 'dragend'){
-		//dragzerox = ev.position.x;
-		//dragzeroy = ev.position.y;
+		dragzerox = 0;
+		dragzeroy = 0;
 	}
 }
 
@@ -181,7 +194,7 @@ function panelTap(ev){
 	}
 	
 	if(tapStatus == 'buildtile'){
-		var obj = getCloseTile(tapx,tapy);
+		var obj = getCloseTile(tapx-zeroX,tapy-zeroY);
 		var posobj = getPixelByPos(obj[0],obj[1]);
 		var x = posobj.xpix -baseRhombusHeight;
 		var y = posobj.ypix -baseRhombusHeight/2;

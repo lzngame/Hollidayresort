@@ -9,8 +9,6 @@ function drawLeftMenu(ctx){
 
 //绘制菱形，x,y :中心点
 function drawRhombusCenter(ctx,x,y,w,h,clr,clrborder){
-	x = x+zeroX;
-	y = y+zeroY;
 	ctx.beginPath();
 	ctx.moveTo(x-w/2,y);
 	ctx.lineTo(x,y-h/2);
@@ -61,7 +59,8 @@ function drawRhombusPos(ctx,h,xpos,ypos){
 		var y = ypos * h + h/2;
 		clr = 'white';
 	}
-	
+	x = x+zeroX;
+	y = y+zeroY;
 	drawRhombusCenter(ctx,x,y,w,h,clr,clrborder);
 	ctx.fillStyle = 'black';
 	ctx.fillText(xpos.toString()+':'+ypos.toString(),x-10,y+3);
@@ -94,12 +93,9 @@ function drawTilePos2(ctx,titlename,h,sh,xpos,ypos){
 }
 
 //绘制菱形图块地图
-function drawRhombusMap(ctx,wn,clr,clrborder){
-	baseRhombusWidth = stageWidth/wn;
-	baseRhombusHeight = baseRhombusWidth/2;
-	var hn = stageHeight/baseRhombusHeight;
-	for(var i=0;i<=wn*4;i++){
-		for(var j=0;j<=hn;j++){
+function drawRhombusMap(ctx,mapw,maph,clr,clrborder){
+	for(var i=0;i<=mapw;i++){
+		for(var j=0;j<=maph;j++){
 			drawRhombusPos(ctx,baseRhombusHeight,i,j);
 		}
 	}

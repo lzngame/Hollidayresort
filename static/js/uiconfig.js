@@ -26,6 +26,12 @@ var screenTiles = 5;
 var zeroX = 0;
 var zeroY = 0;
 
+var mapWTiles = 30;
+var mapHTiles = 20;
+
+var rightEdge = 0;
+var bottomEdge = 0;
+
 var btnGoplayTxt = '前往<br\>游戏';
 var btnGologinTxt = '返回<br\>注册';
 
