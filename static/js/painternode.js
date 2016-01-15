@@ -15,8 +15,10 @@ function updateDraw(ctx){
 				data.y = data.y + zeroY;
 				if(data.type == NodeTypeClass.tile){
 					drawJsonImg3(ctx,data.name,data.x,data.y,baseRhombusWidth,baseRhombusHeight,true,true);
-				}else{
+				}else if(data.type == NodeTypeClass.entityitem){
 					drawJsonImg(ctx,data.name,data.x,data.y,true,true);
+				}else if(data.type == NodeTypeClass.build){
+					drawPng(ctx,data.name,data.x,data.y,data.w,data.h,100,true);
 				}
 			}
 			for(var name in layoutBgPool){
@@ -84,6 +86,18 @@ function drawScaleImg(context,name,x,y,scale){
 		
 function drawImg(context,name,x,y){
 	drawJsonImg(context,name,x,y,true,false);
+}
+
+function drawPng(context,name,x,y,w,h,border){
+			var data = jsonObj[name];
+			var d1 = data[0];
+			var dx = d1[0];
+			var dy = d1[1];
+			var dw = d1[2];
+			var dh = d1[3];
+			context.drawImage(img_sencha,dx,dy,dw,dh,x,y,w,h);
+			if(border)
+				drawPoint(context,x,y,w,h);
 }
 
 function drawJsonImg(context,name,x,y,init,border,boxoffsetX,boxoffsetY){

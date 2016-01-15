@@ -1,3 +1,34 @@
+function BuildNode(name,type,x,y,depth){
+	this.name = name;
+	this.x = x;
+	this.y = y;
+	this.depth = depth;
+	this.isVisble = true;
+	this.id = increaseId++;
+	this.ntype = type;
+	this.initw = getPngSize(name).w;
+	this.inith = getPngSize(name).h;
+	this.w = getSizeToMap(this.initw,this.inith).w;
+	this.h = getSizeToMap(this.initw,this.inith).h;
+}
+
+BuildNode.prototype.getDrawData = function(){
+	var objdata = { name:this.name,
+					x:this.x,
+					y:this.y,
+					type:this.ntype,
+					w:this.w,
+					h:this.h,
+					depth:this.depth};
+	return objdata;
+};
+
+function getSizeToMap(initw,inith){
+	var nw = Math.round(initw/initTileSize);
+	var nh = Math.round(inith/initTileSize);
+	return {w:nw * baseRhombusHeight,h:nh*baseRhombusHeight};
+}
+
 function EntityNode(name,type,data,x,y,depth,frameFps){
 	this.depth = depth || DEFAULT_DEPTH;
 	this.frameFps = frameFps || DEFAULT_FPS;
@@ -58,7 +89,7 @@ function addEntityNode(entityitem){
 	return id;
 }
 
-function getTypNode(name,typeclass){
+function getTypeNode(name,typeclass){
 	switch(typeclass){
 		case NodeTypeClass.icon:
 			return iconPool[name];

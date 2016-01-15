@@ -2,6 +2,16 @@ function $(id){
 	return document.getElementById(id);
 }
 
+function getPngSize(name){
+	var data = jsonObj[name];
+	var d1 = data[0];
+	var dw = d1[2];
+	var dh = d1[3];
+	var initW = data[4][0];
+	var initH = data[4][1];
+	return {w:dw,h:dh};
+}
+
 function getDis(x1,y1,x2,y2){
 	return Math.sqrt(getDisSquare(x1,y1,x2,y2));
 }
@@ -69,6 +79,6 @@ function getCloseTile(tapx,tapy){
 			targetY = ypos;
 		}
 	}
-	console.log('点击的坐标：  %d:%d',targetX,targetY);
+	//console.log('点击的坐标：  %d:%d',targetX,targetY);
 	return [targetX,targetY];
 }
