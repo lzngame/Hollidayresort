@@ -1,4 +1,4 @@
-function BuildNode(name,type,x,y,depth){
+function BuildNode(name,type,buildtype,x,y,depth){
 	this.name = name;
 	this.x = x;
 	this.y = y;
@@ -6,10 +6,11 @@ function BuildNode(name,type,x,y,depth){
 	this.isVisble = true;
 	this.id = increaseId++;
 	this.ntype = type;
-	this.initw = getPngSize(name).w;
+	this.buildtype = buildtype;
+	/*this.initw = getPngSize(name).w;
 	this.inith = getPngSize(name).h;
 	this.w = getSizeToMap(this.initw,this.inith).w;
-	this.h = getSizeToMap(this.initw,this.inith).h;
+	this.h = getSizeToMap(this.initw,this.inith).h;*/
 }
 
 BuildNode.prototype.getDrawData = function(){
@@ -17,10 +18,24 @@ BuildNode.prototype.getDrawData = function(){
 					x:this.x,
 					y:this.y,
 					type:this.ntype,
-					w:this.w,
-					h:this.h,
-					depth:this.depth};
+					depth:this.depth,
+					buildtype:this.buildtype
+					};
 	return objdata;
+};
+
+BuildNode.prototype.drawself = function(ctx){
+	var data = builddata[this.buildtype];
+	
+	for(var name in  data){
+		var item = data[name];
+		drawImg(ctx,name,this.x+item[0],this.y+item[1]);
+	}
+};
+
+BuildNode.prototype.setPos = function(x,y){
+	this.x = x;
+	this.y = y;
 };
 
 function getSizeToMap(initw,inith){

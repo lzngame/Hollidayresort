@@ -4,6 +4,7 @@ function $(id){
 
 function getPngSize(name){
 	var data = jsonObj[name];
+	
 	var d1 = data[0];
 	var dw = d1[2];
 	var dh = d1[3];

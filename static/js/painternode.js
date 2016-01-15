@@ -18,7 +18,14 @@ function updateDraw(ctx){
 				}else if(data.type == NodeTypeClass.entityitem){
 					drawJsonImg(ctx,data.name,data.x,data.y,true,true);
 				}else if(data.type == NodeTypeClass.build){
-					drawPng(ctx,data.name,data.x,data.y,data.w,data.h,100,true);
+					var databuild = builddata[data.buildtype];
+					for(var name in  databuild){
+						var item = databuild[name];
+						var x = data.x + item[0];
+						var y = data.y + item[1];
+						console.log('%d %d %s',x,y,name);
+						drawJsonImg(ctx,name,x,y,true,true);
+					}
 				}
 			}
 			for(var name in layoutBgPool){

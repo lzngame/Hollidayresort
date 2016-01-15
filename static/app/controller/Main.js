@@ -53,31 +53,31 @@ Ext.define('Resort.controller.Main',{
 		touch.on($(CANVASID),'drag dragstart dragend',panelDrag);
 		var ctx = $(CANVASID).getContext('2d');
 		
-		addEntityNode(new EntityNode('tmp',NodeTypeClass.entityitem,[['image 282','image 283']],200,50,50,200));
-		addEntityNode(new BuildNode('image 797',NodeTypeClass.build,baseRhombusHeight*2,baseRhombusHeight*5.5,true));
+		addEntityNode(new EntityNode('tmp',NodeTypeClass.entityitem,[['img282','img283']],200,50,50,200));
+		addEntityNode(new BuildNode('house1',NodeTypeClass.build,buildTypes.houselv1,200,300,60));
 		
 		addPool(
 			new IconNodeGroup('tmptest',2,50,60,260,'green','blue',
 			[
-				new IconNode('temp1','image 400',2,55,50,50,'red','blue',function(name){
+				new IconNode('temp1','img400',2,55,50,50,'red','blue',function(name){
 					console.log(this.iconname);
 					currentHandleStatus = handleStatus.tile;
 					currentBuildTileIconName = this.iconname;
 					groupBack();
 				}),
-				new IconNode('temp2','image 694',2,110,50,50,'red','blue',function(name){
+				new IconNode('temp2','img694',2,110,50,50,'red','blue',function(name){
 					console.log(this.name);
 					currentHandleStatus = handleStatus.tile;
 					currentBuildTileIconName = this.iconname;
 					groupBack();
 				}),
-				new IconNode('temp3','image 692',2,165,50,50,'red','blue',function(name){
+				new IconNode('temp3','img692',2,165,50,50,'red','blue',function(name){
 					console.log(this.name);
 					currentHandleStatus = handleStatus.tile;
 					currentBuildTileIconName = this.iconname;
 					groupBack();
 				}),
-				new IconNode('image 766','image 2200',2,220,50,50,'red','blue',function(name){
+				new IconNode('img766','img2200',2,220,50,50,'red','blue',function(name){
 					console.log(this.name);
 					currentBuildIconName = this.name;
 					currentHandleStatus = handleStatus.dragingbuild;
@@ -86,7 +86,7 @@ Ext.define('Resort.controller.Main',{
 			],false
 		));
 		
-		addPool(new IconNode('temp222','image 690',2,100,50,50,'white','blue',function(name){
+		addPool(new IconNode('temp222','img690',2,100,50,50,'white','blue',function(name){
 			console.log(this.name);
 			var group = getTypeNode('tmptest',NodeTypeClass.icongroup);
 			if(!group.swipingLeft && !group.swipingRight){
@@ -143,8 +143,8 @@ function initCanvas(){
 	canvas.width = stageWidth;
 	canvas.height = stageHeight;
 	var ctx = canvas.getContext('2d');
-	baseRhombusWidth = stageWidth/screenTiles;
-	baseRhombusHeight = baseRhombusWidth/2;
+	//baseRhombusWidth = stageWidth/screenTiles;
+	//baseRhombusHeight = baseRhombusWidth/2;
 	
 	rightEdge = baseRhombusHeight* mapWTiles -stageWidth;
 	bottomEdge = baseRhombusHeight * mapHTiles -stageHeight;
@@ -186,7 +186,8 @@ function panelDrag(ev) {
 		
 		
 		if (ev.type == 'dragstart') {
-			tmpnode = new EntityNode('tile',NodeTypeClass.tile,[[currentBuildTileIconName]],0,0,50,200);
+			tmpnode = new  BuildNode('img1605',NodeTypeClass.build,0,0,true);
+			//tmpnode = new EntityNode('tile',NodeTypeClass.tile,[[currentBuildTileIconName]],0,0,50,200);
 			tmpnode.setPos(x,y);
 			addEntityNode(tmpnode);
 		}
@@ -249,7 +250,7 @@ function groupBack(){
 	var group = getTypeNode('tmptest',NodeTypeClass.icongroup);
 	group.swipe(Direct.left);
 	tapStatus = 'buildtile';
-	addPool(new IconNode(IconNameTxts.cancleBuildTile,'image 2997',100,5,50,50,'white','blue',function(name){
+	addPool(new IconNode(IconNameTxts.cancleBuildTile,'img2997',100,5,50,50,'white','blue',function(name){
 			console.log(this.name);
 			this.deleteSelf();
 			currentHandleStatus = handleStatus.normal;
