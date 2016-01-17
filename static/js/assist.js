@@ -83,3 +83,68 @@ function getCloseTile(tapx,tapy){
 	//console.log('点击的坐标：  %d:%d',targetX,targetY);
 	return [targetX,targetY];
 }
+
+function GetPosInBuild(xpos,ypos){
+	for (var id in entitys) {
+		var item = entitys[id];
+		if (item.ntype == NodeTypeClass.build) {
+			var floorspace = item.floorspace;
+			if(floorspace != null){
+				var find = isInFloorspce(xpos, ypos,floorspace);
+				if (find) {
+					return item;
+				}
+			}
+		}
+	}
+	return null;
+}
+
+function getRound4ByLeftTop(x,y){
+	if(x % 2== 0){
+		return [
+			[x,y],[x+1,y-1],[x+1,y],[x+2,y]
+		]
+	}else{
+		return [
+			[x,y],[x+1,y],[x+1,y+1],[x+2,y]
+		]
+	}
+}
+
+function getExit4ByLeftTop(x,y){
+	if(x %2 == 0){
+		return [
+			[x-1,y],[x,y+1],[x+2,y+1],[x+3,y]
+		]
+	}else{
+		return [
+			[x-1,y+1],[x,y+1],[x+2,y+1],[x+3,y+1]
+		]
+	}
+}
+
+function isInFloorspce(x,y,floorspaceArray){
+	var re = false;
+	for(var i=0;i<floorspaceArray.length;i++){
+		var itemtarget = floorspaceArray[i];
+		if(itemtarget[0]==x && itemtarget[1]==y){
+			re = true;
+			break;
+		}
+	}
+	return re;
+}
+
+function isInRhombus4(x,y){
+	var target = getRound4ByLeftTop(x,y);
+	var re = false;
+	for(var i=0;i<target.length;i++){
+		var itemtarget = target[i];
+		if(itemtarget[0]==x && itemtarget[1]==y){
+			re = true;
+			break;
+		}
+	}
+	return re;
+}

@@ -52,11 +52,11 @@ function animate(time){
 	}
 	
 	if((activeUpdatePool[currentActiveIndex]) != null){
-		tickActiveSum +=  bigfourgame.clock.getTick();
-		if(tickActiveSum > activeUpdatePoolTime[currentActiveIndex]){
-			tickActiveSum = 0;
+		//tickActiveSum +=  bigfourgame.clock.getTick();
+		//if(tickActiveSum > activeUpdatePoolTime[currentActiveIndex]){
+		//	tickActiveSum = 0;
 			activeUpdatePool[currentActiveIndex]();
-		}
+		//}
 	}
 	window.requestNextAnimationFrame(animate);
 }

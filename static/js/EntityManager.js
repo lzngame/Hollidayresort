@@ -1,4 +1,4 @@
-function BuildNode(name,type,buildtype,x,y,depth){
+function BuildNode(name,type,buildtype,x,y,depth,floorspace){
 	this.name = name;
 	this.x = x;
 	this.y = y;
@@ -7,11 +7,12 @@ function BuildNode(name,type,buildtype,x,y,depth){
 	this.id = increaseId++;
 	this.ntype = type;
 	this.buildtype = buildtype;
-	/*this.initw = getPngSize(name).w;
-	this.inith = getPngSize(name).h;
-	this.w = getSizeToMap(this.initw,this.inith).w;
-	this.h = getSizeToMap(this.initw,this.inith).h;*/
+	this.floorspace = floorspace;
 }
+
+BuildNode.prototype.IsInFloorspace = function(xpos,ypos){
+	return isInFloorspce(xpos,ypos,this.floorspace);
+};
 
 BuildNode.prototype.getDrawData = function(){
 	var objdata = { name:this.name,
@@ -129,23 +130,94 @@ function ShapeNode(name,shapetype,clr,borderclr,x,y,data){
 	this.data = data;
 }
 
-ShapeNode.prototype.draw = function(ctx){
+function ShapeCircle(name,clr,borderclr,x,y,r){
+	this.name = name;
+	this.x = x;
+	this.y = y;
+	this.ntype = NodeTypeClass.circle;
+	this.x = x;
+	this.y = y;
+	this.r = r;
+}
+
+ShapeCircle.prototype.draw = function(ctx){
 	ctx.fillStyle = this.clr;
 	ctx.strokeStyle = this.borderclr;
-	switch(this.ntype){
-		case NodeTypeClass.rect:
-			ctx.fillRect(this.x,this.y,this.data.w,this.data.h);
-			ctx.strokeRect(this.x,this.y,this.data.w,this.data.h);
-			break;
-		case NodeTypeClass.roundrect:
-			ctx.roundRect(this.x,this.y,this.data.w,this.data.h,this.data.r).fill();
-			ctx.roundRect(this.x,this.y,this.data.w,this.data.h,this.data.r).stroke();
-			break;
-		case NodeTypeClass.circle:
-			drawCircle(ctx,this.x,this.y,this.data.r);
-			break;
-		}
+	drawCircle(ctx,this.x,this.y,this.data.r);
 };
+
+function ShapeRect(name,clr,borderclr,x,y,w,h){
+	this.name = name;
+	this.x = x;
+	this.y = y;
+	this.w = w;
+	this.h = h;
+	this.clr = clr;
+	this.borderclr = borderclr;
+}
+
+ShapeRect.prototype.draw = function(ctx){
+	ctx.fillStyle = this.clr;
+	ctx.strokeStyle = this.borderclr;
+	ctr.fillRect(this.x,this.y,this.w,this.h);
+	ctx.strokeRect(this.x,this.y,this.w,this.h);
+};
+
+function ShapeRoundrect(name,clr,borderclr,x,y,w,h,r){
+	this.name = name;
+	this.x = x;
+	this.y = y;
+	this.w = w;
+	this.h = h;
+	this.r = r;
+	this.clr = clr;
+	this.borderclr = borderclr;
+	layoutBgPool[name] = this;
+}
+
+ShapeRoundrect.prototype.draw = function(ctx){
+	ctx.fillStyle = this.clr;
+	ctx.strokeStyle = this.borderclr;
+	ctx.roundRect(this.x,this.y,this.w,this.h,this.r).fill();
+	ctx.roundRect(this.x,this.y,this.w,this.h,this.r).stroke();
+}
+
+function LvNode(name,iconname,x,y,n,size){
+	this.x = x;
+	this.y = y;
+	this.name = name;
+	this.n = n;
+	this.iconname = iconname;
+	this.size = size;
+	layoutBgPool[name] = this;
+}
+
+LvNode.prototype.draw = function(ctx){
+	for(var i=0;i<this.n;i++){
+		var y = this.y;
+		var x = this.x + i*this.size;
+		drawJsonImg3(ctx,this.iconname,x,y,this.size,this.size);
+	}
+};
+
+LvNode.prototype.setLv = function(n){
+	this.n = n;
+};
+
+function ImageNode(name,iconname,x,y,w,h){
+	this.name = name;
+	this.iconname = iconname;
+	this.x = x;
+	this.y = y;
+	this.w = w;
+	this.h = h;
+	layoutBgPool[name] = this;
+}
+
+ImageNode.prototype.draw = function(ctx){
+	drawJsonImg3(ctx,this.iconname,this.x,this.y,this.w,this.h);
+};
+
 
 function addPool(itemnode){
 	var name = itemnode.name;
@@ -243,7 +315,7 @@ IconNodeGroup.prototype.setPos = function(x,y){
 };
 
 
-function IconNode(name,iconname,x,y,w,h,defaultBgclr,activeBgclr,handler){
+function IconNode(name,iconname,x,y,w,h,defaultBgclr,activeBgclr,handler,borderClr){
 	this.id = increaseId++;
 	this.name = name;
 	this.iconname = iconname;
@@ -254,6 +326,8 @@ function IconNode(name,iconname,x,y,w,h,defaultBgclr,activeBgclr,handler){
 	this.ntype = NodeTypeClass.icon;
 	this.defaultBgclr = defaultBgclr;
 	this.activeBgclr = activeBgclr;
+	if(borderClr)
+		this.borderclr = borderClr;
 	this.handler = handler;
 	this.depth = 1000;
 	this.isVisble = true;
@@ -265,6 +339,8 @@ IconNode.prototype.draw = function(ctx){
 	var h = iconobj.h;
 	ctx.fillStyle = this.defaultBgclr;
 	ctx.roundRect(this.x,this.y,this.w,this.h,3).fill();
+	ctx.strokeStyle = this.borderclr;
+	ctx.roundRect(this.x,this.y,this.w,this.h,3).stroke();
 	var xp = this.x + (this.w/2 - w/2);
 	var yp = this.y + (this.h/2 - h/2);
 	drawImg(ctx,this.iconname,xp,yp);
@@ -285,4 +361,35 @@ IconNode.prototype.getDrawData = function(){
 
 IconNode.prototype.deleteSelf = function(){
 	delete iconPool[this.name];
+};
+
+function EntitTextNode(txt,x,y,clr,size){
+	this.text = txt;
+	this.x = x;
+	this.y = y;
+	this.clr = clr;
+	this.size = size;
+}
+
+EntitTextNode.prototype.draw = function(ctx){
+	ctx.fillText(this.txt,x,y);
+};
+
+function PngNumNode(name,txt,x,y){
+	this.name = name;
+	this.x = x;
+	this.y = y;
+	this.txt = txt;
+	this.ntype = NodeTypeClass.num;
+	layoutBgPool[name] = this;
+}
+
+PngNumNode.prototype.draw = function(ctx){
+	drawNumSt(ctx,this.txt,this.x,this.y);
+};
+
+PngNumNode.prototype.setTxt = function(txt){
+	if(isNaN(txt))
+		txt = '999999999999';
+	this.txt = txt;
 };

@@ -18,10 +18,10 @@ Ext.define('Resort.view.Main',{
 				text:'Back',
 				width:'20%',
 				height:20,
-				top:'1%',
+				top:'90%',
 				left:'80%'
 			},
-			{
+			/*{
 				id:'btn_test',
 				xtype:'button',
 				text:'test1',
@@ -29,7 +29,7 @@ Ext.define('Resort.view.Main',{
 				height:20,
 				top:'10%',
 				left:'80%'
-			}
+			}*/
 		]
 	},
 	

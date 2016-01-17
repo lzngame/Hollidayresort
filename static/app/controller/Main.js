@@ -54,8 +54,21 @@ Ext.define('Resort.controller.Main',{
 		touch.on($(CANVASID),'drag dragstart dragend',panelDrag);
 		var ctx = $(CANVASID).getContext('2d');
 		currentHandleStatus = handleStatus.normal;
-		addEntityNode(new EntityNode('tmp',NodeTypeClass.entityitem,[['img432','img434','img436','img438']],10,10,50,30));
+		addEntityNode(new EntityNode('tmp',NodeTypeClass.entityitem,[['img432','img434','img436','img438']],110,10,50,30));
 		
+		var shape = new ShapeRoundrect('shaperoundrect','black','blue',61,1,150,26,4);
+		var numnode = new PngNumNode('numnode','0123456789',85,5);
+		var lvstar = new LvNode('lvstar','img3415',125,4,5,25);
+		var imgnode = new ImageNode('testimgnode','img3415',61,130,25,25);
+		
+		addPool(new IconNode('Money','img302',62,3,20,20,'white','white',function(name){
+					console.log(this.iconname);
+		},'white'));
+		addPool(new IconNode('Head','img3368',0,0,60,60,'yellow','blue',function(name){
+					console.log(this.iconname);
+					layoutBgPool['lvstar'].setLv(Math.round(Math.random()*10));
+					layoutBgPool['numnode'].setTxt(Math.floor(Math.random()*10000).toString());
+		},'red'));
 		
 		addPool(
 			new IconNodeGroup('tmptest',2,50,60,335,'green','blue',
@@ -121,6 +134,10 @@ Ext.define('Resort.controller.Main',{
 					Ext.Viewport.animateActiveItem(this.getMainview(),{type:'slide',direction:'left'});
 					this.redirectTo('login');
 		}));
+		
+		
+		
+		
 		//addPool(new ShapeNode('test',NodeTypeClass.bg,'blue','red',100,100,{w:100,h:120}));
 		//addBgPool(new ShapeNode('temp',NodeTypeClass.roundrect,'white','green',30,200,{w:100,h:120,r:10}));
 		//addBgPool(new ShapeNode('temp2',NodeTypeClass.roundrect,'white','green',130,200,{w:100,h:100,r:50}));
@@ -163,8 +180,6 @@ function initCanvas(){
 	canvas.width = stageWidth;
 	canvas.height = stageHeight;
 	var ctx = canvas.getContext('2d');
-	//baseRhombusWidth = stageWidth/screenTiles;
-	//baseRhombusHeight = baseRhombusWidth/2;
 	
 	rightEdge = baseRhombusHeight* mapWTiles -stageWidth;
 	bottomEdge = baseRhombusHeight * mapHTiles -stageHeight;
@@ -195,32 +210,47 @@ function panelDrag(ev) {
 			dragzerox = 0;
 			dragzeroy = 0;
 		}
-	}
-	if(currentHandleStatus == handleStatus.dragingbuild){
+	}else if(currentHandleStatus == handleStatus.dragingbuild){
 		var tapx = ev.position.x;
 		var tapy = ev.position.y;
 		var obj = getCloseTile(tapx-zeroX,tapy-zeroY);
 		var posobj = getPixelByPos(obj[0],obj[1]);
-		var x = posobj.xpix -baseRhombusHeight;
-		var y = posobj.ypix +baseRhombusHeight;
 		
+		var x = posobj.xpix -baseRhombusHeight-baseRhombusWidth;
+		var y = posobj.ypix -baseRhombusHeight;
+		var wsize = builddata[currentBuildType];
+		for(var i in wsize){
+			var size = getPngSize(i);
+			if(Math.abs(size.w - baseRhombusWidth) <= 5){
+				x = posobj.xpix -baseRhombusHeight;
+				y = posobj.ypix -baseRhombusHeight/2;
+			}
+			break;
+		}
 		
 		if (ev.type == 'dragstart') {
-			tmpnode = new BuildNode('house1',NodeTypeClass.build,currentBuildType,200,300,60);
-			//tmpnode = new EntityNode('tile',NodeTypeClass.tile,[[currentBuildTileIconName]],0,0,50,200);
+			tmpnode = new BuildNode('tmpnode',NodeTypeClass.build,currentBuildType,0,0,0);
 			tmpnode.setPos(x,y);
 			tmpnode.setDepth(y);
 			addEntityNode(tmpnode);
+			canbuild = true;
 		}
 		if (ev.type == 'drag') {
-			tapx = ev.position.x;
-			tapy = ev.position.y;
-			obj = getCloseTile(tapx-zeroX,tapy-zeroY);
-			posobj = getPixelByPos(obj[0],obj[1]);
-			x = posobj.xpix -baseRhombusHeight;
-			y = posobj.ypix +baseRhombusHeight;
-			//debugger;
-			console.log('x:%s y:%s  -- %s:%s ',obj[0],obj[1],tapx,tapy);
+			var findx = x+15;
+			var findy = y+baseRhombusHeight;
+			var findObj = getCloseTile(findx,findy);
+			console.log('Find:%d-%d',findObj[0],findObj[1]);
+			var roundAr = getRound4ByLeftTop(findObj[0],findObj[1]);
+			
+			for(var i=0;i<roundAr.length;i++){
+				var ar = roundAr[i];
+				if(GetPosInBuild(ar[0],ar[1]) != null){
+					console.log('不能建造');
+					canbuild = false;
+					break;
+				}
+			}
+
 			tmpnode.setPos(x,y);
 			tmpnode.setDepth(y);
 		}
@@ -228,8 +258,36 @@ function panelDrag(ev) {
 			currentHandleStatus = handleStatus.normal;	
 			delete entitys[tmpnode.id];
 			tmpnode = null;
+			var canbuild = true;
+			var findx = x+15;
+			var findy = y+baseRhombusHeight;
+			var findObj = getCloseTile(findx,findy);
+			console.log('buildend:%d-%d',findObj[0],findObj[1]);
+			var roundAr = getRound4ByLeftTop(findObj[0],findObj[1]);
+			var exitAr = getExit4ByLeftTop(findObj[0],findObj[1]);
 			
-			addEntityNode(new BuildNode('house1',NodeTypeClass.build,currentBuildType,x,y,y));
+			for(var i=0;i<roundAr.length;i++){
+				var ar = roundAr[i];
+				if(GetPosInBuild(ar[0],ar[1]) != null){
+					console.log('建筑区域内有建筑物，不能建造');
+					canbuild = false;
+					break;
+				}
+			}
+			
+			
+			for(var i=0;i<exitAr.length;i++){
+				canbuild = false;
+				var ar = exitAr[i];
+				if(GetPosInBuild(ar[0],ar[1]) == null){
+					console.log('建筑区域内有通道，可以建造');
+					canbuild = true;
+					break;
+				}
+				console.log('建筑区域内没有通道，不能建造');
+			}
+			if(canbuild)
+				addEntityNode(new BuildNode('house1',NodeTypeClass.build,currentBuildType,x,y,y,roundAr));
 		}
 	}
 }
@@ -259,7 +317,17 @@ function panelTap(ev){
 			}
 			return;
 		}
+	} 
+	
+	if (currentHandleStatus == handleStatus.normal) {
+		var tapx = ev.position.x;
+		var tapy = ev.position.y;
+		var obj = getCloseTile(tapx - zeroX, tapy - zeroY);
+		var item = GetPosInBuild(obj[0],obj[1]);
+		if(item != null)
+		   console.log('find:%d-%s',item.id,item.name);
 	}
+	
 	
 	if(currentHandleStatus == handleStatus.tile){
 		var obj = getCloseTile(tapx-zeroX,tapy-zeroY);

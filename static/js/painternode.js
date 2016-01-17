@@ -347,4 +347,15 @@ function drawText(ctx,x,y,fontDis,txtArray){
 			}
 		}
 
+var numWidths =[9,6,9,9,10,9,9,9,9,9];
+function drawNumSt(ctx,st,x,y){
+	var offsetx = 0;
+	for(var i=0;i<st.length;i++){
+		var numst = st.slice(i,i+1);
+		var num = "num"+numst;
+		drawJsonImg(ctx,num,x+offsetx,y,true,false,0,0);
+		offsetx += numWidths[parseInt(numst)];
+	}
+}
+
 
