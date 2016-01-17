@@ -215,7 +215,9 @@ function ImageNode(name,iconname,x,y,w,h){
 }
 
 ImageNode.prototype.draw = function(ctx){
+	//debugger;
 	drawJsonImg3(ctx,this.iconname,this.x,this.y,this.w,this.h);
+	//drawJsonImg(ctx,this.iconname,this.x,this.y,true,true);
 };
 
 
@@ -361,6 +363,40 @@ IconNode.prototype.getDrawData = function(){
 
 IconNode.prototype.deleteSelf = function(){
 	delete iconPool[this.name];
+};
+
+function IconInfoNode(name,x,y,w,h,bgicon,txt1,txt2,num,handler){
+	this.id = increaseId++;
+	this.name = name;
+	this.bgicon = bgicon;
+	this.x = x;
+	this.y = y;
+	this.w = w;
+	this.h = h;
+	this.ntype = NodeTypeClass.icon;
+	this.txt1 = txt1;
+	this.txt2 = txt2;
+	this.num = num;
+	
+	this.handler = handler;
+	this.depth = 1000;
+	this.isVisble = true;
+}
+
+IconInfoNode.prototype.draw = function(ctx){
+	drawJsonImg3(ctx,this.bgicon,this.x,this.y,this.w,this.h);
+	drawJsonImg(ctx,this.txt1,this.x+2,this.y+4);
+	drawJsonImg(ctx,this.txt2,this.x+18,this.y+4);
+	drawNumSt(ctx,this.num.toString(),this.x+34,this.y+3);
+};
+
+IconInfoNode.prototype.setPos= function(x,y){
+	this.x = x;
+	this.y = y;
+};
+
+IconInfoNode.prototype.checkTap = function(tapx,tapy){
+	return checkPointInBox(tapx,tapy,this.x,this.y,this.w,this.h);	
 };
 
 function EntitTextNode(txt,x,y,clr,size){

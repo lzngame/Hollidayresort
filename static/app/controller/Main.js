@@ -56,19 +56,8 @@ Ext.define('Resort.controller.Main',{
 		currentHandleStatus = handleStatus.normal;
 		addEntityNode(new EntityNode('tmp',NodeTypeClass.entityitem,[['img432','img434','img436','img438']],110,10,50,30));
 		
-		var shape = new ShapeRoundrect('shaperoundrect','black','blue',61,1,150,26,4);
-		var numnode = new PngNumNode('numnode','0123456789',85,5);
-		var lvstar = new LvNode('lvstar','img3415',125,4,5,25);
-		var imgnode = new ImageNode('testimgnode','img3415',61,130,25,25);
+		LayoutUI(ctx);
 		
-		addPool(new IconNode('Money','img302',62,3,20,20,'white','white',function(name){
-					console.log(this.iconname);
-		},'white'));
-		addPool(new IconNode('Head','img3368',0,0,60,60,'yellow','blue',function(name){
-					console.log(this.iconname);
-					layoutBgPool['lvstar'].setLv(Math.round(Math.random()*10));
-					layoutBgPool['numnode'].setTxt(Math.floor(Math.random()*10000).toString());
-		},'red'));
 		
 		addPool(
 			new IconNodeGroup('tmptest',2,50,60,335,'green','blue',
@@ -336,6 +325,44 @@ function panelTap(ev){
 		var y = posobj.ypix -baseRhombusHeight/2;
 		addEntityNode(new EntityNode('tile',NodeTypeClass.tile,[[currentBuildTileIconName]],x,y,50,200));
 	}
+}
+
+function LayoutUI(ctx){
+	addPool(new IconNode('Head','img300',0,0,layoutconfig.headsize,layoutconfig.headsize,layoutconfig.headbgclr,layoutconfig.headborderclr,function(name){
+					console.log(this.iconname);
+					layoutBgPool['lvstar'].setLv(Math.round(Math.random()*10));
+					layoutBgPool['numnode'].setTxt(Math.floor(Math.random()*10000).toString());
+		},layoutconfig.headborderclr));
+	//var shape = new ShapeRoundrect('shaperoundrect','black','blue',layoutconfig.headsize+1,1,100,50,4);
+	//debugger;
+	var imgbg   = new ImageNode('moneybg','img3697',layoutconfig.headsize+1,1,stageWidth-layoutconfig.headsize,22);
+	var imgnode = new ImageNode('moneyicon','img302',layoutconfig.headsize+3,5,layoutconfig.moneyiconsize,layoutconfig.moneyiconsize);
+	var numnode = new PngNumNode('numnode','0123456789',layoutconfig.headsize+layoutconfig.moneyiconsize+5,5);
+	var lvstar = new LvNode('lvstar','img3252',layoutconfig.headsize+layoutconfig.moneyiconsize+5+100,5,11,layoutconfig.lvstarsize);
+		
+		
+	/*addPool(new IconNode('btn1','img3044',stageWidth-150,23,50,20,'yellow','blue',function(name){
+					console.log(this.iconname);
+		},'yellow'));	
+	addPool(new IconNode('btn2','img3044',stageWidth-100,23,50,20,'yellow','blue',function(name){
+					console.log(this.iconname);
+		},'yellow'));*/
+	addPool(new IconInfoNode('btn1',stageWidth-64,23,64,22,'img3044','f18_18','f54_54',120,function(name){
+					console.log(this.iconname);
+		},'yellow'));
+	addPool(new IconInfoNode('btn2',stageWidth-2*64,23,64,22,'img3044','f18_18','f54_54',50,function(name){
+					console.log(this.iconname);
+		},'yellow'));
+	addPool(new IconInfoNode('btn3',stageWidth-3*64,23,64,22,'img3044','f18_18','f54_54',8,function(name){
+					console.log(this.iconname);
+		},'yellow'));
+		
+		
+		addPool(new IconNode('Head','img300',0,0,50,50,'yellow','blue',function(name){
+					console.log(this.iconname);
+					layoutBgPool['lvstar'].setLv(Math.round(Math.random()*10));
+					layoutBgPool['numnode'].setTxt(Math.floor(Math.random()*10000).toString());
+		},'red'));
 }
 
 function groupBack(){

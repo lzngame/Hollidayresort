@@ -192,6 +192,9 @@ function drawJsonImg3(context,name,x,y,mw,mh,init,border,boxoffsetX,boxoffsetY){
 			if(!boxoffsetY)
 				boxoffsetY = 0;
 			var data = jsonObj[name];
+			if(data == null){
+				console.log('ErrorName:%s',name);
+			}
 			var d1 = data[0];
 			var dx = d1[0];
 			var dy = d1[1];
@@ -218,7 +221,7 @@ function drawJsonImg3(context,name,x,y,mw,mh,init,border,boxoffsetX,boxoffsetY){
 				var angle = -90*(Math.PI/180);
 				context.translate(x,y);
 				context.rotate(angle);
-				context.drawImage(img_sencha,dx,dy,dh,dw,-dh-rectY+boxoffsetY,rectX+boxoffsetX,mh,mw);
+				context.drawImage(img_sencha,dx,dy,dh,dw,-mh-rectY+boxoffsetY,rectX+boxoffsetX,mh,mw);
 				context.restore();
 			}
 			if(border)
