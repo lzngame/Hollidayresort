@@ -81,7 +81,7 @@ var buildTypes ={
 var builddata = {
 	1001:{'img378':[0,0]},//,'img1563':[0,-25],'img1564':[50,-25],'img1566':[5,-15]},
 	1002:{'img788':[0,0],'img1568':[0,-25],'img1567':[50,-25],'img2275':[5,-15]},
-	1003:{'img5':  [0,0]}//,'img1555':[0,-25],'img1554':[50,-25],'img1570':[5,-15]},
+	1003:{'img1749':  [0,0]}//,'img1555':[0,-25],'img1554':[50,-25],'img1570':[5,-15]},
 };
 
 var layoutconfig ={
@@ -90,5 +90,23 @@ var layoutconfig ={
 	headborderclr:'#FFCCDD',
 	moneyiconsize:15,
 	lvstarsize:14,
+};
+
+var iconSize ={
+	lefticon:35
+};
+
+var resortclockdata ={
+	days:0,
+	hours:0,
+	minitues:0,
+	timespace:30,
+};
+
+var colors ={
+	lefticonsbg:'#9ed900',
+	headbg:'#fff143',
+	lefticonbg:'#50616d',
+	lefticonborder:'white',
 }
 

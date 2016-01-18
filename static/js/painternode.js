@@ -35,9 +35,7 @@ function updateDraw(ctx){
 			
 			for(var name in groupPool){
 				var groupnode = groupPool[name];
-				if(groupnode.isvisible){
-					groupnode.draw(ctx);
-				}
+				groupnode.draw(ctx);
 			}
 			for(var name in iconPool){
 				var iconnode = iconPool[name];
@@ -350,14 +348,62 @@ function drawText(ctx,x,y,fontDis,txtArray){
 			}
 		}
 
-var numWidths =[9,6,9,9,10,9,9,9,9,9];
+//var numWidths ={[9,6,9,9,10,9,9,9,9,9];}
+var numspacedis ={
+	'0':9,
+	'1':6,
+	'2':9,
+	'3':9,
+	'4':10,
+	'5':9,
+	'6':9,
+	'7':9,
+	'8':9,
+	'9':9,
+	':':6,
+	'+':8,
+	'-':8,
+	'.':5
+};
+var numsoffsety ={
+	'0':0,
+	'1':0,
+	'2':0,
+	'3':0,
+	'4':0,
+	'5':0,
+	'6':0,
+	'7':0,
+	'8':0,
+	'9':0,
+	':':3,
+	'+':3,
+	'-':5,
+	'.':10
+};
+var numurls ={
+	'0':'num0',
+	'1':'num1',
+	'2':'num2',
+	'3':'num3',
+	'4':'num4',
+	'5':'num5',
+	'6':'num6',
+	'7':'num7',
+	'8':'num8',
+	'9':'num9',
+	':':'numcolon',
+	'+':'numplus',
+	'-':'numminusbmp',
+	'.':'numspotbmp'
+};
 function drawNumSt(ctx,st,x,y){
 	var offsetx = 0;
 	for(var i=0;i<st.length;i++){
 		var numst = st.slice(i,i+1);
-		var num = "num"+numst;
-		drawJsonImg(ctx,num,x+offsetx,y,true,false,0,0);
-		offsetx += numWidths[parseInt(numst)];
+		var num = numurls[numst];
+		drawJsonImg(ctx,num,x+offsetx,y+numsoffsety[numst],true,false,0,0);
+		offsetx += numspacedis[numst];
 	}
 }
 

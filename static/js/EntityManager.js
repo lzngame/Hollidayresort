@@ -65,20 +65,22 @@ function EntityNode(name,type,data,x,y,depth,frameFps){
 	this.frameSumTick = 0;
 	this.currentAction = 0;
 	this.ntype = type;
-}
+};
+
 EntityNode.prototype.setVisible = function(isVisible){
 	this.isVisble = isVisible;
-}
+};
 
 
 EntityNode.prototype.setPos = function(x,y){
 	this.x = x;
 	this.y = y;
-}
+};
 
 EntityNode.prototype.setDepth = function(depth){
 	this.depth = depth;
-}
+};
+
 
 EntityNode.prototype.getFrame = function(){
 	if(this.data[0].length == 1){
@@ -92,16 +94,97 @@ EntityNode.prototype.getFrame = function(){
 	}else{
 		this.frameSumTick += bigfourgame.clock.getTick();
 	}
-	if(this.frameIndex >(this.data[this.currentAction].length -1))
+	if(this.frameIndex >(this.data[this.currentAction].length -1)){
 		this.frameIndex = 0;
+	}
 	
 	return this.data[this.currentAction][this.frameIndex];
 };
+
+
 
 EntityNode.prototype.getDrawData = function(){
 	var objdata = {name:this.getFrame(),x:this.x,y:this.y,type:this.ntype,depth:this.depth};
 	return objdata;
 };
+
+function EntityFootNode(name,type,data,x,y,depth,frameFps,autodel,lastFunc,lastdata){
+	this.depth = depth ;
+	this.frameFps = frameFps ;
+	this.isVisble = true;
+	this.x = x;
+	this.y = y;
+	this.name = name;
+	if(typeof(data)=='object')
+		this.data = data;
+	else
+		this.data = [[data]];
+	this.id = increaseId ++;
+	this.frameIndex = 0;
+	this.frameSumTick = 0;
+	this.currentAction = 0;
+	this.ntype = type;
+	this.autodel = autodel;
+	this.lastFunc = lastFunc;
+	this.lastFuncdata = lastdata;
+}
+
+EntityFootNode.prototype.setVisible = function(isVisible){
+	this.isVisble = isVisible;
+};
+
+EntityFootNode.prototype.lastFrameFun = function(){
+	console.log('最后一帧执行');
+};
+
+
+EntityFootNode.prototype.setPos = function(x,y){
+	this.x = x;
+	this.y = y;
+};
+
+EntityFootNode.prototype.setDepth = function(depth){
+	this.depth = depth;
+};
+
+EntityFootNode.prototype.getFrame = function(){
+	if(this.data[0].length == 1){
+		var obj = this.data[0];
+		return obj[0];
+	}
+		
+	if(this.frameSumTick > this.frameFps){
+		this.frameSumTick = 0;
+		this.frameIndex++;
+	}else{
+		this.frameSumTick += bigfourgame.clock.getTick();
+	}
+	if(this.frameIndex >(this.data[this.currentAction].length -1)){
+		this.frameIndex = 0;
+		if(this.lastFunc != null){
+			this.lastFunc(this.lastFuncdata);
+		}
+		if(this.autodel){
+			delete entitys[this.id]
+		}
+	}
+	
+	return this.data[this.currentAction][this.frameIndex];
+};
+
+EntityFootNode.prototype.getSize = function(){
+	var name = getPngSize(this.getFrame())
+};
+
+EntityFootNode.prototype.getDrawData = function(){
+	var pngname = this.getFrame();
+	var size = getPngSize(pngname);
+	var offsetx = this.x-size.w/2;
+	var offsety = this.y-size.h;
+	var objdata = {name:this.getFrame(),x:offsetx,y:offsety,type:this.ntype,depth:this.depth};
+	return objdata;
+};
+
 
 function addEntityNode(entityitem){
 	var id = entityitem.id;
@@ -210,7 +293,7 @@ function ImageNode(name,iconname,x,y,w,h){
 	this.x = x;
 	this.y = y;
 	this.w = w;
-	this.h = h;
+	this.h = h; 
 	layoutBgPool[name] = this;
 }
 
@@ -238,7 +321,7 @@ function addPool(itemnode){
 	return itemnode;
 }
 
-function IconNodeGroup(name,x,y,w,h,bgclr,borderclr,icons,isvisible){
+function IconNodeGroup(name,x,y,w,h,bgclr,borderclr,icons,isvisible,targetDis){
 	this.name = name;
 	this.x = x;
 	this.y = y;
@@ -252,38 +335,47 @@ function IconNodeGroup(name,x,y,w,h,bgclr,borderclr,icons,isvisible){
 	this.inity = y;
 	this.swipingRight = false;
 	this.swipingLeft = false;
-	this.targetRight = x + 55;
-	this.disable = false;
+	this.targetRight = x + targetDis;
+	this.isdisable = true;
 	this.isvisible = isvisible;
 	this.swipespeed = 12;
+	for (var i = 0; i < this.icons.length; i++) {
+		var iconnode = this.icons[i];
+		iconnode.groupname = name;  
+	}
 }
 
-IconNodeGroup.prototype.draw = function(ctx){
-	if(this.swipingRight){
-		if(this.x >= this.targetRight){
-			this.x = this.targetRight;
-			this.swipingRight = false;
-			this.swipingLeft = false;
-		}else{
-			this.setPos(this.x + this.swipespeed,this.inity);
+IconNodeGroup.prototype.draw = function(ctx) {
+	if (this.isvisible) {
+		if (this.swipingRight) {
+			if (this.x >= this.targetRight) {
+				this.x = this.targetRight;
+				this.swipingRight = false;
+				this.swipingLeft = false;
+				this.isdisable = true;
+				this.isvisible = true;
+			} else {
+				this.setPos(this.x + this.swipespeed, this.inity);
+			}
+		} else if (this.swipingLeft) {
+			if (this.x <= this.initx) {
+				this.x = this.initx;
+				this.swipingRight = false;
+				this.swipingLeft = false;
+				this.isvisible = false;
+			} else {
+				this.setPos(this.x - this.swipespeed, this.inity)
+			}
 		}
-	}else if(this.swipingLeft){
-		if(this.x <= this.initx){
-			this.x = this.initx;
-			this.swipingRight = false;
-			this.swipingLeft = false;
-			this.isvisible = false;
-		}else{
-			this.setPos(this.x -this.swipespeed,this.inity)
+		ctx.fillStyle = this.bgclr;
+		ctx.strokeStyle = this.borderclr;
+		ctx.roundRect(this.x, this.y, this.w, this.h, 3).fill();
+		ctx.roundRect(this.x, this.y, this.w, this.h, 3).stroke();
+		for (var i = 0; i < this.icons.length; i++) {
+			var iconnode = this.icons[i];
+			iconnode.isdisable = true;
+			iconnode.draw(ctx);
 		}
-	}
-	ctx.fillStyle = this.bgclr;
-	ctx.strokeStyle = this.borderclr;
-	ctx.roundRect(this.x,this.y,this.w,this.h,3).fill();
-	ctx.roundRect(this.x,this.y,this.w,this.h,3).stroke();
-	for(var i=0;i<this.icons.length;i++){
-		var iconnode = this.icons[i];
-		iconnode.draw(ctx);
 	}
 };
 
@@ -332,7 +424,9 @@ function IconNode(name,iconname,x,y,w,h,defaultBgclr,activeBgclr,handler,borderC
 		this.borderclr = borderClr;
 	this.handler = handler;
 	this.depth = 1000;
-	this.isVisble = true;
+	this.isvisble = true;
+	this.isdisable = true; 
+	this.groupname = '';
 }
 
 IconNode.prototype.draw = function(ctx){
@@ -429,3 +523,66 @@ PngNumNode.prototype.setTxt = function(txt){
 		txt = '999999999999';
 	this.txt = txt;
 };
+
+function ResortClock(name,x,y){
+	this.x = x;
+	this.y = y;
+	this.sumtick =0;
+	this.days = resortclockdata.days;
+	this.hours = resortclockdata.hours;
+	this.minitues = resortclockdata.minitues;
+	this.timepace = resortclockdata.timespace;
+}
+
+ResortClock.prototype.update = function(ctx){
+	this.sumtick += bigfourgame.clock.getTick();
+	if(this.sumtick >= this.timepace){
+		this.sumtick = 0;
+		this.minitues++;
+		if(this.minitues >= 60){
+			this.hours++;
+			this.minitues = 0;
+			if(this.hours >= 24){
+				this.hours = 0;
+				this.days++;
+			}
+		}
+	}
+	//console.log('D:%d H:%d M:%d',this.days,this.hours,this.minitues);
+	drawJsonImg3(ctx,'img3769',this.x,this.y,130,35);
+	//drawNumSt(ctx,this.x+4,this.y+10,this.hours.toString()+':'+this.minitues.toString());
+	if((this.hours >= 19 && this.hours <=24)||
+	   (this.hours <= 7  && this.hours >= 0))
+	{
+		ctx.fillStyle = 'white';
+		ctx.fillText('夜晚',this.x+2,this.y+20);
+	}else{
+		ctx.fillStyle = 'yellow';
+		ctx.fillText('白天',this.x+2,this.y+20);
+	}
+	drawNumSt(ctx,this.hours.toString(),this.x+50,this.y+16);
+	
+}
+
+function OnebuildingNode(name,xpos,ypos){
+	var obj = getPixelByPos(xpos,ypos);
+	var xpix = obj.xpix;
+	var ypix = obj.ypix+baseRhombusHeight/2;
+	addEntityNode(new EntityFootNode('buildingone',NodeTypeClass.entityitem,[['img259','img261','img263','img265','img267','img269']],xpix,ypix,ypix,1000));
+}
+
+OnebuildingNode.prototype.deleteNode = function(){
+	delete entitys[this.one.id];
+}
+
+function ShowInfoNode(name,x,y,w,h){
+	this.x = x;
+	this.y = y;
+	this.w = w;
+	this.h = h;
+	addPool(this);
+}
+
+ShowInfoNode.prototype.draw = function(ctx){
+	drawJsonImg3(ctx,'img3647',this.x,this.y,this.w,this.h);
+}
