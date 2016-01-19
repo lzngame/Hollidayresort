@@ -279,7 +279,7 @@ LvNode.prototype.draw = function(ctx){
 	for(var i=0;i<this.n;i++){
 		var y = this.y;
 		var x = this.x + i*this.size;
-		drawJsonImg3(ctx,this.iconname,x,y,this.size,this.size);
+		drawImg(ctx,this.iconname,x,y,false,this.size,this.size);
 	}
 };
 
@@ -298,10 +298,55 @@ function ImageNode(name,iconname,x,y,w,h){
 }
 
 ImageNode.prototype.draw = function(ctx){
-	//debugger;
-	drawJsonImg3(ctx,this.iconname,this.x,this.y,this.w,this.h);
-	//drawJsonImg(ctx,this.iconname,this.x,this.y,true,true);
+	drawImg(ctx,this.iconname,this.x,this.y,false,this.w,this.h);
 };
+
+function TxtNode(name,txt,iconhead,clr,x,y,w){
+	this.name = name;
+	this.txt = txt;
+	this.initx = x;
+	this.x = x;
+	this.y = y;
+	this.clr = clr;
+	this.w = w;
+	this.iconhead = iconhead;
+	this.iconwidth = 0;
+	layoutBgPool[name] = this;
+	if(this.iconhead){
+		this.iconwidth = getPngSize(iconhead).w;
+	}
+	this.speed = 1;
+}
+
+TxtNode.prototype.draw = function(ctx){
+	ctx.fillStyle = this.clr;
+	this.run();
+	if(this.iconhead)
+		drawImg(ctx,this.iconhead,this.x-40,this.y);
+	//ctx.fillText(this.txt,this.x+this.iconwidth+5,this.y+15);
+	ctx.fillText(this.txt,this.x,this.y+12);
+};
+
+TxtNode.prototype.run = function(stop){
+	this.x += this.speed;
+	if(this.x > this.initx +this.w){
+		this.x = this.initx;
+	}
+};
+
+TxtNode.prototype.setTxt =  function(txt,iconhead){
+	this.txt = txt;
+	this.iconhead = iconhead;
+	if(this.iconhead){
+		this.iconwidth = getPngSize(this.iconhead);
+	}else{
+		this.iconwidth = 0;
+	}
+}
+
+TxtNode.prototype.setPos = function(x){
+	this.x = x;
+}
 
 
 function addPool(itemnode){
@@ -459,6 +504,43 @@ IconNode.prototype.deleteSelf = function(){
 	delete iconPool[this.name];
 };
 
+function ImgNode(name,iconname,x,y,w,h,handler){
+	this.id = increaseId++;
+	this.name = name;
+	this.iconname = iconname;
+	this.x = x;
+	this.y = y;
+	this.w = w;
+	this.h = h;
+	this.ntype = NodeTypeClass.icon;
+	
+	this.handler = handler;
+	this.depth = 1000;
+	this.isvisble = true;
+	this.isdisable = true; 
+}
+
+ImgNode.prototype.draw = function(ctx){
+	drawImg(ctx,this.iconname,this.x,this.y,false,this.w,this.h);
+};
+
+ImgNode.prototype.setPos= function(x,y){
+	this.x = x;
+	this.y = y;
+};
+
+ImgNode.prototype.checkTap = function(tapx,tapy){
+	return checkPointInBox(tapx,tapy,this.x,this.y,this.w,this.h);	
+};
+
+ImgNode.prototype.getDrawData = function(){
+	return {name:this.iconname,x:this.x,y:this.y,type:this.type,depth:this.depth};
+};
+
+ImgNode.prototype.deleteSelf = function(){
+	delete iconPool[this.name];
+};
+
 function IconInfoNode(name,x,y,w,h,bgicon,txt1,txt2,num,handler){
 	this.id = increaseId++;
 	this.name = name;
@@ -478,9 +560,9 @@ function IconInfoNode(name,x,y,w,h,bgicon,txt1,txt2,num,handler){
 }
 
 IconInfoNode.prototype.draw = function(ctx){
-	drawJsonImg3(ctx,this.bgicon,this.x,this.y,this.w,this.h);
-	drawJsonImg(ctx,this.txt1,this.x+2,this.y+4);
-	drawJsonImg(ctx,this.txt2,this.x+18,this.y+4);
+	drawImg(ctx,this.bgicon,this.x,this.y,false,this.w,this.h);
+	drawImg(ctx,this.txt1,this.x+2,this.y+4);
+	drawImg(ctx,this.txt2,this.x+18,this.y+4);
 	drawNumSt(ctx,this.num.toString(),this.x+34,this.y+3);
 };
 
@@ -549,19 +631,32 @@ ResortClock.prototype.update = function(ctx){
 		}
 	}
 	//console.log('D:%d H:%d M:%d',this.days,this.hours,this.minitues);
-	drawJsonImg3(ctx,'img3769',this.x,this.y,130,35);
+	
 	//drawNumSt(ctx,this.x+4,this.y+10,this.hours.toString()+':'+this.minitues.toString());
+	var imgname = 'img3697';
+	var imgstar = 'img3558';
+	var st = '夜晚';
+	var clr = 'white';
 	if((this.hours >= 19 && this.hours <=24)||
 	   (this.hours <= 7  && this.hours >= 0))
 	{
-		ctx.fillStyle = 'white';
-		ctx.fillText('夜晚',this.x+2,this.y+20);
+		
 	}else{
-		ctx.fillStyle = 'yellow';
-		ctx.fillText('白天',this.x+2,this.y+20);
+		st = '白天';
+		clr = 'black';
+		imgname = 'img3493bmp';
+		imgstar = 'img3561';
 	}
-	drawNumSt(ctx,this.hours.toString(),this.x+50,this.y+16);
-	
+	drawImg(ctx,imgname,this.x+47,this.y+12,false,bottomsize.rilisize,40);
+	drawImg(ctx,'iPhone-Calendar',this.x+50,this.y+12,false,15,15);
+	drawImg(ctx,'iPhone-Clock',this.x+50,this.y+30,false,15,15);
+	drawImg(ctx,'f43_43',this.x+70,this.y+14);
+	drawNumSt(ctx,'365',this.x+95,this.y+15);
+	drawImg(ctx,'f46_46',this.x+125,this.y+14);
+	drawImg(ctx,imgstar,this.x,this.y);
+	drawNumSt(ctx,this.hours.toString()+":"+this.minitues.toString(),this.x+90,this.y+31);
+	//ctx.fillStyle = clr;
+	//ctx.fillText(st,this.x+2,this.y+20);
 }
 
 function OnebuildingNode(name,xpos,ypos){
@@ -576,13 +671,28 @@ OnebuildingNode.prototype.deleteNode = function(){
 }
 
 function ShowInfoNode(name,x,y,w,h){
+	this.name = name;
 	this.x = x;
 	this.y = y;
 	this.w = w;
 	this.h = h;
 	addPool(this);
+	this.closename = this.name + 'close_name';
+	this.closebtn = new IconNode(this.closename,'img2997',this.x+this.w-23,this.y+3,20,20,'red','red',function(){
+		var obj = this;
+		this.deleteSelf();
+		delete layoutBgPool[name];
+	},'red');
+	addPool(this.closebtn);
+	layoutBgPool[this.name] = this;
+}
+
+ShowInfoNode.prototype.closeInfoWin = function(){
+	console.log('close');
+	
+	this.deleteSelf();
 }
 
 ShowInfoNode.prototype.draw = function(ctx){
-	drawJsonImg3(ctx,'img3647',this.x,this.y,this.w,this.h);
+	drawImg(ctx,'img2951',this.x,this.y,false,this.w,this.h);
 }

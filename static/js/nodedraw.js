@@ -77,7 +77,7 @@ function drawTilePos(ctx,titlename,h,xpos,ypos){
 	}else{
 		var y = ypos * h + h/2;
 	}
-	drawJsonImg3(ctx,titlename,x-h,y-h/2,w,h);
+	drawImg(ctx,titlename,x-h,y-h/2,false,w,h);
 }
 
 //根据矩阵位置绘制图块
@@ -89,7 +89,7 @@ function drawTilePos2(ctx,titlename,h,sh,xpos,ypos){
 	}else{
 		var y = ypos * sh + sh/2;
 	}
-	drawJsonImg3(ctx,titlename,x-sh,y-sh,w,h);
+	drawImg(ctx,titlename,x-sh,y-sh,false,w,h);
 }
 
 //绘制菱形图块地图
@@ -97,6 +97,21 @@ function drawRhombusMap(ctx,mapw,maph,clr,clrborder){
 	for(var i=0;i<=mapw;i++){
 		for(var j=0;j<=maph;j++){
 			drawRhombusPos(ctx,baseRhombusHeight,i,j);
+		}
+	}
+}
+
+function drawTileMap(ctx,tilename,w,h){
+	for(var i=0;i<=w;i++){
+		for(var j=0;j<=h;j++){
+			var x = i * baseRhombusHeight;
+			var y = j * baseRhombusHeight + baseRhombusHeight/2;
+			if(i %2 == 0){
+				y = j * baseRhombusHeight;
+			}
+			x = x+zeroX;
+			y = y+zeroY;
+			drawImg(ctx,tilename,x-baseRhombusHeight,y-baseRhombusHeight/2);
 		}
 	}
 }

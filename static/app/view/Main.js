@@ -18,7 +18,7 @@ Ext.define('Resort.view.Main',{
 				text:'Back',
 				width:'20%',
 				height:20,
-				top:'90%',
+				top:'40%',
 				left:'80%'
 			},
 			/*{

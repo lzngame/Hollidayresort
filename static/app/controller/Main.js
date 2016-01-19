@@ -9,6 +9,7 @@ var currentBuildIconName = '';
 var currentBuildType = -1;
 var tmpnode = null; 
 var resortclock = null;
+var txtinfo = null;
 
 Ext.define('Resort.controller.Main',{
 	extend:'Ext.app.Controller',
@@ -70,7 +71,7 @@ Ext.define('Resort.controller.Main',{
 		
 		LayoutUI(ctx);
 		
-		resortclock = new ResortClock('resortclock',10,stageHeight -40);
+		resortclock = new ResortClock('resortclock',0,stageHeight -47);
 		addPool(
 			new IconNodeGroup('tmptest',2,50,60,335,'green','blue',
 			[
@@ -147,10 +148,11 @@ Ext.define('Resort.controller.Main',{
 		
 		initUpdate(1,function(){
 			ctx.clearRect(0,0,stageWidth,stageHeight);
-			drawRhombusMap(ctx,mapWTiles,mapHTiles,'blue','red');
+			//drawRhombusMap(ctx,mapWTiles,mapHTiles,'blue','red');
+			drawTileMap(ctx,'img711',mapWTiles,mapHTiles);
 			updateDraw(ctx);
 			resortclock.update(ctx);
-		},15);
+		},30);
 		
 		currentActiveIndex = 1;
 	},
@@ -323,7 +325,6 @@ function panelTap(ev){
 	for(var name in iconPool){
 		var itemnode = iconPool[name];
 		if(itemnode.checkTap(tapx,tapy)){
-			
 			itemnode.handler();
 			return;
 		}
@@ -386,6 +387,7 @@ function LayoutUI(ctx){
 		},'yellow'));
 	addPool(new IconInfoNode('btn2',stageWidth-2*64,23,64,22,'img3044','f18_18','f54_54',50,function(name){
 					console.log(this.iconname);
+					new ShowInfoNode('tmpshowinf',100,100,100,150);
 		},'yellow'));
 	addPool(new IconInfoNode('btn3',stageWidth-3*64,23,64,22,'img3044','f18_18','f54_54',8,function(name){
 					console.log(this.iconname);
@@ -398,6 +400,12 @@ function LayoutUI(ctx){
 		layoutBgPool['lvstar'].setLv(Math.round(Math.random()*10));
 		layoutBgPool['numnode'].setTxt(Math.floor(Math.random()*10000).toString());
 		},'red'));
+	var bottomRightWidth = (stageWidth - bottomsize.rilisize -47)/4;
+	for(var i=0;i<4;i++){
+		addPool(new ImgNode('bottom'+i.toString(),'img3516',bottomsize.rilisize+47+i*bottomRightWidth,stageHeight-40,bottomRightWidth-2,38));
+	}
+	new ImageNode('txtbg','img3358bmp',47,stageHeight-70,stageWidth-47,30);
+	txtinfo = new TxtNode('welcome','欢迎来到度假村世界游戏！','img3195','#676767',55,stageHeight-67,stageWidth - 47);
 }
 
 function layoutLeftIcons(ctx){
@@ -432,6 +440,7 @@ function layoutLeftIcons(ctx){
 		},colors.lefticonborder));
 	addPool(new IconNode('temp2216','img464',2,(iconSize.lefticon+space)*5+layoutconfig.headsize+inity,iconSize.lefticon,iconSize.lefticon,colors.lefticonbg,'blue',function(name){
 			console.log(this.name);
+			txtinfo.setTxt('赠送新手大礼包！','img3554');
 		},colors.lefticonborder));
 }
 
