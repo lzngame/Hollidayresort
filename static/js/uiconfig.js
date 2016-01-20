@@ -10,15 +10,15 @@ var jsonObj=JSON.parse(jsonData);
 var stageWidth = 0;
 var stageHeight = 0;
 
-var baseRhombusWidth = 48;
-var baseRhombusHeight = 24;
+var baseRhombusWidth = 80;
+var baseRhombusHeight = 40;
 var screenTiles = 5;
 
 var zeroX = 0;
 var zeroY = 0;
 
-var mapWTiles = 30;
-var mapHTiles = 30;
+var mapWTiles = 40;
+var mapHTiles = 40;
 
 var rightEdge = 0;
 var bottomEdge = 0;
@@ -106,6 +106,71 @@ var colors ={
 	headbg:'#fff143',
 	lefticonbg:'#50616d',
 	lefticonborder:'white',
+	lefticonactive:'#333333'
+};
+
+var lefticonInfos ={
+	floor:{name:'FLOOR_ICON',url:'img452',groupname:'FLOOR_GROUP'},
+	plant:{name:'PLANT_ICON',url:'img3212',groupname:'PLANT_GROUP'},
+	house:{name:'HOUSE_ICON',url:'img450',groupname:'HOUSE_GROUP'},
+	carpet:{name:'CARPET',url:'img3154',groupname:'CARPET_GROUP'},
+	lawn:{name:'LAWN',url:'img3160',groupname:'LAWN_GROUP'},
+	restaurant:{name:'RESTAURANT_ICON',url:'img2196',groupname:'RESTAURANT_GROUP'},
+	update:{name:'UPDATE_ICON',url:'img464',groupname:'UPDATE_GROUP'},
+	expand:{name:'EXPAND_ICON',url:'img468',groupname:'EXPAND_GROUP'},
+};
+
+var floorInfos = {
+	lv1floor:{iconnodename:'lv1_floor_noed',name:'瓷砖地板',    price:500,note:'价格合适的瓷砖地板',url:'img694',floortype:'img694'},
+	lv2floor:{iconnodename:'lv2_floor_noed',name:'深色大理石',  price:700,note:'漂亮的大理石地板',url:'img686',floortype:'img686'},
+	lv3floor:{iconnodename:'lv3_floor_noed',name:'木地板',      price:1000,note:'舒适的木地板',url:'img697',floortype:'img697'},
+	lv4floor:{iconnodename:'lv4_floor_noed',name:'红木地板',    price:1500,note:'高档的红木地板',url:'img699',floortype:'img699'},
+};
+var plantInfos = {
+	lv1plant:{iconnodename:'lv1_plant_noed',name:'风信子盆栽',    price:500,note:'价格合适的瓷砖地板',url:'img729'},
+	lv2plant:{iconnodename:'lv2_plant_noed',name:'美人蕉盆栽',  	  price:700,note:'漂亮的大理石地板',url:'img731'},
+	lv3plant:{iconnodename:'lv3_plant_noed',name:'木菊盆栽',      price:800,note:'舒适的木地板',url:'img733'},
+	lv4plant:{iconnodename:'lv4_plant_noed',name:'富贵竹盆栽',    price:1000,note:'高档的红木地板',url:'img735'},
+	lv5plant:{iconnodename:'lv5_plant_noed',name:'雪松',    price:1500,note:'价格合适的瓷砖地板',url:'img737'},
+	lv6plant:{iconnodename:'lv6_plant_noed',name:'桂花树',  price:1700,note:'漂亮的大理石地板',url:'img739'},
+	lv7plant:{iconnodename:'lv7_plant_noed',name:'枫树',      price:2000,note:'舒适的木地板',url:'img742'},
+	lv8plant:{iconnodename:'lv8_plant_noed',name:'棕榈树',    price:2500,note:'高档的红木地板',url:'img2868'},
+};
+var houseInfos ={
+	lv1house:{iconnodename:'lv1_house_noed',name:'标准公寓',    price:1500,note:'价格合适的瓷砖地板',url:'img2196'},
+	lv2house:{iconnodename:'lv2_house_noed',name:'度假屋',    price:2500,note:'价格合适的瓷砖地板',url:'img2198'},
+};
+var carpetInfos ={
+	lv1carpet:{iconnodename:'lv1_carpet_noed',name:'织花地毯',    price:1500,note:'价格合适的瓷砖地板',url:'img690'},
+	lv2carpet:{iconnodename:'lv2_carpet_noed',name:'织锦地毯',    price:2500,note:'价格合适的瓷砖地板',url:'img692'},
+};
+
+var lawnInfos = {
+	lv1lawn:{iconnodename:'lv1_lawn_noed',name:'草坪',    price:500,note:'价格合适的瓷砖地板',url:'img3160'},
+	lv2lawn:{iconnodename:'lv2_lawn_noed',name:'草坪',  	  price:500,note:'漂亮的大理石地板',url:'img3163'},
+	lv3lawn:{iconnodename:'lv3_lawn_noed',name:'草坪',      price:500,note:'舒适的木地板',url:'img3166'},
+	lv4lawn:{iconnodename:'lv4_lawn_noed',name:'草坪',    price:500,note:'高档的红木地板',url:'img3169'},
+	lv5lawn:{iconnodename:'lv5_lawn_noed',name:'草坪',    price:500,note:'价格合适的瓷砖地板',url:'img3172'},
+	lv6lawn:{iconnodename:'lv6_lawn_noed',name:'草坪',  price:500,note:'漂亮的大理石地板',url:'img3175'},
+	lv7lawn:{iconnodename:'lv7_lawn_noed',name:'草坪',      price:500,note:'舒适的木地板',url:'img3178'},
+	lv8lawn:{iconnodename:'lv8_lawn_noed',name:'草坪',    price:500,note:'高档的红木地板',url:'img3181'},
+	lv9lawn:{iconnodename:'lv9_lawn_noed',name:'草坪',    price:500,note:'高档的红木地板',url:'img3184'},
+};
+
+var restaurantInfos = {
+	lv1restaurant:{iconnodename:'lv1_urant_noed',name:'桑拿室',    price:500,note:'价格合适的瓷砖地板',url:'img2200'},
+	lv2restaurant:{iconnodename:'lv2_urant_noed',name:'西餐厅',  	  price:500,note:'漂亮的大理石地板',url:'img2222'},
+	lv3restaurant:{iconnodename:'lv3_urant_noed',name:'健身房',      price:500,note:'舒适的木地板',url:'img2202'},
+	lv4restaurant:{iconnodename:'lv4_urant_noed',name:'酒吧',    price:500,note:'高档的红木地板',url:'img2208'},
+	lv5restaurant:{iconnodename:'lv5_urant_noed',name:'水疗馆',    price:500,note:'价格合适的瓷砖地板',url:'img2204'},
+	lv6restaurant:{iconnodename:'lv6_urant_noed',name:'游戏厅',  price:500,note:'漂亮的大理石地板',url:'img2206'},
+	lv7restaurant:{iconnodename:'lv7_urant_noed',name:'印度餐厅',      price:500,note:'舒适的木地板',url:'img2218'},
+	lv8restaurant:{iconnodename:'lv8_urant_noed',name:'日本料理',    price:500,note:'高档的红木地板',url:'img2220'},
+	lv9restaurant:{iconnodename:'lv9_urant_noed',name:'Spa店',    price:500,note:'高档的红木地板',url:'img2226'},
+	lv10restaurant:{iconnodename:'lv5_urant_noed',name:'医疗中心',    price:500,note:'价格合适的瓷砖地板',url:'img2216'},
+	lv11restaurant:{iconnodename:'lv6_urant_noed',name:'超市',  price:500,note:'漂亮的大理石地板',url:'img2210'},
+	lv12restaurant:{iconnodename:'lv7_urant_noed',name:'游泳池',      price:500,note:'舒适的木地板',url:'img2212'},
+	lv13estaurant:{iconnodename:'lv8_urant_noed',name:'高尔夫球场',    price:500,note:'高档的红木地板',url:'img2214'},
 };
 
 var bottomsize ={

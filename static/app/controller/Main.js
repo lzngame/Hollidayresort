@@ -10,6 +10,7 @@ var currentBuildType = -1;
 var tmpnode = null; 
 var resortclock = null;
 var txtinfo = null;
+var currentTileType = 'img194';
 
 Ext.define('Resort.controller.Main',{
 	extend:'Ext.app.Controller',
@@ -57,101 +58,21 @@ Ext.define('Resort.controller.Main',{
 		touch.on($(CANVASID),'drag dragstart dragend',panelDrag);
 		var ctx = $(CANVASID).getContext('2d');
 		currentHandleStatus = handleStatus.normal;
-		addEntityNode(new EntityNode('tmp',NodeTypeClass.entityitem,[['img432','img434','img436','img438']],110,210,50,30));
-		
-
-		
+		//addEntityNode(new EntityNode('tmp',NodeTypeClass.entityitem,[['img432','img434','img436','img438']],110,210,50,30));
 		var obj = getPixelByPos(7,4);
 		var xpix = obj.xpix;
 		var ypix = obj.ypix+baseRhombusHeight/2;
-		addEntityNode(new EntityFootNode('work',NodeTypeClass.entityitem,[['img259','img261','img263','img265','img267','img269']],xpix,ypix,ypix,1230));
-		//addEntityNode(new EntityFootNode('work',NodeTypeClass.entityitem,[['img196','img198','img200','img202']],150,250,50,130));
-		
-		//addEntityNode(new EntityFootNode('work',NodeTypeClass.entityitem,[['img417','img419','img421']],xpix,ypix,50,330));
-		
-		LayoutUI(ctx);
-		
-		resortclock = new ResortClock('resortclock',0,stageHeight -47);
-		addPool(
-			new IconNodeGroup('tmptest',2,50,60,335,'green','blue',
-			[
-				new IconNode('temp1','img3151',2,55,iconSize.lefticon,iconSize.lefticon,'red','blue',function(name){
-					console.log(this.iconname);
-					currentHandleStatus = handleStatus.tile;
-					currentBuildTileIconName = this.iconname;
-					groupBack();
-				}),
-				new IconNode('temp2','img3154',2,110,iconSize.lefticon,iconSize.lefticon,'red','blue',function(name){
-					console.log(this.name);
-					currentHandleStatus = handleStatus.tile;
-					currentBuildTileIconName = this.iconname;
-					groupBack();
-				}),
-				new IconNode('temp3','img3157',2,165,iconSize.lefticon,iconSize.lefticon,'red','blue',function(name){
-					console.log(this.name);
-					currentHandleStatus = handleStatus.tile;
-					currentBuildTileIconName = this.iconname;
-					groupBack();
-				}),
-				new IconNode('temp4','img2200',2,220,iconSize.lefticon,iconSize.lefticon,'red','blue',function(name){
-					console.log(this.name);
-					currentBuildIconName = this.name;
-					currentHandleStatus = handleStatus.dragingbuild;
-					currentBuildType = buildTypes.houselv1;
-					groupBack();
-				}),
-				new IconNode('temp5','img3036',2,275,iconSize.lefticon,iconSize.lefticon,'red','blue',function(name){
-					console.log(this.name);
-					currentBuildIconName = this.name;
-					currentHandleStatus = handleStatus.dragingbuild;
-					currentBuildType = buildTypes.houselv2;
-					groupBack();
-				}),
-				new IconNode('temp6','img2740',2,330,iconSize.lefticon,iconSize.lefticon,'red','blue',function(name){
-					console.log(this.name);
-					currentBuildIconName = this.name;
-					currentHandleStatus = handleStatus.dragingbuild;
-					currentBuildType = buildTypes.houselv3;
-					groupBack();
-				})
-			],false,iconSize.lefticon+2
-		));
-		
-		layoutLeftIcons();
-		
-		/*addPool(new IconNode('temp222','img452',2,100,iconSize.lefticon,iconSize.lefticon,'white','blue',function(name){
-			console.log(this.name);
-			var group = getTypeNode('tmptest',NodeTypeClass.icongroup);
-			if(!group.swipingLeft && !group.swipingRight){
-				if(group.x <= group.initx)
-					group.swipe(Direct.right);
-				else
-					group.swipe(Direct.left);
-			}else if(group.swipingLeft){
-				group.swipe(Direct.right);
-			}else{
-				group.swipe(Direct.left);
-			}
-		}));*/
-		/*addPool(new IconNode('backlogin','img3368',stageWidth - 50,355,50,50,'yellow','blue',function(name){
-					console.log(this.iconname);
-					Ext.Viewport.animateActiveItem(this.getMainview(),{type:'slide',direction:'left'});
-					this.redirectTo('login');
-		}));*/
-		
-		
-		
-		
-		//addPool(new ShapeNode('test',NodeTypeClass.bg,'blue','red',100,100,{w:100,h:120}));
-		//addBgPool(new ShapeNode('temp',NodeTypeClass.roundrect,'white','green',30,200,{w:100,h:120,r:10}));
-		//addBgPool(new ShapeNode('temp2',NodeTypeClass.roundrect,'white','green',130,200,{w:100,h:100,r:50}));
+		//LayoutUI(ctx);
+		//resortclock = new ResortClock('resortclock',0,stageHeight -47);
+		//layoutLeftIcons();
+		//layoutGroups();
 		
 		initUpdate(1,function(){
 			ctx.clearRect(0,0,stageWidth,stageHeight);
-			//drawRhombusMap(ctx,mapWTiles,mapHTiles,'blue','red');
-			drawTileMap(ctx,'img711',mapWTiles,mapHTiles);
+			drawRhombusMap2(ctx,mapWTiles,mapHTiles,'blue','red');
+			//drawTileMap(ctx,currentTileType,mapWTiles,mapHTiles);
 			updateDraw(ctx);
-			resortclock.update(ctx);
+			//resortclock.update(ctx);
 		},30);
 		
 		currentActiveIndex = 1;
@@ -368,20 +289,12 @@ function LayoutUI(ctx){
 					layoutBgPool['lvstar'].setLv(Math.round(Math.random()*10));
 					layoutBgPool['numnode'].setTxt(Math.floor(Math.random()*10000).toString());
 		},layoutconfig.headborderclr));
-	//var shape = new ShapeRoundrect('shaperoundrect','black','blue',layoutconfig.headsize+1,1,100,50,4);
-	//debugger;
 	var imgbg   = new ImageNode('moneybg','img3697',layoutconfig.headsize+1,1,stageWidth-layoutconfig.headsize,22);
 	var imgnode = new ImageNode('moneyicon','img302',layoutconfig.headsize+3,5,layoutconfig.moneyiconsize,layoutconfig.moneyiconsize);
 	var numnode = new PngNumNode('numnode','0.1+2--3:456789',layoutconfig.headsize+layoutconfig.moneyiconsize+5,5);
 	var lvstar = new LvNode('lvstar','img3252',layoutconfig.headsize+layoutconfig.moneyiconsize+5+100,5,1,layoutconfig.lvstarsize);
 	
 		
-	/*addPool(new IconNode('btn1','img3044',stageWidth-150,23,50,20,'yellow','blue',function(name){
-					console.log(this.iconname);
-		},'yellow'));	
-	addPool(new IconNode('btn2','img3044',stageWidth-100,23,50,20,'yellow','blue',function(name){
-					console.log(this.iconname);
-		},'yellow'));*/
 	addPool(new IconInfoNode('btn1',stageWidth-64,23,64,22,'img3044','f18_18','f54_54',120,function(name){
 					console.log(this.iconname);
 		},'yellow'));
@@ -408,40 +321,149 @@ function LayoutUI(ctx){
 	txtinfo = new TxtNode('welcome','欢迎来到度假村世界游戏！','img3195','#676767',55,stageHeight-67,stageWidth - 47);
 }
 
+var activeLeftIconnode = null;
+
 function layoutLeftIcons(ctx){
 	var space = 4;
 	var inity = 5;
-	var bg_lefticons   = new ShapeRoundrect('lefticonsbg',colors.lefticonsbg,'blue',1,layoutconfig.headsize+1,iconSize.lefticon+4,238,4);
-	addPool(new IconNode('temp222','img452',2,(iconSize.lefticon+space)*0+layoutconfig.headsize+inity,iconSize.lefticon,iconSize.lefticon,colors.lefticonbg,colors.lefticonborder,function(name){
+	var bg_lefticons   = new ShapeRoundrect('lefticonsbg',colors.lefticonsbg,'blue',1,layoutconfig.headsize+1,iconSize.lefticon+4,315,4);
+	var dis = 0;
+	for(var name in lefticonInfos){
+		var obj = lefticonInfos[name];
+		var iconnode = new IconNode(obj.name,obj.url,3,(iconSize.lefticon+space)*dis+layoutconfig.headsize+inity,iconSize.lefticon,iconSize.lefticon,colors.lefticonbg,colors.lefticonactive,function(name){
 			console.log(this.name);
-			var group = getTypeNode('tmptest',NodeTypeClass.icongroup);
-			if(!group.swipingLeft && !group.swipingRight){
-				if(group.x <= group.initx)
-					group.swipe(Direct.right);
-				else
-					group.swipe(Direct.left);
-			}else if(group.swipingLeft){
-				group.swipe(Direct.right);
+			this.active = !this.active;
+			var group = getTypeNode(this.groupname,NodeTypeClass.icongroup);
+			group.changeswipe();
+			if(this.active){
+				if(activeLeftIconnode != null){
+					groupPool[activeLeftIconnode.groupname].swipe(Direct.left);
+					activeLeftIconnode.active = false;
+				}
+				activeLeftIconnode = this;
 			}else{
-				group.swipe(Direct.left);
+				activeLeftIconnode = null;
 			}
-		},colors.lefticonborder));
-	addPool(new IconNode('temp2212','img3160',2,(iconSize.lefticon+space)*1+layoutconfig.headsize+inity,iconSize.lefticon,iconSize.lefticon,colors.lefticonbg,'blue',function(name){
-			console.log(this.name);
-		},colors.lefticonborder));
-	addPool(new IconNode('temp2213','img2196',2,(iconSize.lefticon+space)*2+layoutconfig.headsize+inity,iconSize.lefticon,iconSize.lefticon,colors.lefticonbg,'blue',function(name){
-			console.log(this.name);
-		},colors.lefticonborder));
-	addPool(new IconNode('temp2214','img460',2,(iconSize.lefticon+space)*3+layoutconfig.headsize+inity,iconSize.lefticon,iconSize.lefticon,colors.lefticonbg,'blue',function(name){
-			console.log(this.name);
-		},colors.lefticonborder));
-	addPool(new IconNode('temp2215','img468',2,(iconSize.lefticon+space)*4+layoutconfig.headsize+inity,iconSize.lefticon,iconSize.lefticon,colors.lefticonbg,'blue',function(name){
-			console.log(this.name);
-		},colors.lefticonborder));
-	addPool(new IconNode('temp2216','img464',2,(iconSize.lefticon+space)*5+layoutconfig.headsize+inity,iconSize.lefticon,iconSize.lefticon,colors.lefticonbg,'blue',function(name){
-			console.log(this.name);
-			txtinfo.setTxt('赠送新手大礼包！','img3554');
-		},colors.lefticonborder));
+		},colors.lefticonborder);
+		
+		iconnode.groupname = obj.groupname;
+		addPool(iconnode);
+		dis++;
+	}
+}
+
+function checkLeftActive(){
+	
+}
+
+function layoutGroups(){
+	var space = 44;
+	
+	var nodearray = [];
+	var i = 0;
+	for(var name in floorInfos){
+		var obj = floorInfos[name];
+		var floor = new IconNode(obj.iconnodename,obj.url,2,i*space+55,iconSize.lefticon,iconSize.lefticon,'yellow','blue',function(name){
+			console.log(this.iconname);
+			debugger;
+			currentTileType = this.floortype;
+		});
+		floor.txtdata.push(obj.name+"  $:"+obj.price.toString());
+		floor.txtdata.push(obj.note);
+		floor.floortype = obj.floortype;
+		nodearray.push(floor);
+		i++
+	}
+	addPool(new IconNodeGroup(lefticonInfos.floor.groupname,2,50,200,190,'#C0F56E','blue',nodearray,false,iconSize.lefticon+2));
+	
+	nodearray = [];
+	i = 0;
+	for(var name in plantInfos){
+		var obj = plantInfos[name];
+		var plant = new IconNode(obj.iconnodename,obj.url,2,i*space+55,iconSize.lefticon,iconSize.lefticon,'yellow','blue',function(name){
+			console.log(this.iconname);
+			currentHandleStatus = handleStatus.tile;
+			currentBuildTileIconName = this.iconname;
+			groupBack();
+		});
+		plant.txtdata.push(obj.name+"  $:"+obj.price.toString());
+		plant.txtdata.push(obj.note);
+		nodearray.push(plant);
+		i++
+	}
+	addPool(new IconNodeGroup(lefticonInfos.plant.groupname,2,50,200,354,'#C0F56E','blue',nodearray,false,iconSize.lefticon+2));
+	
+	nodearray = [];
+	i = 0;
+	for(var name in houseInfos){
+		var obj = houseInfos[name];
+		var house = new IconNode(obj.iconnodename,obj.url,2,i*space+135,iconSize.lefticon,iconSize.lefticon,'yellow','blue',function(name){
+			console.log(this.iconname);
+			currentHandleStatus = handleStatus.tile;
+			currentBuildTileIconName = this.iconname;
+			groupBack();
+		});
+		house.txtdata.push(obj.name+"  $:"+obj.price.toString());
+		house.txtdata.push(obj.note);
+		nodearray.push(house);
+		i++
+	}
+	addPool(new IconNodeGroup(lefticonInfos.house.groupname,2,130,200,90,'#C0F56E','blue',nodearray,false,iconSize.lefticon+2));
+	
+	nodearray = [];
+	i = 0;
+	for(var name in carpetInfos){
+		var obj = carpetInfos[name];
+		var carpet = new IconNode(obj.iconnodename,obj.url,2,i*space+150,iconSize.lefticon,iconSize.lefticon,'yellow','blue',function(name){
+			console.log(this.iconname);
+			currentHandleStatus = handleStatus.tile;
+			currentBuildTileIconName = this.iconname;
+			groupBack();
+		});
+		carpet.txtdata.push(obj.name+"  $:"+obj.price.toString());
+		carpet.txtdata.push(obj.note);
+		nodearray.push(carpet);
+		i++
+	}
+	addPool(new IconNodeGroup(lefticonInfos.carpet.groupname,2,145,200,90,'#C0F56E','blue',nodearray,false,iconSize.lefticon+2));
+	
+	nodearray = [];
+	i = 0;
+	for(var name in lawnInfos){
+		var obj = lawnInfos[name];
+		var x = Math.floor(i/5)*90 +2;
+		var y = (i % 5)*space + 155;
+		var lawn = new IconNode(obj.iconnodename,obj.url,x,y,iconSize.lefticon,iconSize.lefticon,'yellow','blue',function(name){
+			console.log(this.iconname);
+			currentHandleStatus = handleStatus.tile;
+			currentBuildTileIconName = this.iconname;
+			groupBack();
+		});
+		lawn.txtdata.push(obj.name);
+		lawn.txtdata.push("$:"+obj.price.toString());
+		nodearray.push(lawn);
+		i++
+	}
+	addPool(new IconNodeGroup(lefticonInfos.lawn.groupname,2,150,200,220,'#C0F56E','blue',nodearray,false,iconSize.lefticon+2));
+	
+	nodearray = [];
+	i = 0;
+	for(var name in restaurantInfos){
+		var obj = restaurantInfos[name];
+		var x = Math.floor(i/7)*90 +2;
+		var y = (i % 7)*space + 55;
+		var room = new IconNode(obj.iconnodename,obj.url,x,y,iconSize.lefticon,iconSize.lefticon,'yellow','blue',function(name){
+			console.log(this.iconname);
+			currentHandleStatus = handleStatus.tile;
+			currentBuildTileIconName = this.iconname;
+			groupBack();
+		});
+		room.txtdata.push(obj.name);
+		room.txtdata.push("$:"+obj.price.toString());
+		nodearray.push(room);
+		i++
+	}
+	addPool(new IconNodeGroup(lefticonInfos.restaurant.groupname,2,50,230,310,'#C0F56E','blue',nodearray,false,iconSize.lefticon+2));
 }
 
 function groupBack(){

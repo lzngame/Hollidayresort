@@ -101,6 +101,26 @@ function drawRhombusMap(ctx,mapw,maph,clr,clrborder){
 	}
 }
 
+//绘制菱形图块地图
+function drawRhombusMap2(ctx,mapw,maph,clr,clrborder){
+	var initx = zeroX;//-24*30;
+	var inity = zeroY;//240
+	var clrr = 'black';
+	for(var i=-5;i<=-1;i++){
+		for(var j=6;j<=9;j++){
+			var x = initx + i*baseRhombusHeight +j*baseRhombusHeight;
+			var y = inity - i*baseRhombusHeight/2+j*baseRhombusHeight/2;
+			if(i%2==0)
+				clrr = 'black';
+			else
+				clrr = 'blue';
+			drawRhombusCenter(ctx,x,y,baseRhombusWidth,baseRhombusHeight,clrr,clrborder);
+			ctx.fillStyle = 'white';
+			ctx.fillText(i.toString()+':'+j.toString(),x-10,y);
+		}
+	}
+}
+
 function drawTileMap(ctx,tilename,w,h){
 	for(var i=0;i<=w;i++){
 		for(var j=0;j<=h;j++){

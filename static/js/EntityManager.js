@@ -310,38 +310,32 @@ function TxtNode(name,txt,iconhead,clr,x,y,w){
 	this.clr = clr;
 	this.w = w;
 	this.iconhead = iconhead;
-	this.iconwidth = 0;
 	layoutBgPool[name] = this;
-	if(this.iconhead){
-		this.iconwidth = getPngSize(iconhead).w;
-	}
 	this.speed = 1;
+	this.circle = false;
 }
 
 TxtNode.prototype.draw = function(ctx){
 	ctx.fillStyle = this.clr;
 	this.run();
 	if(this.iconhead)
-		drawImg(ctx,this.iconhead,this.x-40,this.y);
-	//ctx.fillText(this.txt,this.x+this.iconwidth+5,this.y+15);
-	ctx.fillText(this.txt,this.x,this.y+12);
+		drawImg(ctx,this.iconhead,this.x,this.y);
+	ctx.fillText(this.txt,this.x+40,this.y+12);
 };
 
-TxtNode.prototype.run = function(stop){
-	this.x += this.speed;
-	if(this.x > this.initx +this.w){
-		this.x = this.initx;
+TxtNode.prototype.run = function(stop) {
+	if (this.circle) {
+		this.x += this.speed;
+		if (this.x > this.initx + this.w) {
+			this.x = this.initx;
+		}
 	}
 };
 
-TxtNode.prototype.setTxt =  function(txt,iconhead){
+TxtNode.prototype.setTxt =  function(txt,iconhead,circle){
 	this.txt = txt;
 	this.iconhead = iconhead;
-	if(this.iconhead){
-		this.iconwidth = getPngSize(this.iconhead);
-	}else{
-		this.iconwidth = 0;
-	}
+	this.circle = circle;
 }
 
 TxtNode.prototype.setPos = function(x){
@@ -384,10 +378,6 @@ function IconNodeGroup(name,x,y,w,h,bgclr,borderclr,icons,isvisible,targetDis){
 	this.isdisable = true;
 	this.isvisible = isvisible;
 	this.swipespeed = 12;
-	for (var i = 0; i < this.icons.length; i++) {
-		var iconnode = this.icons[i];
-		iconnode.groupname = name;  
-	}
 }
 
 IconNodeGroup.prototype.draw = function(ctx) {
@@ -424,9 +414,23 @@ IconNodeGroup.prototype.draw = function(ctx) {
 	}
 };
 
+
 IconNodeGroup.prototype.checkTap = function(tapx,tapy){
 	return checkPointInBox(tapx,tapy,this.x,this.y,this.w,this.h);	
 };
+
+IconNodeGroup.prototype.changeswipe = function(){
+	if(!this.swipingLeft && !this.swipingRight){
+		if(this.x <= this.initx)
+			this.swipe(Direct.right);
+		else
+			this.swipe(Direct.left);
+	}else if(this.swipingLeft){
+		this.swipe(Direct.right);
+	}else{
+		this.swipe(Direct.left);
+	}
+}
 
 IconNodeGroup.prototype.swipe = function(direct){
 	this.isvisible = true;
@@ -472,19 +476,31 @@ function IconNode(name,iconname,x,y,w,h,defaultBgclr,activeBgclr,handler,borderC
 	this.isvisble = true;
 	this.isdisable = true; 
 	this.groupname = '';
+	this.active = false;
+	this.txtclr ='black';
+	this.txtdata = [];
 }
 
 IconNode.prototype.draw = function(ctx){
 	var iconobj = getPngSize(this.iconname);
 	var w = iconobj.w;
 	var h = iconobj.h;
-	ctx.fillStyle = this.defaultBgclr;
+	if(this.active)
+		ctx.fillStyle = this.activeBgclr;
+	else
+		ctx.fillStyle = this.defaultBgclr;
 	ctx.roundRect(this.x,this.y,this.w,this.h,3).fill();
 	ctx.strokeStyle = this.borderclr;
 	ctx.roundRect(this.x,this.y,this.w,this.h,3).stroke();
 	var xp = this.x + (this.w/2 - w/2);
 	var yp = this.y + (this.h/2 - h/2);
 	drawImg(ctx,this.iconname,xp,yp);
+	if(this.txtdata.length > 0){
+		ctx.fillStyle = this.txtclr;
+		for(var i=0;i<this.txtdata.length;i++){
+			ctx.fillText(this.txtdata[i],this.x+this.w+10,this.y+i*20+10);
+		}
+	}
 };
 
 IconNode.prototype.setPos= function(x,y){
