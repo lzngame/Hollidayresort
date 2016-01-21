@@ -4,8 +4,6 @@ function $(id){
 
 function getPngSize(name){
 	var data = jsonObj[name];
-	
-	
 	return {w:data[2],h:data[3]};
 }
 
@@ -27,6 +25,46 @@ window.ontouchstart = function(e) { e.preventDefault(); };
 
 function getMaincanvas(){
 	return $(CANVASID);
+}
+
+//新的坐标系下，取得Tile 右，右下，下 和自身 4个图块
+function getTile_rigntup(xpos,ypos){
+	return [[xpos,ypos],[xpos+1,ypos],[xpos+1,ypos+1],[xpos,ypos+1]];
+}
+
+//新坐标系下，取得点击坐标
+function getTilePos(x,y){
+	var xpos = Math.floor(x/baseRhombusWidth - y/baseRhombusHeight);
+	var ypos = Math.floor(x/baseRhombusWidth + y/baseRhombusHeight);
+	var roundArray = getTile_rigntup(xpos,ypos);
+	var dis = 10000000;
+	var targetX = -10000;
+	var targetY = -10000;
+	for(var i=0;i<roundArray.length;i++){
+		var tilex = roundArray[i][0];
+		var tiley = roundArray[i][1];
+		var pixAr = getPixByPosTile(tilex,tiley);
+		var pixX =  pixAr[0];
+		var pixY =  pixAr[1];
+		var tmpdis = getDisSquare(x,y,pixX,pixY);
+		if(dis > tmpdis){
+			dis = tmpdis;
+			targetX = tilex;
+			targetY = tiley;
+		}
+	}
+	console.log('tapx:%d tapy:%d',targetX,targetY);
+	return {posx:targetX,posy:targetY};	
+}
+
+
+/*
+ * 新坐标系下，根据整数坐标取得像素坐标
+ */
+function getPixByPosTile(xpos,ypos){
+	var x = xpos*baseRhombusHeight +ypos*baseRhombusHeight;
+	var y = -xpos*baseRhombusHeight/2+ypos*baseRhombusHeight/2;
+	return [x,y];
 }
 
 

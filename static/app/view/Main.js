@@ -7,7 +7,7 @@ Ext.define('Resort.view.Main',{
 			{
 				id:'mainpanel',
 				xtype:'panel',
-				style:'background-color:#aa6789',
+				styleHtmlCls:'background-image:url(/static/img/image 162.bmp)',
 				height:'100%',
 				width:'100%',
 				html:'<div id="mainpaneldiv"></div>'

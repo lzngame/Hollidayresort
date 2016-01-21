@@ -58,21 +58,23 @@ Ext.define('Resort.controller.Main',{
 		touch.on($(CANVASID),'drag dragstart dragend',panelDrag);
 		var ctx = $(CANVASID).getContext('2d');
 		currentHandleStatus = handleStatus.normal;
-		//addEntityNode(new EntityNode('tmp',NodeTypeClass.entityitem,[['img432','img434','img436','img438']],110,210,50,30));
+		addEntityNode(new EntityNode('tmp',NodeTypeClass.entityitem,[['img432','img434','img436','img438']],110,210,50,30));
 		var obj = getPixelByPos(7,4);
 		var xpix = obj.xpix;
 		var ypix = obj.ypix+baseRhombusHeight/2;
-		//LayoutUI(ctx);
-		//resortclock = new ResortClock('resortclock',0,stageHeight -47);
-		//layoutLeftIcons();
-		//layoutGroups();
+		LayoutUI(ctx);
+		resortclock = new ResortClock('resortclock',0,stageHeight -47);
+		layoutLeftIcons();
+		layoutGroups();
 		
 		initUpdate(1,function(){
 			ctx.clearRect(0,0,stageWidth,stageHeight);
-			drawRhombusMap2(ctx,mapWTiles,mapHTiles,'blue','red');
+			//
+			//drawRhombusMap2(ctx,mapWTiles,mapHTiles,'blue','red');
+			drawBg(ctx,'img162bmp');
 			//drawTileMap(ctx,currentTileType,mapWTiles,mapHTiles);
 			updateDraw(ctx);
-			//resortclock.update(ctx);
+			resortclock.update(ctx);
 		},30);
 		
 		currentActiveIndex = 1;
@@ -241,11 +243,17 @@ function panelDrag(ev) {
 }
 
 function panelTap(ev){
-	var tapx = ev.position.x;
-	var tapy = ev.position.y;
+	var tapx = ev.position.x-zeroX;
+	var tapy = ev.position.y-zeroY;
+	var sceneX = ev.position.x;
+	var sceneY = ev.position.y;
+	
+	var objtarget = getTilePos(tapx,tapy);
+	
+	
 	for(var name in iconPool){
 		var itemnode = iconPool[name];
-		if(itemnode.checkTap(tapx,tapy)){
+		if(itemnode.checkTap(sceneX,sceneY)){
 			itemnode.handler();
 			return;
 		}
@@ -253,10 +261,10 @@ function panelTap(ev){
 	
 	for(var name in groupPool){
 		var itemnode = groupPool[name];
-		if(itemnode.isdisable && !itemnode.swipingLeft && !itemnode.swipingRight && itemnode.isvisible && itemnode.checkTap(tapx,tapy)){
+		if(itemnode.isdisable && !itemnode.swipingLeft && !itemnode.swipingRight && itemnode.isvisible && itemnode.checkTap(sceneX,sceneY)){
 			for(var i=0;i<itemnode.icons.length;i++){
 				var iconnode = itemnode.icons[i];
-				if(iconnode.checkTap(tapx,tapy)){
+				if(iconnode.checkTap(sceneX,sceneY)){
 					iconnode.handler();
 					return;
 				}
@@ -365,12 +373,13 @@ function layoutGroups(){
 		var obj = floorInfos[name];
 		var floor = new IconNode(obj.iconnodename,obj.url,2,i*space+55,iconSize.lefticon,iconSize.lefticon,'yellow','blue',function(name){
 			console.log(this.iconname);
-			debugger;
 			currentTileType = this.floortype;
+			groupBack(this.groupname,lefticonInfos.floor.name);
 		});
 		floor.txtdata.push(obj.name+"  $:"+obj.price.toString());
 		floor.txtdata.push(obj.note);
 		floor.floortype = obj.floortype;
+		floor.groupname = obj.groupname;
 		nodearray.push(floor);
 		i++
 	}
@@ -466,15 +475,12 @@ function layoutGroups(){
 	addPool(new IconNodeGroup(lefticonInfos.restaurant.groupname,2,50,230,310,'#C0F56E','blue',nodearray,false,iconSize.lefticon+2));
 }
 
-function groupBack(){
-	var group = getTypeNode('tmptest',NodeTypeClass.icongroup);
-	group.swipe(Direct.left);
-	tapStatus = 'buildtile';
-	addPool(new IconNode(IconNameTxts.cancleBuildTile,'img2997',100,5,50,50,'white','blue',function(name){
-			console.log(this.name);
-			this.deleteSelf();
-			currentHandleStatus = handleStatus.normal;
-	}));
+function groupBack(icongroupname,parentname){
+	var group = getTypeNode(icongroupname,NodeTypeClass.icongroup);
+	group.changeswipe();
+	var parentIcon = iconPool[parentname];
+	parentIcon.active = false;
+	activeLeftIconnode = null;
 }
 
 

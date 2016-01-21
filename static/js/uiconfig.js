@@ -10,8 +10,8 @@ var jsonObj=JSON.parse(jsonData);
 var stageWidth = 0;
 var stageHeight = 0;
 
-var baseRhombusWidth = 80;
-var baseRhombusHeight = 40;
+var baseRhombusWidth = 48;
+var baseRhombusHeight = 24;
 var screenTiles = 5;
 
 var zeroX = 0;
@@ -62,7 +62,9 @@ var NodeTypeClass ={
 
 var Direct ={
 	left:'DIRECT_LEFT',
-	right:'DIRECT_RIGHT'
+	right:'DIRECT_RIGHT',
+	up:'DIRECT_UP',
+	down:'DIRECT_DOWN'
 };
 
 var IconNameTxts ={
@@ -121,10 +123,10 @@ var lefticonInfos ={
 };
 
 var floorInfos = {
-	lv1floor:{iconnodename:'lv1_floor_noed',name:'瓷砖地板',    price:500,note:'价格合适的瓷砖地板',url:'img694',floortype:'img694'},
-	lv2floor:{iconnodename:'lv2_floor_noed',name:'深色大理石',  price:700,note:'漂亮的大理石地板',url:'img686',floortype:'img686'},
-	lv3floor:{iconnodename:'lv3_floor_noed',name:'木地板',      price:1000,note:'舒适的木地板',url:'img697',floortype:'img697'},
-	lv4floor:{iconnodename:'lv4_floor_noed',name:'红木地板',    price:1500,note:'高档的红木地板',url:'img699',floortype:'img699'},
+	lv1floor:{iconnodename:'lv1_floor_noed',name:'瓷砖地板',    price:500,note:'价格合适的瓷砖地板',url:'img694',floortype:'img694',groupname:'FLOOR_GROUP'},
+	lv2floor:{iconnodename:'lv2_floor_noed',name:'深色大理石',  price:700,note:'漂亮的大理石地板',url:'img686',floortype:'img686',groupname:'FLOOR_GROUP'},
+	lv3floor:{iconnodename:'lv3_floor_noed',name:'木地板',      price:1000,note:'舒适的木地板',url:'img697',floortype:'img697',groupname:'FLOOR_GROUP'},
+	lv4floor:{iconnodename:'lv4_floor_noed',name:'红木地板',    price:1500,note:'高档的红木地板',url:'img699',floortype:'img699',groupname:'FLOOR_GROUP'},
 };
 var plantInfos = {
 	lv1plant:{iconnodename:'lv1_plant_noed',name:'风信子盆栽',    price:500,note:'价格合适的瓷砖地板',url:'img729'},
