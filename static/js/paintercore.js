@@ -1,11 +1,17 @@
 function updateDraw(ctx){
+			for(var id in floorpool){
+				var floor = floorpool[id];
+				floor.draw(ctx);
+			}
+	
 			for(var id in entitys){
 				var entity = entitys[id];
-				if(entity.isVisble){
+				if(entity.isvisible){
 					var dataObj = entity.getDrawData();
 					drawPool.push(dataObj);
 				}
 			}
+			
 			if(drawPool.length > 0)
 				drawPool.sort(orderDepthNode);
 			for(var i=0;i<drawPool.length;i++){
@@ -13,11 +19,8 @@ function updateDraw(ctx){
 
 				data.x = data.x + zeroX;
 				data.y = data.y + zeroY;
-				if(data.type == NodeTypeClass.tile){
-					drawImg(ctx,data.name,data.x,data.y,true,baseRhombusWidth,baseRhombusHeight);
-				}else if(data.type == NodeTypeClass.entityitem){
-					drawImg(ctx,data.name,data.x,data.y,true);
-				}else if(data.type == NodeTypeClass.build){
+					
+				if(data.type == NodeTypeClass.build){
 					var databuild = builddata[data.buildtype];
 					for(var name in  databuild){
 						var item = databuild[name];
@@ -25,6 +28,8 @@ function updateDraw(ctx){
 						var y = data.y + item[1];
 						drawImg(ctx,name,x,y,true);
 					}
+				}else{
+					drawImg(ctx,data.name,data.x,data.y,true);
 				}
 			}
 			for(var name in layoutBgPool){

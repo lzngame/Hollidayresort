@@ -1,17 +1,3 @@
-var handleStatus = {
-    normal:10000,
-    dragingbuild:10001,
-    tile:10002
-}
-var currentHandleStatus = -1;
-var currentBuildTileIconName = '';
-var currentBuildIconName = '';
-var currentBuildType = -1;
-var tmpnode = null; 
-var resortclock = null;
-var txtinfo = null;
-var currentTileType = 'img194';
-
 Ext.define('Resort.controller.Main',{
 	extend:'Ext.app.Controller',
 	init:function(this_initialconfig){
@@ -66,6 +52,9 @@ Ext.define('Resort.controller.Main',{
 		resortclock = new ResortClock('resortclock',0,stageHeight -47);
 		layoutLeftIcons();
 		layoutGroups();
+		
+		new PlantNode('test',NodeTypeClass.entityitem,[['img705','img717','img713','img709']],-9,29,true);
+		new PlantNode('test',NodeTypeClass.entityitem,'img1605',-10,30,true);
 		
 		initUpdate(1,function(){
 			ctx.clearRect(0,0,stageWidth,stageHeight);
@@ -250,11 +239,12 @@ function panelTap(ev){
 	
 	var objtarget = getTilePos(tapx,tapy);
 	
+	var node = getNodeByPos(objtarget.posx,objtarget.posy);
 	
 	for(var name in iconPool){
 		var itemnode = iconPool[name];
 		if(itemnode.checkTap(sceneX,sceneY)){
-			itemnode.handler();
+			itemnode.handler(itemnode.tapdata);
 			return;
 		}
 	}
@@ -283,11 +273,18 @@ function panelTap(ev){
 	}
 	
 	if(currentHandleStatus == handleStatus.tile){
-		var obj = getCloseTile(tapx-zeroX,tapy-zeroY);
+		var floor = new FloorNode('lawn',currentBuildfloor,objtarget.posx,objtarget.posy,function(){
+			console.log(this);
+		});
+		/*var obj = getCloseTile(tapx-zeroX,tapy-zeroY);
 		var posobj = getPixelByPos(obj[0],obj[1]);
 		var x = posobj.xpix -baseRhombusHeight;
 		var y = posobj.ypix -baseRhombusHeight/2;
-		addEntityNode(new EntityNode('tile',NodeTypeClass.tile,[[currentBuildTileIconName]],x,y,50,200));
+		addEntityNode(new EntityNode('tile',NodeTypeClass.tile,[[currentBuildTileIconName]],x,y,50,200));*/
+	}
+	if(currentHandleStatus == handleStatus.plant){
+		//if(getNodeByPos(objtarget.posx,objtarget.posy))
+		new PlantNode('test',NodeTypeClass.entityitem,currentBuildType,objtarget.posx,objtarget.posy,false);
 	}
 }
 
@@ -325,11 +322,22 @@ function LayoutUI(ctx){
 	for(var i=0;i<4;i++){
 		addPool(new ImgNode('bottom'+i.toString(),'img3516',bottomsize.rilisize+47+i*bottomRightWidth,stageHeight-40,bottomRightWidth-2,38));
 	}
+	
+	layourHandleInfo();
+}
+var activeLeftIconnode = null;
+
+function layoutBottomTxtinfo(){
 	new ImageNode('txtbg','img3358bmp',47,stageHeight-70,stageWidth-47,30);
 	txtinfo = new TxtNode('welcome','欢迎来到度假村世界游戏！','img3195','#676767',55,stageHeight-67,stageWidth - 47);
 }
 
-var activeLeftIconnode = null;
+var stopHandleBtn = null;
+function layourHandleInfo(){
+	stopHandleBtn =  new StopHandleMenu('test',stageWidth-188,stageHeight-112-40);
+	stopHandleBtn.hide();
+}
+
 
 function layoutLeftIcons(ctx){
 	var space = 4;
@@ -340,6 +348,7 @@ function layoutLeftIcons(ctx){
 		var obj = lefticonInfos[name];
 		var iconnode = new IconNode(obj.name,obj.url,3,(iconSize.lefticon+space)*dis+layoutconfig.headsize+inity,iconSize.lefticon,iconSize.lefticon,colors.lefticonbg,colors.lefticonactive,function(name){
 			console.log(this.name);
+			stopHandleBtn.hide();
 			this.active = !this.active;
 			var group = getTypeNode(this.groupname,NodeTypeClass.icongroup);
 			group.changeswipe();
@@ -358,10 +367,6 @@ function layoutLeftIcons(ctx){
 		addPool(iconnode);
 		dis++;
 	}
-}
-
-function checkLeftActive(){
-	
 }
 
 function layoutGroups(){
@@ -391,12 +396,17 @@ function layoutGroups(){
 		var obj = plantInfos[name];
 		var plant = new IconNode(obj.iconnodename,obj.url,2,i*space+55,iconSize.lefticon,iconSize.lefticon,'yellow','blue',function(name){
 			console.log(this.iconname);
-			currentHandleStatus = handleStatus.tile;
-			currentBuildTileIconName = this.iconname;
-			groupBack();
+			currentHandleStatus = handleStatus.plant;
+			var data = plantInfos[this.dataname];
+			currentBuildType = data.tileurl;
+			currentBuildData = data;
+			stopHandleBtn.show();
+			groupBack(this.groupname,lefticonInfos.plant.name);
 		});
 		plant.txtdata.push(obj.name+"  $:"+obj.price.toString());
 		plant.txtdata.push(obj.note);
+		plant.groupname = obj.groupname;
+		plant.dataname = name;
 		nodearray.push(plant);
 		i++
 	}
@@ -410,10 +420,11 @@ function layoutGroups(){
 			console.log(this.iconname);
 			currentHandleStatus = handleStatus.tile;
 			currentBuildTileIconName = this.iconname;
-			groupBack();
+			groupBack(this.groupname,lefticonInfos.house.name);
 		});
 		house.txtdata.push(obj.name+"  $:"+obj.price.toString());
 		house.txtdata.push(obj.note);
+		house.groupname = obj.groupname;
 		nodearray.push(house);
 		i++
 	}
@@ -426,11 +437,15 @@ function layoutGroups(){
 		var carpet = new IconNode(obj.iconnodename,obj.url,2,i*space+150,iconSize.lefticon,iconSize.lefticon,'yellow','blue',function(name){
 			console.log(this.iconname);
 			currentHandleStatus = handleStatus.tile;
-			currentBuildTileIconName = this.iconname;
-			groupBack();
+			var data = carpetInfos[this.dataname];
+			currentBuildfloor = data.tileurl;
+			stopHandleBtn.show();
+			groupBack(this.groupname,lefticonInfos.carpet.name);
 		});
 		carpet.txtdata.push(obj.name+"  $:"+obj.price.toString());
 		carpet.txtdata.push(obj.note);
+		carpet.groupname = obj.groupname;
+		carpet.dataname = name;
 		nodearray.push(carpet);
 		i++
 	}
@@ -445,15 +460,19 @@ function layoutGroups(){
 		var lawn = new IconNode(obj.iconnodename,obj.url,x,y,iconSize.lefticon,iconSize.lefticon,'yellow','blue',function(name){
 			console.log(this.iconname);
 			currentHandleStatus = handleStatus.tile;
-			currentBuildTileIconName = this.iconname;
-			groupBack();
+			var data = lawnInfos[this.dataname];
+			currentBuildfloor = data.tileurl;
+			stopHandleBtn.show();
+			groupBack(this.groupname,lefticonInfos.lawn.name);
 		});
 		lawn.txtdata.push(obj.name);
 		lawn.txtdata.push("$:"+obj.price.toString());
+		lawn.groupname = obj.groupname;
+		lawn.dataname = name;
 		nodearray.push(lawn);
 		i++
 	}
-	addPool(new IconNodeGroup(lefticonInfos.lawn.groupname,2,150,200,220,'#C0F56E','blue',nodearray,false,iconSize.lefticon+2));
+	addPool(new IconNodeGroup(lefticonInfos.lawn.groupname,2,148,200,220,'#C0F56E','blue',nodearray,false,iconSize.lefticon+2));
 	
 	nodearray = [];
 	i = 0;
@@ -465,10 +484,11 @@ function layoutGroups(){
 			console.log(this.iconname);
 			currentHandleStatus = handleStatus.tile;
 			currentBuildTileIconName = this.iconname;
-			groupBack();
+			groupBack(this.groupname,lefticonInfos.restaurant.name);
 		});
 		room.txtdata.push(obj.name);
 		room.txtdata.push("$:"+obj.price.toString());
+		room.groupname = obj.groupname;
 		nodearray.push(room);
 		i++
 	}

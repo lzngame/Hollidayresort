@@ -67,6 +67,19 @@ function getPixByPosTile(xpos,ypos){
 	return [x,y];
 }
 
+/*
+ * 取得该坐标Node
+ */
+function getNodeByPos(xpos,ypos){
+	for(var id in floorpool){
+		var floor = floorpool[id];
+		if(floor.xpos == xpos && floor.ypos== ypos){
+			debugger;
+			return floor;
+		}
+	}
+	return null;
+}
 
 //根据整数坐标取得菱形中心像素坐标
 function getPixelByPos(xpos,ypos){

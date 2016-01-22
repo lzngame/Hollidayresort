@@ -3,7 +3,7 @@ function BuildNode(name,type,buildtype,x,y,depth,floorspace){
 	this.x = x;
 	this.y = y;
 	this.depth = depth;
-	this.isVisble = true;
+	this.isvisible = true;
 	this.id = increaseId++;
 	this.ntype = type;
 	this.buildtype = buildtype;
@@ -52,7 +52,7 @@ function getSizeToMap(initw,inith){
 function EntityNode(name,type,data,x,y,depth,frameFps){
 	this.depth = depth || DEFAULT_DEPTH;
 	this.frameFps = frameFps || DEFAULT_FPS;
-	this.isVisble = true;
+	this.isvisible = true;
 	this.x = x;
 	this.y = y;
 	this.name = name;
@@ -67,8 +67,8 @@ function EntityNode(name,type,data,x,y,depth,frameFps){
 	this.ntype = type;
 };
 
-EntityNode.prototype.setVisible = function(isVisible){
-	this.isVisble = isVisible;
+EntityNode.prototype.setVisible = function(isvisible){
+	this.isvisible = isvisible;
 };
 
 
@@ -111,7 +111,7 @@ EntityNode.prototype.getDrawData = function(){
 function EntityFootNode(name,type,data,x,y,depth,frameFps,autodel,lastFunc,lastdata){
 	this.depth = depth ;
 	this.frameFps = frameFps ;
-	this.isVisble = true;
+	this.isvisible = true;
 	this.x = x;
 	this.y = y;
 	this.name = name;
@@ -129,8 +129,8 @@ function EntityFootNode(name,type,data,x,y,depth,frameFps,autodel,lastFunc,lastd
 	this.lastFuncdata = lastdata;
 }
 
-EntityFootNode.prototype.setVisible = function(isVisible){
-	this.isVisble = isVisible;
+EntityFootNode.prototype.setVisible = function(isvisible){
+	this.isvisible = isvisible;
 };
 
 EntityFootNode.prototype.lastFrameFun = function(){
@@ -292,14 +292,32 @@ function ImageNode(name,iconname,x,y,w,h){
 	this.iconname = iconname;
 	this.x = x;
 	this.y = y;
-	this.w = w;
-	this.h = h; 
+	if(w){
+		this.w = w;
+		this.h = h; 
+	}else{
+		var obj = getPngSize(iconname);
+		var width = obj.w;
+		var height = obj.h;
+		this.w = width;
+		this.h = height;
+	}
+	
 	layoutBgPool[name] = this;
+	this.isvisible = true;
 }
 
 ImageNode.prototype.draw = function(ctx){
-	drawImg(ctx,this.iconname,this.x,this.y,false,this.w,this.h);
+	if(this.isvisible)
+		drawImg(ctx,this.iconname,this.x,this.y,false,this.w,this.h);
 };
+
+ImageNode.prototype.setImg = function(iconname){
+	var png = getPngSize(iconname);
+	this.iconname = iconname;
+	this.w = png.w;
+	this.h = png.h;
+}
 
 function TxtNode(name,txt,iconhead,clr,x,y,w){
 	this.name = name;
@@ -313,14 +331,17 @@ function TxtNode(name,txt,iconhead,clr,x,y,w){
 	layoutBgPool[name] = this;
 	this.speed = 1;
 	this.circle = false;
+	this.isvisible = true;
 }
 
-TxtNode.prototype.draw = function(ctx){
-	ctx.fillStyle = this.clr;
-	this.run();
-	if(this.iconhead)
-		drawImg(ctx,this.iconhead,this.x,this.y);
-	ctx.fillText(this.txt,this.x+40,this.y+12);
+TxtNode.prototype.draw = function(ctx) {
+	if (this.isvisible) {
+		ctx.fillStyle = this.clr;
+		this.run();
+		if (this.iconhead)
+			drawImg(ctx, this.iconhead, this.x, this.y);
+		ctx.fillText(this.txt, this.x + 40, this.y + 12);
+	}
 };
 
 TxtNode.prototype.run = function(stop) {
@@ -473,7 +494,7 @@ function IconNode(name,iconname,x,y,w,h,defaultBgclr,activeBgclr,handler,borderC
 		this.borderclr = borderClr;
 	this.handler = handler;
 	this.depth = 1000;
-	this.isvisble = true;
+	this.isvisible = true;
 	this.isdisable = true; 
 	this.groupname = '';
 	this.active = false;
@@ -532,12 +553,14 @@ function ImgNode(name,iconname,x,y,w,h,handler){
 	
 	this.handler = handler;
 	this.depth = 1000;
-	this.isvisble = true;
+	this.isvisible = true;
 	this.isdisable = true; 
+	addPool(this);
 }
 
 ImgNode.prototype.draw = function(ctx){
-	drawImg(ctx,this.iconname,this.x,this.y,false,this.w,this.h);
+	if(this.isvisible)
+		drawImg(ctx,this.iconname,this.x,this.y,false,this.w,this.h);
 };
 
 ImgNode.prototype.setPos= function(x,y){
@@ -546,6 +569,8 @@ ImgNode.prototype.setPos= function(x,y){
 };
 
 ImgNode.prototype.checkTap = function(tapx,tapy){
+	if(!this.isvisible)
+		return false;
 	return checkPointInBox(tapx,tapy,this.x,this.y,this.w,this.h);	
 };
 
@@ -572,7 +597,7 @@ function IconInfoNode(name,x,y,w,h,bgicon,txt1,txt2,num,handler){
 	
 	this.handler = handler;
 	this.depth = 1000;
-	this.isVisble = true;
+	this.isvisible = true;
 }
 
 IconInfoNode.prototype.draw = function(ctx){
@@ -684,7 +709,7 @@ function OnebuildingNode(name,xpos,ypos){
 
 OnebuildingNode.prototype.deleteNode = function(){
 	delete entitys[this.one.id];
-}
+};
 
 function ShowInfoNode(name,x,y,w,h){
 	this.name = name;
@@ -707,8 +732,135 @@ ShowInfoNode.prototype.closeInfoWin = function(){
 	console.log('close');
 	
 	this.deleteSelf();
-}
+};
 
 ShowInfoNode.prototype.draw = function(ctx){
 	drawImg(ctx,'img2951',this.x,this.y,false,this.w,this.h);
+};
+
+function FloorNode(name,iconname,xpos,ypos,handler){
+	this.id = increaseId++;
+	this.name = name;
+	this.iconname = iconname;
+	this.xpos = xpos;
+	this.ypos = ypos;
+	this.x = getPixByPosTile(xpos,ypos)[0];
+	this.y = getPixByPosTile(xpos,ypos)[1];
+	this.ntype = NodeTypeClass.floor;
+	this.handler = handler;
+	floorpool[this.id] = this;
 }
+
+FloorNode.prototype.draw = function(ctx){
+	drawImgBottomTile(ctx,this.iconname,this.xpos,this.ypos);
+};
+
+FloorNode.prototype.setPos= function(x,y){
+	this.x = x;
+	this.y = y;
+};
+
+FloorNode.prototype.checkTap = function(tapx,tapy){
+	return checkPointInBox(tapx,tapy,this.x,this.y,baseRhombusWidth,baseRhombusWidth);	
+};
+
+FloorNode.prototype.deleteSelf = function(){
+	delete floorpool[this.id];
+};
+
+function StopHandleMenu(name,x,y){
+	this.name = name;
+	this.x = x;
+	this.y = y;
+	this.iconname = 'StopHandleMenu_iconname';
+	this.bgnodename = 'StopHandleMenu_bgname';
+	this.closenodename = 'StopHandleMenu_stopname';
+	this.txt1name = 'StopMenu_txt_handle';
+	this.txt2name = 'StopMenu_txt_name';
+	this.txt3name = 'StopMenu_txt_note';
+	this.txt4name = 'StopMenu_txt_price';
+	
+	this.self = this;
+	new ImageNode(this.bgnodename,'img396',this.x,this.y,186,112);
+	var stopBtn = new ImgNode(this.closenodename,'img3638',this.x+145,this.y+4,34,34,this.hide);
+	stopBtn.tapdata = this;
+	this.handleTxt = new TxtNode(this.txt1name,'空白处点击建造草坪','','yellow',this.x-20,this.y+10,100);
+	
+	this.nameTxt = new TxtNode(this.txt2name,'','','black',this.x+20,this.y+50,100);
+	this.noteTxt =  new TxtNode(this.txt3name,'','','black',this.x+20,this.y+80,100);
+	this.priceTxt = new TxtNode(this.txt4name,'','','black',this.x+20,this.y+110,100);
+	
+	this.iconImg = new ImageNode(this.iconname,'img409',this.x+20,this.y+50);
+}
+
+StopHandleMenu.prototype.hide = function(tapdata){
+	var isvisible = false;
+	if(tapdata != null){
+		currentHandleStatus = handleStatus.normal;
+		layoutBgPool[tapdata.bgnodename].isvisible = isvisible;
+		iconPool[tapdata.closenodename].isvisible = isvisible;
+		layoutBgPool[tapdata.txt1name].isvisible = isvisible;
+		layoutBgPool[tapdata.txt2name].isvisible = isvisible;
+		layoutBgPool[tapdata.iconname].isvisible = isvisible;
+	}else{
+		layoutBgPool[this.bgnodename].isvisible = isvisible;
+		iconPool[this.closenodename].isvisible = isvisible;
+		layoutBgPool[this.txt1name].isvisible = isvisible;
+		layoutBgPool[this.txt2name].isvisible = isvisible;
+		layoutBgPool[this.iconname].isvisible = isvisible;
+	}
+	currentHandleStatus = handleStatus.normal;
+};
+
+StopHandleMenu.prototype.show = function(){
+	var isvisible = true;
+	layoutBgPool[this.bgnodename].isvisible = isvisible;
+	iconPool[this.closenodename].isvisible = isvisible;
+	layoutBgPool[this.txt1name].isvisible = isvisible;
+	layoutBgPool[this.txt2name].isvisible = isvisible;
+	layoutBgPool[this.iconname].isvisible = isvisible;
+	var data = currentBuildData;
+	this.nameTxt.setTxt(data)
+};
+
+StopHandleMenu.prototype.setPos= function(x,y){
+	this.x = x;
+	this.y = y;
+};
+
+function PlantNode(name,type,frames,xpos,ypos,center){
+	this.name = name;
+	this.isvisible = true;
+	this.id = increaseId++;
+	this.ntype = type;
+	if(typeof(frames)=='object'){
+		var png = frames[0][0];
+		this.w = getPngSize(png).w;
+		this.h = getPngSize(png).h;
+	}else{
+		this.w = getPngSize(frames).w;
+		this.h = getPngSize(frames).h;
+	}
+	var obj = getPixByPosTile(xpos,ypos);
+	this.x = obj[0];
+	this.y = obj[1];
+	if(center)
+		var y = this.y - this.h + baseRhombusHeight/2;
+	else
+		var y = this.y - this.h;
+	var entitynode = new EntityNode(name,type,frames,this.x-this.w/2,y,ypos,330);
+	this.entityid = entitynode.id;
+	addEntityNode(entitynode);
+	
+	buildpool[this.id] = this;
+}
+
+
+PlantNode.prototype.setPos = function(x,y){
+	this.x = x;
+	this.y = y;
+};
+
+PlantNode.prototype.setDepth = function(zindex){
+	this.depth = zindex;
+};

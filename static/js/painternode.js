@@ -1,7 +1,7 @@
 function updateDraw(ctx){
 			for(var id in entitys){
 				var entity = entitys[id];
-				if(entity.isVisble){
+				if(entity.isVisible){
 					var dataObj = entity.getDrawData();
 					drawPool.push(dataObj);
 				}
