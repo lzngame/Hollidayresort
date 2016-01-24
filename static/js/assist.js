@@ -68,17 +68,20 @@ function getPixByPosTile(xpos,ypos){
 }
 
 /*
- * 取得该坐标Node
+ * 取得该坐标地板Node
  */
-function getNodeByPos(xpos,ypos){
+function getFloorNodeByPos(xpos,ypos){
 	for(var id in floorpool){
 		var floor = floorpool[id];
 		if(floor.xpos == xpos && floor.ypos== ypos){
-			debugger;
 			return floor;
 		}
 	}
 	return null;
+}
+
+function getBuildNodeByPos(xpos,ypos){
+	//for(var id in )
 }
 
 //根据整数坐标取得菱形中心像素坐标
@@ -148,27 +151,15 @@ function GetPosInBuild(xpos,ypos){
 }
 
 function getRound4ByLeftTop(x,y){
-	if(x % 2== 0){
 		return [
-			[x,y],[x+1,y-1],[x+1,y],[x+2,y]
+			[x,y],[x+1,y],[x+1,y+1],[x,y+1]
 		]
-	}else{
-		return [
-			[x,y],[x+1,y],[x+1,y+1],[x+2,y]
-		]
-	}
 }
 
 function getExit4ByLeftTop(x,y){
-	if(x %2 == 0){
 		return [
-			[x-1,y],[x,y+1],[x+2,y+1],[x+3,y]
+			[x-1,y],[x-1,y+1],[x,y+2],[x+1,y+2]
 		]
-	}else{
-		return [
-			[x-1,y+1],[x,y+1],[x+2,y+1],[x+3,y+1]
-		]
-	}
 }
 
 function isInFloorspce(x,y,floorspaceArray){

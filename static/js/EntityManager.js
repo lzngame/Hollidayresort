@@ -8,6 +8,7 @@ function BuildNode(name,type,buildtype,x,y,depth,floorspace){
 	this.ntype = type;
 	this.buildtype = buildtype;
 	this.floorspace = floorspace;
+	addEntityNode(this);
 }
 
 BuildNode.prototype.IsInFloorspace = function(xpos,ypos){
@@ -192,6 +193,13 @@ function addEntityNode(entityitem){
 	return id;
 }
 
+function deleteEntity(id){
+	if(typeof(id)=='number')
+		delete entitys[id];
+	else
+		delete entitys[id.id];
+}
+
 function getTypeNode(name,typeclass){
 	switch(typeclass){
 		case NodeTypeClass.icon:
@@ -237,13 +245,17 @@ function ShapeRect(name,clr,borderclr,x,y,w,h){
 	this.h = h;
 	this.clr = clr;
 	this.borderclr = borderclr;
+	layoutBgPool[name]= this;
+	this.isvisible = true;
 }
 
 ShapeRect.prototype.draw = function(ctx){
-	ctx.fillStyle = this.clr;
-	ctx.strokeStyle = this.borderclr;
-	ctr.fillRect(this.x,this.y,this.w,this.h);
-	ctx.strokeRect(this.x,this.y,this.w,this.h);
+	if(this.isvisible){
+		ctx.fillStyle = this.clr;
+		ctx.strokeStyle = this.borderclr;
+		ctx.fillRect(this.x,this.y,this.w,this.h);
+		ctx.strokeRect(this.x,this.y,this.w,this.h);
+	}
 };
 
 function ShapeRoundrect(name,clr,borderclr,x,y,w,h,r){
@@ -541,7 +553,7 @@ IconNode.prototype.deleteSelf = function(){
 	delete iconPool[this.name];
 };
 
-function ImgNode(name,iconname,x,y,w,h,handler){
+function ImgNode(name,iconname,x,y,w,h,handler,handlerdata){
 	this.id = increaseId++;
 	this.name = name;
 	this.iconname = iconname;
@@ -627,6 +639,27 @@ function EntitTextNode(txt,x,y,clr,size){
 EntitTextNode.prototype.draw = function(ctx){
 	ctx.fillText(this.txt,x,y);
 };
+
+function UItextNode(name,txt,x,y,clr){
+	this.name = name;
+	this.x = x;
+	this.y = y;
+	this.clr = clr;
+	this.txt = txt;
+	layoutBgPool[name] = this;
+	this.isvisible = true;
+};
+
+UItextNode.prototype.draw = function(ctx){
+	if(this.isvisible){
+		ctx.fillStyle = this.clr;
+		ctx.fillText(this.txt,this.x,this.y);
+	}
+};
+
+UItextNode.prototype.settxt = function(txt){
+	this.txt = txt;
+}
 
 function PngNumNode(name,txt,x,y){
 	this.name = name;
@@ -738,7 +771,7 @@ ShowInfoNode.prototype.draw = function(ctx){
 	drawImg(ctx,'img2951',this.x,this.y,false,this.w,this.h);
 };
 
-function FloorNode(name,iconname,xpos,ypos,handler){
+function FloorNode(name,iconname,xpos,ypos,data){
 	this.id = increaseId++;
 	this.name = name;
 	this.iconname = iconname;
@@ -747,7 +780,7 @@ function FloorNode(name,iconname,xpos,ypos,handler){
 	this.x = getPixByPosTile(xpos,ypos)[0];
 	this.y = getPixByPosTile(xpos,ypos)[1];
 	this.ntype = NodeTypeClass.floor;
-	this.handler = handler;
+	this.data = data;
 	floorpool[this.id] = this;
 }
 
@@ -782,15 +815,15 @@ function StopHandleMenu(name,x,y){
 	
 	this.self = this;
 	new ImageNode(this.bgnodename,'img396',this.x,this.y,186,112);
-	var stopBtn = new ImgNode(this.closenodename,'img3638',this.x+145,this.y+4,34,34,this.hide);
+	var stopBtn = new ImgNode(this.closenodename,'cancel',this.x+100,this.y+4,80,25,this.hide);
 	stopBtn.tapdata = this;
-	this.handleTxt = new TxtNode(this.txt1name,'空白处点击建造草坪','','yellow',this.x-20,this.y+10,100);
 	
-	this.nameTxt = new TxtNode(this.txt2name,'','','black',this.x+20,this.y+50,100);
-	this.noteTxt =  new TxtNode(this.txt3name,'','','black',this.x+20,this.y+80,100);
-	this.priceTxt = new TxtNode(this.txt4name,'','','black',this.x+20,this.y+110,100);
+	this.handleTxt = new TxtNode(this.txt1name,'','','yellow',this.x-35,this.y+25,100);
+	this.nameTxt =  new TxtNode(this.txt2name,'','','black',this.x+20,this.y+40,100);
+	this.noteTxt =  new TxtNode(this.txt3name,'','','black',this.x+20,this.y+70,100);
+	this.priceTxt = new TxtNode(this.txt4name,'','','black',this.x+20,this.y+90,100);
 	
-	this.iconImg = new ImageNode(this.iconname,'img409',this.x+20,this.y+50);
+	this.iconImg = new ImageNode(this.iconname,'img409',this.x+10,this.y+45);
 }
 
 StopHandleMenu.prototype.hide = function(tapdata){
@@ -801,12 +834,16 @@ StopHandleMenu.prototype.hide = function(tapdata){
 		iconPool[tapdata.closenodename].isvisible = isvisible;
 		layoutBgPool[tapdata.txt1name].isvisible = isvisible;
 		layoutBgPool[tapdata.txt2name].isvisible = isvisible;
+		layoutBgPool[tapdata.txt3name].isvisible = isvisible;
+		layoutBgPool[tapdata.txt4name].isvisible = isvisible;
 		layoutBgPool[tapdata.iconname].isvisible = isvisible;
 	}else{
 		layoutBgPool[this.bgnodename].isvisible = isvisible;
 		iconPool[this.closenodename].isvisible = isvisible;
 		layoutBgPool[this.txt1name].isvisible = isvisible;
 		layoutBgPool[this.txt2name].isvisible = isvisible;
+		layoutBgPool[this.txt3name].isvisible = isvisible;
+		layoutBgPool[this.txt4name].isvisible = isvisible;
 		layoutBgPool[this.iconname].isvisible = isvisible;
 	}
 	currentHandleStatus = handleStatus.normal;
@@ -818,9 +855,15 @@ StopHandleMenu.prototype.show = function(){
 	iconPool[this.closenodename].isvisible = isvisible;
 	layoutBgPool[this.txt1name].isvisible = isvisible;
 	layoutBgPool[this.txt2name].isvisible = isvisible;
+	layoutBgPool[this.txt3name].isvisible = isvisible;
+	layoutBgPool[this.txt4name].isvisible = isvisible;
 	layoutBgPool[this.iconname].isvisible = isvisible;
-	var data = currentBuildData;
-	this.nameTxt.setTxt(data)
+	
+	layoutBgPool[this.txt1name].setTxt('空地板上面点击建造');
+	layoutBgPool[this.txt2name].setTxt(currentBuildData.name);
+	layoutBgPool[this.txt3name].setTxt(currentBuildData.note);
+	layoutBgPool[this.txt4name].setTxt('$:'+currentBuildData.price.toString());
+	layoutBgPool[this.iconname].setImg(currentBuildData.tileurl);
 };
 
 StopHandleMenu.prototype.setPos= function(x,y){
@@ -860,7 +903,62 @@ PlantNode.prototype.setPos = function(x,y){
 	this.x = x;
 	this.y = y;
 };
-
+ 
 PlantNode.prototype.setDepth = function(zindex){
 	this.depth = zindex;
 };
+
+function HandleInfoMenu(name,x,y){
+	this.name = name;
+	this.x = x;
+	this.y = y;
+	this.ntype = NodeTypeClass.menu;
+	
+	this.namesObj = {
+		closename:'icon_'+name+'_closename',
+		bgheadname:name+'_bgheadname',
+		bgrect:name+'_bgrectname',
+		titlename:name+'_titlename',
+		btndestoryname:'icon'+name+'_destoryname'
+	}
+	new ImageNode(this.namesObj.bgheadname,'img3358bmp',this.x,this.y,205,30);
+	var alpha = 'rgba(200,200,200,0.5)';
+	new ShapeRect(this.namesObj.bgrect,alpha,'black',this.x+1,this.y+30,204,100);
+	var closeBtn = new ImgNode(this.namesObj.closename,'img2997',this.x+175,this.y+2,20,20,function(){
+		this.closeData.hide(false);
+	});
+	closeBtn.closeData = this;
+	var destoryBtn = new ImgNode(this.namesObj.btndestoryname,'destory',this.x+55,this.y+55,52,20,function(){
+		this.closeData.hide(false);
+		delete floorpool[currentHandleNode.id];
+		currentHandleNode = null;
+	});
+	destoryBtn.closeData = this;
+	var txttitle = new UItextNode(this.namesObj.titlename,'名称',this.x+10,this.y+15,'blue');
+}
+
+HandleInfoMenu.prototype.show = function(nodedata){
+	layoutBgPool[this.namesObj.titlename].settxt(nodedata.name);
+};
+
+HandleInfoMenu.prototype.hide = function(isvisible){
+	var data = this.closeData;
+	if(this.ntype == NodeTypeClass.menu)
+		data = this;
+	for(var name in data.namesObj){
+		var tmpname = data.namesObj[name];
+		var check = tmpname.indexOf('icon');
+		if(tmpname.indexOf('icon') == 0){
+			iconPool[tmpname].isvisible = isvisible;
+		}else{
+			layoutBgPool[tmpname].isvisible = isvisible;
+		}
+	}
+	if(nowHandleNodeSingle != null){
+		deleteEntity(nowHandleNodeSingle);
+		nowHandleNodeSingle = null;
+	}
+	
+}
+
+

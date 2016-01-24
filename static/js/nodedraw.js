@@ -9,16 +9,16 @@ function drawBg(ctx,bgImg){
 	drawBox(ctx,'img686',-14,19,13,13);
 	drawRect(ctx,currentTileType,-13,20,11,11);
 	
-	drawImg(ctx,'img1237',300+zeroX,258+zeroY);
-	drawImg(ctx,'img208',300+zeroX,318+zeroY);
+	//drawImg(ctx,'img1237',300+zeroX,258+zeroY);
+	//drawImg(ctx,'img208',300+zeroX,318+zeroY);
 	
-	drawImgBottomCenter(ctx,'img2867',-15,18);
+	//drawImgBottomCenter(ctx,'img2867',-15,18);
 	
-	drawImgBottomTile(ctx,'img413',-10,18);
+	//drawImgBottomTile(ctx,'img413',-10,18);
 	
-	drawImgBottomTile(ctx,'img1658',-10,18+6);
+	//drawImgBottomTile(ctx,'img1658',-10,18+6);
 	
-	drawImgBottomCenter(ctx,'img892',-10,18+7);
+	//drawImgBottomCenter(ctx,'img892',-10,18+7);
 }
 
 function drawImgCenter(ctx,name,x,y){
