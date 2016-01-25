@@ -56,8 +56,8 @@ Ext.define('Resort.controller.Main',{
 		initUpdate(1,function(){
 			ctx.clearRect(0,0,stageWidth,stageHeight);
 			//
-			//drawRhombusMap2(ctx,mapWTiles,mapHTiles,'blue','red');
-			drawBg(ctx,'img162bmp');
+			drawRhombusMap2(ctx,mapWTiles,mapHTiles,'blue','red');
+			//drawBg(ctx,'img162bmp');
 			//drawTileMap(ctx,currentTileType,mapWTiles,mapHTiles);
 			updateDraw(ctx);
 			resortclock.update(ctx);
@@ -131,34 +131,41 @@ function panelDrag(ev) {
 		var sceneX = ev.position.x;
 		var sceneY = ev.position.y;
 		var obj = getTilePos(tapx,tapy);
-		
+		var x =0;
+		var y =0;
+		var posx = 0;
+		var posy = 0;
+		var roundAr = null;
 		var posobj = getPixByPosTile(obj.posx,obj.posy);
-		var x = posobj[0] -baseRhombusHeight-baseRhombusWidth;
-		var y = posobj[1] -baseRhombusHeight;
-		var wsize = builddata[currentBuildType];
-		for(var i in wsize){
-			var size = getPngSize(i);
-			if(Math.abs(size.w - baseRhombusWidth) <= 5){
-				x = posobj[0] -baseRhombusHeight;
-				y = posobj[1] -baseRhombusHeight/2;
-			}
-			break;
-		}
-		
+		console.log('posobj:%d:%d',obj.posx,obj.posy);
 		if (ev.type == 'dragstart') {
 			tmpnode = new BuildNode('tmpnode',NodeTypeClass.build,currentBuildType,0,0,0);
 			tmpnode.setPos(x,y);
 			tmpnode.setDepth(y);
-			addEntityNode(tmpnode);
 			canbuild = true;
 		}
 		if (ev.type == 'drag') {
-			var findx = x+15;
-			var findy = y+baseRhombusHeight;
-			var findObj = getTilePos(findx,findy);
-			console.log('Find:%d-%d',findObj.posx,findObj.posy);
-			var roundAr = getRound4ByLeftTop(findObj.posx,findObj.posy);
 			
+			if(currentBuildData.floorarea == 4){
+				x = posobj[0] -baseRhombusWidth-baseRhombusWidth/2;
+				y = posobj[1] -baseRhombusHeight;
+				posx = obj.posx -1;
+				posy = obj.posy -1;
+				roundAr = getRound4ByLeftTop(posx,posy);
+			}else if(currentBuildData.floorarea == 6){
+				x = posobj[0] -baseRhombusWidth;
+				y = posobj[1] -baseRhombusHeight;
+				posx = obj.posx -1;
+				posy = obj.posy;
+				roundAr = getRound6ByLeftTop(posx,posy);
+			}else if(currentBuildData.floorarea == 9){
+				x = posobj[0] -1.5*baseRhombusWidth;
+				y = posobj[1] -1.5*baseRhombusHeight;
+				posx = obj.posx -1;
+				posy = obj.posy -1;
+				roundAr = getRound9ByLeftTop(posx,posy);
+			}
+			console.log('find %d:%d',posx,posy);
 			for(var i=0;i<roundAr.length;i++){
 				var ar = roundAr[i];
 				if(GetPosInBuild(ar[0],ar[1]) != null){
@@ -167,7 +174,6 @@ function panelDrag(ev) {
 					break;
 				}
 			}
-
 			tmpnode.setPos(x,y);
 			tmpnode.setDepth(y);
 		}
@@ -175,13 +181,29 @@ function panelDrag(ev) {
 			delete entitys[tmpnode.id];
 			tmpnode = null;
 			var canbuild = true;
-			var findx = x+15;
-			var findy = y+baseRhombusHeight;
-			var findObj = getTilePos(findx,findy);
-			console.log('buildend:%d-%d',findObj.posx,findObj.posy);
-			var roundAr = getRound4ByLeftTop(findObj.posx,findObj.posy);
-			var exitAr = getExit4ByLeftTop(findObj.posx,findObj.posy);
+			 
+			console.log('buildend:%d:%d',posx,posy);
 			
+			if(currentBuildData.floorarea == 4){
+				x = posobj[0] -baseRhombusWidth-baseRhombusWidth/2;
+				y = posobj[1] -baseRhombusHeight;
+				posx = obj.posx -1;
+				posy = obj.posy -1;
+				roundAr = getRound4ByLeftTop(posx,posy);
+			}else if(currentBuildData.floorarea == 6){
+				x = posobj[0] -baseRhombusWidth;
+				y = posobj[1] -baseRhombusHeight;
+				posx = obj.posx -1;
+				posy = obj.posy;
+				roundAr = getRound6ByLeftTop(posx,posy);
+			}else if(currentBuildData.floorarea == 9){
+				x = posobj[0] -1.5*baseRhombusWidth;
+				y = posobj[1] -1.5*baseRhombusHeight;
+				posx = obj.posx -1;
+				posy = obj.posy -1;
+				roundAr = getRound9ByLeftTop(posx,posy);
+			}
+
 			for(var i=0;i<roundAr.length;i++){
 				var ar = roundAr[i];
 				if(GetPosInBuild(ar[0],ar[1]) != null){
@@ -190,20 +212,7 @@ function panelDrag(ev) {
 					break;
 				}
 			}
-			
-			
-			for(var i=0;i<exitAr.length;i++){
-				canbuild = false;
-				var ar = exitAr[i];
-				if(GetPosInBuild(ar[0],ar[1]) == null){
-					console.log('建筑区域内有通道，可以建造');
-					canbuild = true;
-					break;
-				}
-				console.log('建筑区域内没有通道，不能建造');
-			}
 			if(canbuild){
-				//addEntityNode(new BuildNode('house1',NodeTypeClass.build,currentBuildType,x,y,y,roundAr));
 				for(var i=0;i<roundAr.length-1;i++){
 					var o = roundAr[i];
 					var xpos = o[0];
@@ -220,9 +229,9 @@ function panelDrag(ev) {
 				var xpix = obj[0];
 				var ypix = obj[1]+baseRhombusHeight/2;
 				addEntityNode(new EntityFootNode('work',NodeTypeClass.entityitem,[['img259','img261','img263','img265','img267','img269']],xpix,ypix,ypix-baseRhombusHeight,1230,true,function(data){
-					addEntityNode(new BuildNode('house1',NodeTypeClass.build,currentBuildType,x,y,y,roundAr));
+					var build = new BuildNode('house1',NodeTypeClass.build,currentBuildType,x,y,y,roundAr,posx,posy);
+					build.data = currentBuildData;
 				},{xp:x,yp:y,ar:roundAr}));
-				
 			}
 		}
 	}
@@ -260,26 +269,45 @@ function panelTap(ev){
 		}
 	} 
 	
-	if (currentHandleStatus == handleStatus.normal) {
+	if (currentHandleStatus == handleStatus.normal)  {
 		var tapx = ev.position.x;
 		var tapy = ev.position.y;
 		var obj = getCloseTile(tapx - zeroX, tapy - zeroY);
 		var item = GetPosInBuild(obj[0],obj[1]);
 		if(item != null)
 		   console.log('find:%d-%s',item.id,item.name);
-		   
-		currentHandleNode = getFloorNodeByPos(objtarget.posx,objtarget.posy);
+		
+		
+		currentHandleNode = getBuildNodeByPos(objtarget.posx,objtarget.posy);
 		if(currentHandleNode != null){
-			if(currentHandleNode.ntype == NodeTypeClass.floor){
+			if(currentHandleNode.ntype == NodeTypeClass.build){
 				handleInfoMenu.hide(true);
 				handleInfoMenu.show(currentHandleNode.data);
-				var obj = getPixByPosTile(objtarget.posx,objtarget.posy);
+				var obj = getPixByPosTile(currentHandleNode.floorspace[0][0],currentHandleNode.floorspace[0][1]);
 				var x = obj[0];
 				var y = obj[1];
-				nowHandleNodeSingle = new EntityNode('tmp',NodeTypeClass.entityitem,[['img382','img384','img386']],x-baseRhombusHeight,y-baseRhombusHeight/2,50,130);
-				addEntityNode(nowHandleNodeSingle);
+				if(currentHandleNode.data.floorarea == 4){
+					nowHandleNodeFour = new EntityNode('tmp',NodeTypeClass.entityitem,[['img374','img376','img378']],x-baseRhombusHeight,y-baseRhombusHeight,1000,130);
+					addEntityNode(nowHandleNodeFour);
+				}
+				if(currentHandleNode.data.floorarea == 6){
+					nowHandleNodeSix = new EntityNode('tmp4',NodeTypeClass.entityitem,[['img672','img674','img676']],x-baseRhombusHeight,y-1.5*baseRhombusHeight,1000,130);
+					addEntityNode(nowHandleNodeSix);
+				}
 			}
-				
+		}else{
+			currentHandleNode = getFloorNodeByPos(objtarget.posx,objtarget.posy);
+			if(currentHandleNode != null){
+				if(currentHandleNode.ntype == NodeTypeClass.floor){
+					handleInfoMenu.hide(true);
+					handleInfoMenu.show(currentHandleNode.data);
+					var obj = getPixByPosTile(objtarget.posx,objtarget.posy);
+					var x = obj[0];
+					var y = obj[1];
+					nowHandleNodeSingle= new EntityNode('tmp',NodeTypeClass.entityitem,[['img382','img384','img386']],x-baseRhombusHeight,y-baseRhombusHeight/2,1000,130);
+					addEntityNode(nowHandleNodeSingle);
+				}
+			}
 		}
 	}
 	
@@ -291,15 +319,8 @@ function panelTap(ev){
 			delete floorpool[floorExist.id];
 			var floor = new FloorNode('lawn',currentBuildfloor,objtarget.posx,objtarget.posy,currentBuildData);
 		}
-		
-		/*var obj = getCloseTile(tapx-zeroX,tapy-zeroY);
-		var posobj = getPixelByPos(obj[0],obj[1]);
-		var x = posobj.xpix -baseRhombusHeight;
-		var y = posobj.ypix -baseRhombusHeight/2;
-		addEntityNode(new EntityNode('tile',NodeTypeClass.tile,[[currentBuildTileIconName]],x,y,50,200));*/
 	}
 	if(currentHandleStatus == handleStatus.plant){
-		//if(getNodeByPos(objtarget.posx,objtarget.posy))
 		new PlantNode('test',NodeTypeClass.entityitem,currentBuildType,objtarget.posx,objtarget.posy,false);
 	}
 }
@@ -439,7 +460,7 @@ function layoutGroups(){
 			console.log(this.iconname);
 			currentHandleStatus = handleStatus.dragingbuild;
 			currentBuildData = houseInfos[this.dataname];
-			currentBuildType = buildTypes.houselv1;
+			currentBuildType = currentBuildData.housetype;
 			stopHandleBtn.show();
 			groupBack(this.groupname,lefticonInfos.house.name);
 		});
@@ -506,13 +527,16 @@ function layoutGroups(){
 		var y = (i % 7)*space + 55;
 		var room = new IconNode(obj.iconnodename,obj.url,x,y,iconSize.lefticon,iconSize.lefticon,'yellow','blue',function(name){
 			console.log(this.iconname);
-			currentHandleStatus = handleStatus.tile;
-			currentBuildTileIconName = this.iconname;
+			currentHandleStatus = handleStatus.dragingbuild;
+			currentBuildData = restaurantInfos[this.dataname];
+			currentBuildType = currentBuildData.housetype;
+			stopHandleBtn.show();
 			groupBack(this.groupname,lefticonInfos.restaurant.name);
 		});
 		room.txtdata.push(obj.name);
 		room.txtdata.push("$:"+obj.price.toString());
 		room.groupname = obj.groupname;
+		room.dataname = name;
 		nodearray.push(room);
 		i++
 	}

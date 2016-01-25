@@ -80,8 +80,15 @@ function getFloorNodeByPos(xpos,ypos){
 	return null;
 }
 
+//取得该坐标建筑
 function getBuildNodeByPos(xpos,ypos){
-	//for(var id in )
+	for(var id in entitys){
+		var node = entitys[id];
+		if(node.ntype == NodeTypeClass.build){
+			if(node.IsInFloorspace(xpos,ypos))
+				return node;
+		}
+	}
 }
 
 //根据整数坐标取得菱形中心像素坐标
@@ -150,10 +157,25 @@ function GetPosInBuild(xpos,ypos){
 	return null;
 }
 
-function getRound4ByLeftTop(x,y){
-		return [
-			[x,y],[x+1,y],[x+1,y+1],[x,y+1]
-		]
+function getRound4ByLeftTop(xpos,ypos){
+	return [
+		[xpos,ypos],[xpos+1,ypos],[xpos+1,ypos+1],[xpos,ypos+1]
+	]
+}
+
+function getRound6ByLeftTop(xpos,ypos){
+	return [
+		[xpos,ypos],[xpos+1,ypos],[xpos+2,ypos],
+		[xpos,ypos+1],[xpos+1,ypos+1],[xpos+2,ypos+1]
+	]
+}
+
+function getRound9ByLeftTop(xpos,ypos){
+	return [
+		[xpos,ypos],  [xpos+1,ypos],  [xpos+2,ypos],
+		[xpos,ypos+1],[xpos+1,ypos+1],[xpos+2,ypos+1],
+		[xpos,ypos+2],[xpos+1,ypos+2],[xpos+2,ypos+2]
+	]
 }
 
 function getExit4ByLeftTop(x,y){

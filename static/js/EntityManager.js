@@ -1,4 +1,4 @@
-function BuildNode(name,type,buildtype,x,y,depth,floorspace){
+function BuildNode(name,type,buildtype,x,y,depth,floorspace,posx,posy){
 	this.name = name;
 	this.x = x;
 	this.y = y;
@@ -8,6 +8,8 @@ function BuildNode(name,type,buildtype,x,y,depth,floorspace){
 	this.ntype = type;
 	this.buildtype = buildtype;
 	this.floorspace = floorspace;
+	this.posx = posx;
+	this.posy = posy;
 	addEntityNode(this);
 }
 
@@ -930,7 +932,11 @@ function HandleInfoMenu(name,x,y){
 	closeBtn.closeData = this;
 	var destoryBtn = new ImgNode(this.namesObj.btndestoryname,'destory',this.x+55,this.y+55,52,20,function(){
 		this.closeData.hide(false);
-		delete floorpool[currentHandleNode.id];
+		
+		if(currentHandleNode.ntype == NodeTypeClass.floor)
+			delete floorpool[currentHandleNode.id];
+		if(currentHandleNode.ntype == NodeTypeClass.build)
+			deleteEntity(currentHandleNode.id);
 		currentHandleNode = null;
 	});
 	destoryBtn.closeData = this;
@@ -957,6 +963,14 @@ HandleInfoMenu.prototype.hide = function(isvisible){
 	if(nowHandleNodeSingle != null){
 		deleteEntity(nowHandleNodeSingle);
 		nowHandleNodeSingle = null;
+	}
+	if(nowHandleNodeFour != null){
+		deleteEntity(nowHandleNodeFour);
+		nowHandleNodeFour = null;
+	}
+	if(nowHandleNodeSix != null){
+		deleteEntity(nowHandleNodeSix);
+		nowHandleNodeSix = null;
 	}
 	
 }

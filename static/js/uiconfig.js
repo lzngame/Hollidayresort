@@ -84,12 +84,16 @@ var buildTypes ={
 	houselv1:1001,
 	houselv2:1002,
 	houselv3:1003,
+	houselv4:1004,
+	houselv5:1005,
 };
 
 var builddata = {
 	1001:{'img378':[0,0]},//,'img1563':[0,-25],'img1564':[50,-25],'img1566':[5,-15]},
 	1002:{'img788':[0,0],'img1568':[0,-25],'img1567':[50,-25],'img2275':[5,-15]},
-	1003:{'img1749':  [0,0]}//,'img1555':[0,-25],'img1554':[50,-25],'img1570':[5,-15]},
+	1003:{'img1749':[0,0]},//,'img1555':[0,-25],'img1554':[50,-25],'img1570':[5,-15]},
+	1004:{'img676':[0,0]},
+	1005:{'img664':[0,0]},
 };
 
 var layoutconfig ={
@@ -150,8 +154,8 @@ var plantInfos = {
 	lv8plant:{iconnodename:'lv8_plant_noed',name:'棕榈树',    price:2500,note:'高档的红木地板',url:'img3224',tileurl:'img2868',groupname:'PLANT_GROUP'},
 };
 var houseInfos ={
-	lv1house:{iconnodename:'lv1_house_noed',name:'标准公寓',    price:1500,note:'价格合适的瓷砖地板',url:'img2196',tileurl:'img2196',groupname:'HOUSE_GROUP'},
-	lv2house:{iconnodename:'lv2_house_noed',name:'度假屋',    price:2500,note:'价格合适的瓷砖地板',url:'img2198',tileurl:'img2198',groupname:'HOUSE_GROUP'},
+	lv1house:{iconnodename:'lv1_house_noed',name:'标准公寓',housetype:buildTypes.houselv1,price:1500,note:'价格合适的瓷砖地板',url:'img2196',tileurl:'img2196',groupname:'HOUSE_GROUP',floorarea:4},
+	lv2house:{iconnodename:'lv2_house_noed',name:'度假屋', housetype:buildTypes.houselv4,   price:2500,note:'价格合适的瓷砖地板',url:'img2198',tileurl:'img2198',groupname:'HOUSE_GROUP',floorarea:6},
 };
 var carpetInfos ={
 	lv1carpet:{iconnodename:'lv1_carpet_noed',name:'织花地毯',    price:1500,note:'价格合适的瓷砖地板',url:'img690',tileurl:'img690',groupname:'CARPET_GROUP'},
@@ -171,7 +175,7 @@ var lawnInfos = {
 };
 
 var restaurantInfos = {
-	lv1restaurant:{iconnodename:'lv1_urant_noed',name:'桑拿室',    price:500,note:'价格合适的瓷砖地板',url:'img2200',groupname:'RESTAURANT_GROUP'},
+	lv1restaurant:{iconnodename:'lv1_urant_noed',name:'桑拿室', housetype:buildTypes.houselv5,   price:500,note:'价格合适的瓷砖地板',url:'img2200',tileurl:'img2200',groupname:'RESTAURANT_GROUP',floorarea:9},
 	lv2restaurant:{iconnodename:'lv2_urant_noed',name:'西餐厅',  	  price:500,note:'漂亮的大理石地板',url:'img2222',groupname:'RESTAURANT_GROUP'},
 	lv3restaurant:{iconnodename:'lv3_urant_noed',name:'健身房',      price:500,note:'舒适的木地板',url:'img2202',groupname:'RESTAURANT_GROUP'},
 	lv4restaurant:{iconnodename:'lv4_urant_noed',name:'酒吧',    price:500,note:'高档的红木地板',url:'img2208',groupname:'RESTAURANT_GROUP'},
