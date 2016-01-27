@@ -10,6 +10,8 @@ function BuildNode(name,type,buildtype,x,y,depth,floorspace,posx,posy){
 	this.floorspace = floorspace;
 	this.posx = posx;
 	this.posy = posy;
+	this.lv = 1;
+	this.isturn = false;
 	addEntityNode(this);
 }
 
@@ -19,6 +21,7 @@ BuildNode.prototype.IsInFloorspace = function(xpos,ypos){
 
 BuildNode.prototype.getDrawData = function(){
 	var objdata = { name:this.name,
+					id:this.id,
 					x:this.x,
 					y:this.y,
 					type:this.ntype,
@@ -28,12 +31,16 @@ BuildNode.prototype.getDrawData = function(){
 	return objdata;
 };
 
-BuildNode.prototype.drawself = function(ctx){
-	var data = builddata[this.buildtype];
-	
-	for(var name in  data){
-		var item = data[name];
-		drawImg(ctx,name,this.x+item[0],this.y+item[1]);
+BuildNode.prototype.draw = function(ctx) {
+	var databuild = builddata[this.buildtype];
+	for (var name in databuild) {
+		var item = databuild[name];
+		var x = this.x + item[0];
+		var y = this.y + item[1];
+		if(this.isturn)
+			drawTurnImg(ctx, item[this.lv + 1], x+zeroX, y+zeroY, true);
+		else
+			drawImg(ctx, item[this.lv + 1], x+zeroX, y+zeroY, true);
 	}
 };
 
@@ -41,6 +48,11 @@ BuildNode.prototype.setPos = function(x,y){
 	this.x = x;
 	this.y = y;
 };
+
+BuildNode.prototype.upLv = function(){
+	if(this.lv < 3)
+		this.lv++;
+}
 
 BuildNode.prototype.setDepth = function(zindex){
 	this.depth = zindex;
@@ -68,6 +80,7 @@ function EntityNode(name,type,data,x,y,depth,frameFps){
 	this.frameSumTick = 0;
 	this.currentAction = 0;
 	this.ntype = type;
+	this.isturn = false;
 };
 
 EntityNode.prototype.setVisible = function(isvisible){
@@ -104,10 +117,16 @@ EntityNode.prototype.getFrame = function(){
 	return this.data[this.currentAction][this.frameIndex];
 };
 
+EntityNode.prototype.draw = function(ctx){
+	if(this.isturn)
+		drawTurnImg(ctx,this.getFrame(),this.x+zeroX,this.y+zeroY,true);
+	else
+		drawImg(ctx,this.getFrame(),this.x+zeroX,this.y+zeroY,true);
+};
 
 
 EntityNode.prototype.getDrawData = function(){
-	var objdata = {name:this.getFrame(),x:this.x,y:this.y,type:this.ntype,depth:this.depth};
+	var objdata = {id:this.id,name:this.getFrame(),x:this.x,y:this.y,type:this.ntype,depth:this.depth};
 	return objdata;
 };
 
@@ -140,6 +159,9 @@ EntityFootNode.prototype.lastFrameFun = function(){
 	console.log('最后一帧执行');
 };
 
+EntityFootNode.prototype.draw = function(ctx){
+	drawImg(ctx,this.getFrame(),this.x+zeroX,this.y+zeroY,true);
+};
 
 EntityFootNode.prototype.setPos = function(x,y){
 	this.x = x;
@@ -184,7 +206,7 @@ EntityFootNode.prototype.getDrawData = function(){
 	var size = getPngSize(pngname);
 	var offsetx = this.x-size.w/2;
 	var offsety = this.y-size.h;
-	var objdata = {name:this.getFrame(),x:offsetx,y:offsety,type:this.ntype,depth:this.depth};
+	var objdata = {id:this.id,name:this.getFrame(),x:offsetx,y:offsety,type:this.ntype,depth:this.depth};
 	return objdata;
 };
 
@@ -514,6 +536,7 @@ function IconNode(name,iconname,x,y,w,h,defaultBgclr,activeBgclr,handler,borderC
 	this.active = false;
 	this.txtclr ='black';
 	this.txtdata = [];
+	this.lock = false;
 }
 
 IconNode.prototype.draw = function(ctx){
@@ -529,7 +552,10 @@ IconNode.prototype.draw = function(ctx){
 	ctx.roundRect(this.x,this.y,this.w,this.h,3).stroke();
 	var xp = this.x + (this.w/2 - w/2);
 	var yp = this.y + (this.h/2 - h/2);
-	drawImg(ctx,this.iconname,xp,yp);
+	if(this.lock)
+		drawImg(ctx,'img3142',xp,yp);
+	else
+		drawImg(ctx,this.iconname,xp,yp);
 	if(this.txtdata.length > 0){
 		ctx.fillStyle = this.txtclr;
 		for(var i=0;i<this.txtdata.length;i++){
@@ -615,10 +641,12 @@ function IconInfoNode(name,x,y,w,h,bgicon,txt1,txt2,num,handler){
 }
 
 IconInfoNode.prototype.draw = function(ctx){
-	drawImg(ctx,this.bgicon,this.x,this.y,false,this.w,this.h);
-	drawImg(ctx,this.txt1,this.x+2,this.y+4);
-	drawImg(ctx,this.txt2,this.x+18,this.y+4);
-	drawNumSt(ctx,this.num.toString(),this.x+34,this.y+3);
+	if(this.isvisible){
+		drawImg(ctx,this.bgicon,this.x,this.y,false,this.w,this.h);
+		drawImg(ctx,this.txt1,this.x+2,this.y+4);
+		drawImg(ctx,this.txt2,this.x+18,this.y+4);
+		drawNumSt(ctx,this.num.toString(),this.x+34,this.y+3);
+	}
 };
 
 IconInfoNode.prototype.setPos= function(x,y){
@@ -627,6 +655,45 @@ IconInfoNode.prototype.setPos= function(x,y){
 };
 
 IconInfoNode.prototype.checkTap = function(tapx,tapy){
+	return checkPointInBox(tapx,tapy,this.x,this.y,this.w,this.h);	
+};
+
+
+function IconTxtBtn(name,x,y,w,h,bgicon,text,textclr,handler){
+	this.id = increaseId++;
+	this.name = name;
+	this.bgicon = bgicon;
+	this.x = x;
+	this.y = y;
+	this.w = w;
+	this.h = h;
+	this.ntype = NodeTypeClass.icon;
+	this.text = text;
+	this.textclr = textclr;
+	
+	this.handler = handler;
+	this.depth = 1000;
+	this.isvisible = true;
+	iconPool[this.name] = this;
+}
+
+IconTxtBtn.prototype.draw = function(ctx) {
+	if (this.isvisible) {
+		ctx.textalign = 'center';
+		ctx.textBaseline = 'middle';
+		drawImg(ctx, this.bgicon, this.x, this.y, false, this.w, this.h);
+		var w = ctx.measureText(this.text).width;
+		ctx.fillStyle = this.textclr;
+		ctx.fillText(this.text, this.x + this.w / 2 - w / 2, this.y + this.h / 2);
+	}
+};
+
+IconTxtBtn.prototype.setPos= function(x,y){
+	this.x = x;
+	this.y = y;
+};
+
+IconTxtBtn.prototype.checkTap = function(tapx,tapy){
 	return checkPointInBox(tapx,tapy,this.x,this.y,this.w,this.h);	
 };
 
@@ -873,7 +940,7 @@ StopHandleMenu.prototype.setPos= function(x,y){
 	this.y = y;
 };
 
-function PlantNode(name,type,frames,xpos,ypos,center){
+function PlantNode(name,type,frames,xpos,ypos,center,data){
 	this.name = name;
 	this.isvisible = true;
 	this.id = increaseId++;
@@ -893,17 +960,38 @@ function PlantNode(name,type,frames,xpos,ypos,center){
 		var y = this.y - this.h + baseRhombusHeight/2;
 	else
 		var y = this.y - this.h;
-	var entitynode = new EntityNode(name,type,frames,this.x-this.w/2,y,ypos,330);
-	this.entityid = entitynode.id;
-	addEntityNode(entitynode);
-	
-	buildpool[this.id] = this;
+	this.body = new EntityNode(name,type,frames,this.x-this.w/2,y,ypos,330);
+	this.entityid = this.body.id;
+	addEntityNode(this);
+	this.floorspace = [[xpos,ypos]];
+	this.data = data;
+	this.floorarea = 1;
 }
+
+PlantNode.prototype.draw = function(ctx){
+	this.body.draw(ctx);
+};
 
 
 PlantNode.prototype.setPos = function(x,y){
 	this.x = x;
 	this.y = y;
+};
+
+PlantNode.prototype.IsInFloorspace = function(xpos,ypos){
+	return isInFloorspce(xpos,ypos,this.floorspace);
+};
+
+PlantNode.prototype.getDrawData = function(){
+	var objdata = { name:this.name,
+					id:this.id,
+					x:this.x,
+					y:this.y,
+					type:this.ntype,
+					depth:this.depth,
+					buildtype:this.buildtype
+					};
+	return objdata;
 };
  
 PlantNode.prototype.setDepth = function(zindex){
@@ -921,16 +1009,22 @@ function HandleInfoMenu(name,x,y){
 		bgheadname:name+'_bgheadname',
 		bgrect:name+'_bgrectname',
 		titlename:name+'_titlename',
-		btndestoryname:'icon'+name+'_destoryname'
+		btnupdatename:'icon_'+name+'_updatename',
+		btndestoryname:'icon_'+name+'_destoryname',
+		btnroatename:'icon_'+name+'_roatename',
 	}
 	new ImageNode(this.namesObj.bgheadname,'img3358bmp',this.x,this.y,205,30);
 	var alpha = 'rgba(200,200,200,0.5)';
 	new ShapeRect(this.namesObj.bgrect,alpha,'black',this.x+1,this.y+30,204,100);
+	
+	
+	
 	var closeBtn = new ImgNode(this.namesObj.closename,'img2997',this.x+175,this.y+2,20,20,function(){
 		this.closeData.hide(false);
 	});
 	closeBtn.closeData = this;
-	var destoryBtn = new ImgNode(this.namesObj.btndestoryname,'destory',this.x+55,this.y+55,52,20,function(){
+	
+	var destoryBtn = new IconTxtBtn(this.namesObj.btndestoryname,this.x+10,this.y+55,50,20,'img3048','拆除','white',function(){
 		this.closeData.hide(false);
 		
 		if(currentHandleNode.ntype == NodeTypeClass.floor)
@@ -938,8 +1032,24 @@ function HandleInfoMenu(name,x,y){
 		if(currentHandleNode.ntype == NodeTypeClass.build)
 			deleteEntity(currentHandleNode.id);
 		currentHandleNode = null;
+		new ToastInfo('mytoast','已经拆除此建筑！',-130,100,1500);
 	});
 	destoryBtn.closeData = this;
+	
+	var updateBtn = new IconTxtBtn(this.namesObj.btnupdatename,this.x+70,this.y+55,50,20,'img3044','升级','blue',function(){
+		this.closeData.hide(false);
+		currentHandleNode.upLv();
+		new ToastInfo('mytoast','升级成功！',-130,100,1500);
+	});
+	updateBtn.closeData = this;
+	
+	var roateBtn = new IconTxtBtn(this.namesObj.btnroatename,this.x+130,this.y+55,50,20,'img3044','旋转','blue',function(){
+		this.closeData.hide(false);
+		currentHandleNode.isturn = !currentHandleNode.isturn;
+		new ToastInfo('mytoast',currentHandleNode.name+'旋转了方向',-130,100,800);
+	});
+	roateBtn.closeData = this;
+	
 	var txttitle = new UItextNode(this.namesObj.titlename,'名称',this.x+10,this.y+15,'blue');
 }
 
@@ -972,7 +1082,137 @@ HandleInfoMenu.prototype.hide = function(isvisible){
 		deleteEntity(nowHandleNodeSix);
 		nowHandleNodeSix = null;
 	}
+	if(nowHandleNode9 != null){
+		deleteEntity(nowHandleNode9);
+		nowHandleNode9 = null;
+	}
+	if(nowHandleNode12 != null){
+		deleteEntity(nowHandleNode12);
+		nowHandleNode12 = null;
+	}
+	if(nowHandleNode16 != null){
+		deleteEntity(nowHandleNode16);
+		nowHandleNode16 = null;
+	}
 	
 }
 
+/*
+ * Toast 控件
+ */
+function ToastInfo(name,txt,initx,inity,timeout){
+	this.name = name;
+	this.txt = txt;
+	this.initx = initx;
+	this.inity = inity;
+	this.ntype = NodeTypeClass.menu;
+	this.sumtick = 0;
+	this.timeout = timeout;
+	this.x = initx;
+	this.y = inity;
+	this.w = 140;
+	this.h = 30;
+	this.speed = 10;
+	this.targetx = stageWidth/2 - this.w/2;
+	this.stepOne = false;
+	this.stepTwo = false;
+	layoutBgPool[name] = this;
+}
+
+ToastInfo.prototype.draw = function(ctx){
+	this.update();
+	ctx.fillStyle = 'yellow';
+	ctx.fillRect(this.x,this.y,this.w,this.h);
+	ctx.fillStyle = 'red';
+	ctx.fillText(this.txt,this.x+20,this.y+15);
+};
+
+ToastInfo.prototype.update = function(){
+	if(!this.stepOne && this.x <this.targetx){
+		this.x += this.speed;
+	}
+	if(!this.stepOne && this.x >= this.targetx){
+		this.x = this.targetx;
+		this.stepOne = true;
+	}
+	if(this.stepOne){
+		this.sumtick += bigfourgame.clock.getTick();
+		if(this.sumtick >= this.timeout){
+			this.stepTwo = true;
+		}
+	}
+	if(this.stepTwo){
+		var pseed =  easeFrom(this.x/100);
+		this.x += pseed;
+	}
+	if(this.x > stageWidth){
+		delete layoutBgPool[this.name];
+	}
+};
+
+/*
+ * WindowPanel 控件
+ */
+function WindowPanel(name,x,y,w,h){
+	this.name = name;
+	this.x = x;
+	this.y = y;
+	this.ntype = NodeTypeClass.menu;
+	this.w = w;
+	this.h = h;
+	
+	this.name = name;
+	this.x = x;
+	this.y = y;
+	this.ntype = NodeTypeClass.menu;
+	
+	this.namesObj = {
+		closename:'icon_'+name+'_closename',
+		titleheadname:name+'_bgheadname',
+		bgrect:name+'_bgrectname',
+		titlename:name+'_titlename',
+		btnpageupname:'icon_'+name+'_pageupname',
+		//btnpagedownname:'icon_'+name+'_pagedownname',
+	}
+
+	var alpha = 'rgba(200,200,230,0.8)';
+	new ShapeRect(this.namesObj.bgrect,alpha,'black',this.x,this.y,this.w,this.h);
+	new ImageNode(this.namesObj.titleheadname,'img3879',this.x+this.w/2-75,this.y+4,150,20);
+	var closeBtn = new ImgNode(this.namesObj.closename,'img2997',this.x+this.w-25,this.y+4,20,20,function(){
+		this.closeData.hide(false);
+	});
+	closeBtn.closeData = this;
+	
+	var pageupBtn = new ImgNode(this.namesObj.btnpageupname,'img3528',this.x+125,this.y+this.h-25,20,20,function(){
+		//this.closeData.hide(false);
+		console.log('pageup');
+	});
+	pageupBtn.closeData = this;
+	var txttitle = new UItextNode(this.namesObj.titlename,'商店',this.x+this.w/2-20,this.y+18,'blue');
+}
+
+WindowPanel.prototype.hide = function(isvisible){
+	var data = this.closeData;
+	if(this.ntype == NodeTypeClass.menu)
+		data = this;
+	for(var name in data.namesObj){
+		var tmpname = data.namesObj[name];
+		var check = tmpname.indexOf('icon');
+		if(tmpname.indexOf('icon') == 0){
+			iconPool[tmpname].isvisible = isvisible;
+		}else{
+			layoutBgPool[tmpname].isvisible = isvisible;
+		}
+	}
+};
+
+
+
+function easeFrom(pos) {
+	return Math.pow(pos,4);
+};
+
+function  easeOutCubic(pos){
+    return (Math.pow((pos-1), 3) +1)
+};
 

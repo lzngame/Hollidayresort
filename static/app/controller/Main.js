@@ -56,8 +56,8 @@ Ext.define('Resort.controller.Main',{
 		initUpdate(1,function(){
 			ctx.clearRect(0,0,stageWidth,stageHeight);
 			//
-			drawRhombusMap2(ctx,mapWTiles,mapHTiles,'blue','red');
-			//drawBg(ctx,'img162bmp');
+			//drawRhombusMap2(ctx,mapWTiles,mapHTiles,'blue','red');
+			drawBg(ctx,'img162bmp');
 			//drawTileMap(ctx,currentTileType,mapWTiles,mapHTiles);
 			updateDraw(ctx);
 			resortclock.update(ctx);
@@ -136,8 +136,9 @@ function panelDrag(ev) {
 		var posx = 0;
 		var posy = 0;
 		var roundAr = null;
-		var posobj = getPixByPosTile(obj.posx,obj.posy);
-		console.log('posobj:%d:%d',obj.posx,obj.posy);
+		var dataobj = null;
+		//var posobj = getPixByPosTile(obj.posx,obj.posy);
+		//console.log('posobj:%d:%d',obj.posx,obj.posy);
 		if (ev.type == 'dragstart') {
 			tmpnode = new BuildNode('tmpnode',NodeTypeClass.build,currentBuildType,0,0,0);
 			tmpnode.setPos(x,y);
@@ -145,97 +146,53 @@ function panelDrag(ev) {
 			canbuild = true;
 		}
 		if (ev.type == 'drag') {
-			
-			if(currentBuildData.floorarea == 4){
-				x = posobj[0] -baseRhombusWidth-baseRhombusWidth/2;
-				y = posobj[1] -baseRhombusHeight;
-				posx = obj.posx -1;
-				posy = obj.posy -1;
-				roundAr = getRound4ByLeftTop(posx,posy);
-			}else if(currentBuildData.floorarea == 6){
-				x = posobj[0] -baseRhombusWidth;
-				y = posobj[1] -baseRhombusHeight;
-				posx = obj.posx -1;
-				posy = obj.posy;
-				roundAr = getRound6ByLeftTop(posx,posy);
-			}else if(currentBuildData.floorarea == 9){
-				x = posobj[0] -1.5*baseRhombusWidth;
-				y = posobj[1] -1.5*baseRhombusHeight;
-				posx = obj.posx -1;
-				posy = obj.posy -1;
-				roundAr = getRound9ByLeftTop(posx,posy);
-			}
-			console.log('find %d:%d',posx,posy);
-			for(var i=0;i<roundAr.length;i++){
-				var ar = roundAr[i];
+			dataobj = getOffsetXY(currentBuildData.floorarea,obj.posx,obj.posy);
+			console.log('find %d:%d',dataobj.posx,dataobj.posy);
+			for(var i=0;i<dataobj.roundAr.length;i++){
+				var ar = dataobj.roundAr[i];
 				if(GetPosInBuild(ar[0],ar[1]) != null){
 					console.log('不能建造');
 					canbuild = false;
 					break;
 				}
 			}
-			tmpnode.setPos(x,y);
-			tmpnode.setDepth(y);
+			tmpnode.setPos(dataobj.x,dataobj.y);
+			tmpnode.setDepth(dataobj.y);
 		}
 		if (ev.type == 'dragend') {
 			delete entitys[tmpnode.id];
 			tmpnode = null;
 			var canbuild = true;
-			 
-			console.log('buildend:%d:%d',posx,posy);
+			dataobj = getOffsetXY(currentBuildData.floorarea,obj.posx,obj.posy);
+			console.log('buildend:%d:%d',dataobj.posx,dataobj.posy);
 			
-			if(currentBuildData.floorarea == 4){
-				x = posobj[0] -baseRhombusWidth-baseRhombusWidth/2;
-				y = posobj[1] -baseRhombusHeight;
-				posx = obj.posx -1;
-				posy = obj.posy -1;
-				roundAr = getRound4ByLeftTop(posx,posy);
-			}else if(currentBuildData.floorarea == 6){
-				x = posobj[0] -baseRhombusWidth;
-				y = posobj[1] -baseRhombusHeight;
-				posx = obj.posx -1;
-				posy = obj.posy;
-				roundAr = getRound6ByLeftTop(posx,posy);
-			}else if(currentBuildData.floorarea == 9){
-				x = posobj[0] -1.5*baseRhombusWidth;
-				y = posobj[1] -1.5*baseRhombusHeight;
-				posx = obj.posx -1;
-				posy = obj.posy -1;
-				roundAr = getRound9ByLeftTop(posx,posy);
-			}
-
-			for(var i=0;i<roundAr.length;i++){
-				var ar = roundAr[i];
+			for(var i=0;i<dataobj.roundAr.length;i++){
+				var ar = dataobj.roundAr[i];
 				if(GetPosInBuild(ar[0],ar[1]) != null){
 					console.log('建筑区域内有建筑物，不能建造');
+					new ToastInfo('waringbuild',warntext.build_inarea,-130,100,500);
 					canbuild = false;
 					break;
 				}
 			}
 			if(canbuild){
-				for(var i=0;i<roundAr.length-1;i++){
-					var o = roundAr[i];
-					var xpos = o[0];
-					var ypos = o[1];
-					var obj = getPixByPosTile(xpos,ypos);
-					var xpix = obj[0];
-					var ypix = obj[1]+baseRhombusHeight/2;
-					addEntityNode(new EntityFootNode('work',NodeTypeClass.entityitem,[['img259','img261','img263','img265','img267','img269']],xpix,ypix,ypix,1230,true));
-				}
-				var o = roundAr[3]
+				
+				var o = dataobj.roundAr[0]
 				var xpos = o[0];
 				var ypos = o[1];
 				var obj = getPixByPosTile(xpos,ypos);
 				var xpix = obj[0];
 				var ypix = obj[1]+baseRhombusHeight/2;
 				addEntityNode(new EntityFootNode('work',NodeTypeClass.entityitem,[['img259','img261','img263','img265','img267','img269']],xpix,ypix,ypix-baseRhombusHeight,1230,true,function(data){
-					var build = new BuildNode('house1',NodeTypeClass.build,currentBuildType,x,y,y,roundAr,posx,posy);
+					var build = new BuildNode('house1',NodeTypeClass.build,currentBuildType,dataobj.x,dataobj.y,dataobj.y,dataobj.roundAr,dataobj.posx,dataobj.posy);
 					build.data = currentBuildData;
-				},{xp:x,yp:y,ar:roundAr}));
+				},{xp:x,yp:y,ar:dataobj.roundAr}));
 			}
 		}
 	}
 }
+
+
 
 function panelTap(ev){
 	var tapx = ev.position.x-zeroX;
@@ -244,8 +201,6 @@ function panelTap(ev){
 	var sceneY = ev.position.y;
 	
 	var objtarget = getTilePos(tapx,tapy);
-	
-	
 	
 	for(var name in iconPool){
 		var itemnode = iconPool[name];
@@ -282,17 +237,33 @@ function panelTap(ev){
 		if(currentHandleNode != null){
 			if(currentHandleNode.ntype == NodeTypeClass.build){
 				handleInfoMenu.hide(true);
-				handleInfoMenu.show(currentHandleNode.data);
+ 				handleInfoMenu.show(currentHandleNode.data);
 				var obj = getPixByPosTile(currentHandleNode.floorspace[0][0],currentHandleNode.floorspace[0][1]);
 				var x = obj[0];
 				var y = obj[1];
+				if(currentHandleNode.data.floorarea == 1){
+					nowHandleNodeSingle = new EntityNode('tmp1',NodeTypeClass.entityitem,[['img382','img384','img386']],x-baseRhombusHeight,y-baseRhombusHeight/2,1000,130);
+					addEntityNode(nowHandleNodeSingle);
+				}
 				if(currentHandleNode.data.floorarea == 4){
-					nowHandleNodeFour = new EntityNode('tmp',NodeTypeClass.entityitem,[['img374','img376','img378']],x-baseRhombusHeight,y-baseRhombusHeight,1000,130);
+					nowHandleNodeFour = new EntityNode('tmp4',NodeTypeClass.entityitem,[['img374','img376','img378']],x-baseRhombusHeight,y-baseRhombusHeight,1000,130);
 					addEntityNode(nowHandleNodeFour);
 				}
 				if(currentHandleNode.data.floorarea == 6){
-					nowHandleNodeSix = new EntityNode('tmp4',NodeTypeClass.entityitem,[['img672','img674','img676']],x-baseRhombusHeight,y-1.5*baseRhombusHeight,1000,130);
+					nowHandleNodeSix = new EntityNode('tmp6',NodeTypeClass.entityitem,[['img672','img674','img676']],x-baseRhombusHeight,y-1.5*baseRhombusHeight,1000,130);
 					addEntityNode(nowHandleNodeSix);
+				}
+				if(currentHandleNode.data.floorarea == 9){
+					nowHandleNode9 = new EntityNode('tmp9',NodeTypeClass.entityitem,[['img662','img664','img666']],x-baseRhombusHeight,y-1.5*baseRhombusHeight,1000,130);
+					addEntityNode(nowHandleNode9);
+				}
+				if(currentHandleNode.data.floorarea == 12){
+					nowHandleNode12 = new EntityNode('tmp12',NodeTypeClass.entityitem,[['img652','img654','img656']],x-baseRhombusHeight,y-2*baseRhombusHeight,1000,130);
+					addEntityNode(nowHandleNode12);
+				}
+				if(currentHandleNode.data.floorarea == 16){
+					nowHandleNode16 = new EntityNode('tmp16',NodeTypeClass.entityitem,[['img642','img644','img646']],x-baseRhombusHeight,y-2*baseRhombusHeight,1000,130);
+					addEntityNode(nowHandleNode16);
 				}
 			}
 		}else{
@@ -321,7 +292,13 @@ function panelTap(ev){
 		}
 	}
 	if(currentHandleStatus == handleStatus.plant){
-		new PlantNode('test',NodeTypeClass.entityitem,currentBuildType,objtarget.posx,objtarget.posy,false);
+		var floor = getBuildNodeByPos(objtarget.posx,objtarget.posy);
+		if(floor == null || floor.ntype == NodeTypeClass.floor){
+			new PlantNode('test',NodeTypeClass.build,currentBuildType,objtarget.posx,objtarget.posy,false,currentBuildData);
+		}else{
+			console.log('建筑区域内有建筑物，不能建造');
+			new ToastInfo('waringbuild',warntext.build_inarea,-130,100,500);
+		}
 	}
 }
 
@@ -346,7 +323,8 @@ function LayoutUI(ctx){
 		},'yellow'));
 	addPool(new IconInfoNode('btn3',stageWidth-3*64,23,64,22,'img3044','f18_18','f54_54',8,function(name){
 					console.log(this.iconname);
-					Ext.Msg.alert('请先选择虫族');
+					//Ext.Msg.alert('请先选择虫族');
+					shopMenu.hide(true);
 		},'yellow'));
 		
 		
@@ -361,6 +339,12 @@ function LayoutUI(ctx){
 	}
 	
 	layourHandleInfo();
+	
+	shopMenu = new WindowPanel('testwinpanel',55,100,250,300);
+	shopMenu.hide(false);
+	
+	var t = getPixByPosTile(-6,25);
+	var build = new BuildNode('house1',NodeTypeClass.build,buildTypes.receptioncenter,t[0],t[1]-baseRhombusHeight/2,100,getRound2x8ByLeftTop(-6,26),-6,26);
 }
 var activeLeftIconnode = null;
 
@@ -488,6 +472,7 @@ function layoutGroups(){
 		});
 		carpet.txtdata.push(obj.name+"  $:"+obj.price.toString());
 		carpet.txtdata.push(obj.note);
+		carpet.lock = true;
 		carpet.groupname = obj.groupname;
 		carpet.dataname = name;
 		nodearray.push(carpet);
@@ -546,12 +531,11 @@ function layoutGroups(){
 	i = 0;
 	for(var name in miniroomInfos){
 		var obj = miniroomInfos[name];
-		var miniroom = new IconNode(obj.iconnodename,obj.url,2,i*space+290,iconSize.lefticon,iconSize.lefticon,'yellow','blue',function(name){
+		var miniroom = new IconNode(obj.iconnodename,obj.url,2,i*space+281,iconSize.lefticon,iconSize.lefticon,'yellow','blue',function(name){
 			console.log(this.iconname);
-			currentHandleStatus = handleStatus.plant;
-			var data = miniroomInfos[this.dataname];
-			currentBuildType = data.tileurl;
-			currentBuildData = data;
+			currentHandleStatus = handleStatus.dragingbuild;
+			currentBuildData = miniroomInfos[this.dataname];
+			currentBuildType = currentBuildData.housetype;
 			stopHandleBtn.show();
 			groupBack(this.groupname,lefticonInfos.miniroom.name);
 		});
@@ -562,7 +546,7 @@ function layoutGroups(){
 		nodearray.push(miniroom);
 		i++
 	}
-	addPool(new IconNodeGroup(lefticonInfos.miniroom.groupname,2,285,200,130,'#C0F56E','blue',nodearray,false,iconSize.lefticon+2));
+	addPool(new IconNodeGroup(lefticonInfos.miniroom.groupname,2,276,200,130,'#C0F56E','blue',nodearray,false,iconSize.lefticon+2));
 }
 
 function groupBack(icongroupname,parentname){

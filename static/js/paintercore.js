@@ -5,32 +5,43 @@ function updateDraw(ctx){
 			}
 	
 			for(var id in entitys){
-				var entity = entitys[id];
+				var entity = entitys[id]; 
 				if(entity.isvisible){
 					var dataObj = entity.getDrawData();
-					drawPool.push(dataObj);
+					drawOrderPool.push(dataObj);
 				}
 			}
 			
-			if(drawPool.length > 0)
-				drawPool.sort(orderDepthNode);
-			for(var i=0;i<drawPool.length;i++){
-				var data = drawPool[i];
+			if(drawOrderPool.length > 0)
+				drawOrderPool.sort(orderDepthNode);
+				
+			for(var i=0;i<drawOrderPool.length;i++){
+				var data = drawOrderPool[i];
 
 				data.x = data.x + zeroX;
 				data.y = data.y + zeroY;
+				
+				var entity = entitys[drawOrderPool[i].id];
+				if(entity == null){
+					//debugger;
+					console.log('----------------- warring!------%d',drawOrderPool[i].id);
+				}else{
+					entitys[drawOrderPool[i].id].draw(ctx);
+				}
+				
 					
-				if(data.type == NodeTypeClass.build){
+				/*if(data.type == NodeTypeClass.build){
+					//debugger;
 					var databuild = builddata[data.buildtype];
 					for(var name in  databuild){
 						var item = databuild[name];
 						var x = data.x + item[0];
 						var y = data.y + item[1];
-						drawImg(ctx,name,x,y,true);
+						drawImg(ctx,item[2],x,y,true);
 					}
 				}else{
 					drawImg(ctx,data.name,data.x,data.y,true);
-				}
+				}*/
 			}
 			for(var name in layoutBgPool){
 				var itemnode = layoutBgPool[name];
@@ -45,18 +56,32 @@ function updateDraw(ctx){
 				var iconnode = iconPool[name];
 				iconnode.draw(ctx);
 			}
-			while(drawPool.length >0){
-				drawPool.pop();
+			while(drawOrderPool.length >0){
+				drawOrderPool.pop();
 			}
+			
 		}
 		
 function orderDepthNode(nodeA,nodeB){
-			if(nodeA.depth > nodeB.depth)	
+			/*if(nodeA.depth > nodeB.depth)	
 				return 1;
 			else if(nodeA.depth < nodeB.depth)
 				return -1;
 			else 
-				return 0;
+				return 0;*/
+			if(nodeA.y > nodeB.y){
+				return 1;
+			}else if(nodeA.y < nodeB.y){
+				return -1;
+			}else{
+				if(nodeA.x < nodeB.x){
+					return 1
+				}else if(nodeA.x >nodeB.y){
+					return -1;
+				}else{
+					return 0;
+				}
+			}
 		}
 		
 
@@ -74,6 +99,28 @@ function drawImg(context,name,x,y,border,w,h){
 		height = h;
 	}
 	context.drawImage(img_sencha,infoobj[0],infoobj[1],infoobj[2],infoobj[3],x,y,width,height);
+	if(border)
+		drawPoint(context,x,y,width,height);
+}
+
+function drawTurnImg(context,name,x,y,border,w,h){
+	var infoobj = jsonObj[name];
+	if(infoobj == null){
+		console.log('ErrorNameForDrawImage:%s',name);
+		return;
+	}
+	var width = infoobj[2];
+	var height = infoobj[3];
+	if(w){
+		width = w;
+		height = h;
+	}
+	context.save();
+	context.setTransform(1,0,0,1,0,0);
+	context.translate(x,y);
+	context.scale(-1,1);
+	context.drawImage(img_sencha,infoobj[0],infoobj[1],infoobj[2],infoobj[3],-width,0,width,height);
+	context.restore();
 	if(border)
 		drawPoint(context,x,y,width,height);
 }

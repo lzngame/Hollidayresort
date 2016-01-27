@@ -67,6 +67,49 @@ function getPixByPosTile(xpos,ypos){
 	return [x,y];
 }
 
+function getOffsetXY(floorarea,xpos,ypos) {
+	var x,y,posx,posy,roundAr;
+	var posobj = getPixByPosTile(xpos,ypos);
+	if (floorarea == 1) {
+		x = posobj[0] - baseRhombusWidth / 2;
+		y = posobj[1] - baseRhombusHeight/2;
+		posx = xpos;
+		posy = ypos;
+		roundAr = getRound1ByLeftTop(posx, posy);
+	} else	if (floorarea == 4) {
+		x = posobj[0] - baseRhombusWidth - baseRhombusWidth / 2;
+		y = posobj[1] - baseRhombusHeight;
+		posx = xpos - 1;
+		posy = ypos - 1;
+		roundAr = getRound4ByLeftTop(posx, posy);
+	} else if (floorarea == 6) {
+		x = posobj[0] - baseRhombusWidth;
+		y = posobj[1] - baseRhombusHeight;
+		posx = xpos - 1;
+		posy = ypos;
+		roundAr = getRound6ByLeftTop(posx, posy);
+	} else if (floorarea == 9) {
+		x = posobj[0] - 1.5 * baseRhombusWidth;
+		y = posobj[1] - 1.5 * baseRhombusHeight;
+		posx = xpos - 1;
+		posy = ypos - 1;
+		roundAr = getRound9ByLeftTop(posx, posy);
+	} else if(floorarea == 12){
+		x = posobj[0] - 2*baseRhombusWidth;
+		y = posobj[1] - 2.5*baseRhombusHeight;
+		posx = xpos-1;
+		posy = ypos-2;
+		roundAr = getRound12ByLeftTop(posx, posy);
+	}else if(floorarea == 16){
+		x = posobj[0] - 2*baseRhombusWidth;
+		y = posobj[1] - 2.5*baseRhombusHeight;
+		posx = xpos-1;
+		posy = ypos-2;
+		roundAr = getRound16ByLeftTop(posx, posy);
+	}
+	return {x:x,y:y,posx:posx,posy:posy,roundAr:roundAr};
+}
+
 /*
  * 取得该坐标地板Node
  */
@@ -157,6 +200,12 @@ function GetPosInBuild(xpos,ypos){
 	return null;
 }
 
+function getRound1ByLeftTop(xpos,ypos){
+	return [
+		[xpos,ypos]
+	]
+}
+
 function getRound4ByLeftTop(xpos,ypos){
 	return [
 		[xpos,ypos],[xpos+1,ypos],[xpos+1,ypos+1],[xpos,ypos+1]
@@ -175,6 +224,32 @@ function getRound9ByLeftTop(xpos,ypos){
 		[xpos,ypos],  [xpos+1,ypos],  [xpos+2,ypos],
 		[xpos,ypos+1],[xpos+1,ypos+1],[xpos+2,ypos+1],
 		[xpos,ypos+2],[xpos+1,ypos+2],[xpos+2,ypos+2]
+	]
+}
+
+function getRound12ByLeftTop(xpos,ypos){
+	return [
+		[xpos,ypos],  [xpos+1,ypos],  [xpos+2,ypos],  [xpos+3,ypos],
+		[xpos,ypos+1],[xpos+1,ypos+1],[xpos+2,ypos+1],[xpos+3,ypos+1],
+		[xpos,ypos+2],[xpos+1,ypos+2],[xpos+2,ypos+2],[xpos+3,ypos+2]
+	]
+}
+
+function getRound16ByLeftTop(xpos,ypos){
+	return [
+		[xpos,ypos],  [xpos+1,ypos],  [xpos+2,ypos],  [xpos+3,ypos],
+		[xpos,ypos+1],[xpos+1,ypos+1],[xpos+2,ypos+1],[xpos+3,ypos+1],
+		[xpos,ypos+2],[xpos+1,ypos+2],[xpos+2,ypos+2],[xpos+3,ypos+2],
+		[xpos,ypos+3],[xpos+1,ypos+3],[xpos+2,ypos+3],[xpos+3,ypos+3]
+	]
+}
+
+function getRound2x8ByLeftTop(xpos,ypos){
+	return [
+		[xpos,ypos],  [xpos+1,ypos], 
+		[xpos,ypos+1],[xpos+1,ypos+1],
+		[xpos,ypos+2],[xpos+1,ypos+2],
+		[xpos,ypos+3],[xpos+1,ypos+3],
 	]
 }
 
