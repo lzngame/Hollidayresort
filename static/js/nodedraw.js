@@ -5,9 +5,9 @@ function drawBg(ctx,bgImg){
 			drawImg(ctx,bgImg,i*size.w+zeroX,j*size.h+zeroY);
 		}
 	}
-	drawBox(ctx,'img686',-15,18,15,15);
-	drawBox(ctx,'img686',-14,19,13,13);
-	drawRect(ctx,currentTileType,-13,20,11,11);
+	drawBox(ctx,'img413',mapInitPosx-1,mapInitPosy-1,mapLvWidth+2,mapLvWidth+2);
+	drawBox(ctx,'img686',mapInitPosx-2,mapInitPosy-2,mapLvWidth+4,mapLvWidth+4);
+	drawRect(ctx,currentTileType,mapInitPosx,mapInitPosy,mapLvWidth,mapLvWidth);
 	
 	//drawImg(ctx,'img1237',300+zeroX,258+zeroY);
 	//drawImg(ctx,'img208',300+zeroX,318+zeroY);
@@ -58,6 +58,29 @@ function drawBox(ctx,name,x1,y1,w,h){
 	drawLine(ctx,name,x1+w-1,y1+h-1,h,Direct.up);
 }
 
+function drawBackwall(ctx,name,x,y,w,h){
+	ctx.globalAlpha = 1;
+	drawLine2(ctx,'img5',mapInitPosx+mapLvWidth,mapInitPosy-1,mapLvWidth+2,Direct.left);
+	drawLine2(ctx,'img5',mapInitPosx+mapLvWidth,mapInitPosy,mapLvWidth,Direct.down);
+	
+	ctx.globalAlpha = 1;
+}
+
+function drawFrontwall(ctx,name,x,y,w,h){
+	ctx.globalAlpha = 1;
+	//drawLine2(ctx,'img5',x,y,h,Direct.down);
+	//drawLine2(ctx,'img5',x+w,y+h,4,Direct.left);
+	//drawLine2(ctx,'img5',x+4,y+h,4,Direct.left);
+	var doorwidth = 7;
+	var wallwidth = (mapLvWidth+2-doorwidth)/2;
+	drawLine2(ctx,'img5',mapInitPosx-1,mapInitPosy,mapLvWidth,Direct.down);
+	drawLine2(ctx,'img5',mapInitPosx+mapLvWidth,mapInitPosy+mapLvWidth,wallwidth,Direct.left);
+	drawLine2(ctx,'img5',mapInitPosx+mapLvWidth-doorwidth-wallwidth,mapInitPosy+mapLvWidth,wallwidth,Direct.left);
+	
+	
+	ctx.globalAlpha = 1;
+}
+
 function drawLine(ctx,name,x1,y1,wall_length,direct){
 	switch(direct){
 		case Direct.right:
@@ -86,6 +109,43 @@ function drawLine(ctx,name,x1,y1,wall_length,direct){
 			break;
 	}
 }
+
+function drawLine2(ctx,name,x1,y1,wall_length,direct){
+	switch(direct){
+		case Direct.right:
+			for(var x=x1;x<x1+wall_length;x++){
+				var ar = getPixByPosTile(x,y1);
+				drawImgToBottomTile(ctx,name,ar[0]+zeroX,ar[1]+zeroY,true);
+			}
+			break;
+		case Direct.left:
+			for(var x=x1;x>x1-wall_length;x--){
+				var ar = getPixByPosTile(x,y1);
+				drawImgToBottomTile(ctx,name,ar[0]+zeroX,ar[1]+zeroY,true);
+			}
+			break;
+		case Direct.down:
+			for(var y=y1;y<y1+wall_length;y++){
+				var ar = getPixByPosTile(x1,y);
+				drawImgToBottomTile(ctx,name,ar[0]+zeroX,ar[1]+zeroY,true);
+			}
+			break;
+		case Direct.up:
+			for(var y=y1;y>y1-wall_length;y--){
+				var ar = getPixByPosTile(x1,y);
+				drawImgToBottomTile(ctx,name,ar[0]+zeroX,ar[1]+zeroY,true);
+			}
+			break;
+	}
+}
+
+function drawImgToBottomTile(ctx,name,x,y){
+	var size = getPngSize(name);
+	var dy = y -size.h + baseRhombusHeight/2;
+	var dx = x - size.w/2;
+	drawImg(ctx,name,dx,dy);
+}
+
 
 //绘制左边的菜单
 function drawLeftMenu(ctx){

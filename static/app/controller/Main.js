@@ -301,13 +301,8 @@ function panelTap(ev){
 		}
 	}
 }
-
+var testman = null;
 function LayoutUI(ctx){
-	addPool(new IconNode('Head','img300',0,0,layoutconfig.headsize,layoutconfig.headsize,layoutconfig.headbgclr,layoutconfig.headborderclr,function(name){
-					console.log(this.iconname);
-					layoutBgPool['lvstar'].setLv(Math.round(Math.random()*10));
-					layoutBgPool['numnode'].setTxt(Math.floor(Math.random()*10000).toString());
-		},layoutconfig.headborderclr));
 	var imgbg   = new ImageNode('moneybg','img3697',layoutconfig.headsize+1,1,stageWidth-layoutconfig.headsize,22);
 	var imgnode = new ImageNode('moneyicon','img302',layoutconfig.headsize+3,5,layoutconfig.moneyiconsize,layoutconfig.moneyiconsize);
 	var numnode = new PngNumNode('numnode','0.1+2--3:456789',layoutconfig.headsize+layoutconfig.moneyiconsize+5,5);
@@ -316,20 +311,24 @@ function LayoutUI(ctx){
 		
 	addPool(new IconInfoNode('btn1',stageWidth-64,23,64,22,'img3044','f18_18','f54_54',120,function(name){
 					console.log(this.iconname);
+					testman.setDirect(Direct.left);
 		},'yellow'));
 	addPool(new IconInfoNode('btn2',stageWidth-2*64,23,64,22,'img3044','f18_18','f54_54',50,function(name){
 					console.log(this.iconname);
-					new ShowInfoNode('tmpshowinf',100,100,100,150);
+					//new ShowInfoNode('tmpshowinf',100,100,100,150);
+					testman.setDirect(Direct.right);
 		},'yellow'));
 	addPool(new IconInfoNode('btn3',stageWidth-3*64,23,64,22,'img3044','f18_18','f54_54',8,function(name){
 					console.log(this.iconname);
 					//Ext.Msg.alert('请先选择虫族');
-					shopMenu.hide(true);
+					//shopMenu.hide(true);
+					testman.setDirect(Direct.up);
 		},'yellow'));
 		
 		
 	addPool(new IconNode('Head','img300',0,0,50,50,'yellow','blue',function(name){
 		console.log(this.iconname);
+		testman.setDirect(Direct.down);
 		layoutBgPool['lvstar'].setLv(Math.round(Math.random()*10));
 		layoutBgPool['numnode'].setTxt(Math.floor(Math.random()*10000).toString());
 		},'red'));
@@ -343,9 +342,12 @@ function LayoutUI(ctx){
 	shopMenu = new WindowPanel('testwinpanel',55,100,250,300);
 	shopMenu.hide(false);
 	
-	var t = getPixByPosTile(-6,25);
-	var build = new BuildNode('house1',NodeTypeClass.build,buildTypes.receptioncenter,t[0],t[1]-baseRhombusHeight/2,100,getRound2x8ByLeftTop(-6,26),-6,26);
+	testman = new ManNode('testman',[['img35','img37','img39'],['img42','img44','img46'],
+									 ['img924'],['img932']
+									 ],-9,30);
+	addEntityNode(testman);
 }
+
 var activeLeftIconnode = null;
 
 function layoutBottomTxtinfo(){

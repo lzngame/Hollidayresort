@@ -3,6 +3,7 @@ function updateDraw(ctx){
 				var floor = floorpool[id];
 				floor.draw(ctx);
 			}
+			drawBackwall(ctx,'img5',mapInitPosx-1,mapInitPosy-1,mapLvWidth+1,mapLvWidth+1);
 	
 			for(var id in entitys){
 				var entity = entitys[id]; 
@@ -29,20 +30,10 @@ function updateDraw(ctx){
 					entitys[drawOrderPool[i].id].draw(ctx);
 				}
 				
-					
-				/*if(data.type == NodeTypeClass.build){
-					//debugger;
-					var databuild = builddata[data.buildtype];
-					for(var name in  databuild){
-						var item = databuild[name];
-						var x = data.x + item[0];
-						var y = data.y + item[1];
-						drawImg(ctx,item[2],x,y,true);
-					}
-				}else{
-					drawImg(ctx,data.name,data.x,data.y,true);
-				}*/
 			}
+			
+			drawFrontwall(ctx,'img5',mapInitPosx-1,mapInitPosy-1,mapLvWidth+1,mapLvWidth+1);
+			
 			for(var name in layoutBgPool){
 				var itemnode = layoutBgPool[name];
 				itemnode.draw(ctx);

@@ -283,3 +283,11 @@ function isInRhombus4(x,y){
 	}
 	return re;
 }
+
+function easeFrom(pos) {
+	return Math.pow(pos,4);
+};
+
+function  easeOutCubic(pos){
+    return (Math.pow((pos-1), 3) +1)
+};

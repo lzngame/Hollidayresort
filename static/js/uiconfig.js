@@ -20,6 +20,10 @@ var zeroY = 0;
 var mapWTiles = 40;
 var mapHTiles = 40;
 
+var mapInitPosx = -15;
+var mapInitPosy = 18;
+var mapLvWidth = 15;
+
 var rightEdge = 0;
 var bottomEdge = 0;
 
@@ -290,5 +294,17 @@ var currentHandleNode = null;
  * 提示信息
  */
 var warntext ={
-	build_inarea:'建筑区域内有建筑物，不能建造'
+	build_inarea:'建筑区域内有建筑物，不能建造',
+	build_destory:'已经拆除',
+	build_rotate:'旋转方向',
+	build_success:'升级成功',
 };
+/*
+ * 按钮文字
+ */
+var buttontextName ={
+	handle_rotate:'旋转',
+	handle_destory:'拆除',
+	handle_uplv:'升级',
+	handle_title:'名称：',
+}

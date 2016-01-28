@@ -13,6 +13,11 @@ function BuildNode(name,type,buildtype,x,y,depth,floorspace,posx,posy){
 	this.lv = 1;
 	this.isturn = false;
 	addEntityNode(this);
+	this.alpha = 1;
+}
+
+BuildNode.prototype.setAlpha = function(a){
+	this.alpha = a;
 }
 
 BuildNode.prototype.IsInFloorspace = function(xpos,ypos){
@@ -37,10 +42,12 @@ BuildNode.prototype.draw = function(ctx) {
 		var item = databuild[name];
 		var x = this.x + item[0];
 		var y = this.y + item[1];
+		ctx.globalAlpha = this.alpha;
 		if(this.isturn)
-			drawTurnImg(ctx, item[this.lv + 1], x+zeroX, y+zeroY, true);
+			drawTurnImg(ctx, item[this.lv + 1], x+zeroX, y+zeroY);
 		else
-			drawImg(ctx, item[this.lv + 1], x+zeroX, y+zeroY, true);
+			drawImg(ctx, item[this.lv + 1], x+zeroX, y+zeroY);
+		ctx.globalAlpha = 1;
 	}
 };
 
@@ -119,9 +126,9 @@ EntityNode.prototype.getFrame = function(){
 
 EntityNode.prototype.draw = function(ctx){
 	if(this.isturn)
-		drawTurnImg(ctx,this.getFrame(),this.x+zeroX,this.y+zeroY,true);
+		drawTurnImg(ctx,this.getFrame(),this.x+zeroX,this.y+zeroY);
 	else
-		drawImg(ctx,this.getFrame(),this.x+zeroX,this.y+zeroY,true);
+		drawImg(ctx,this.getFrame(),this.x+zeroX,this.y+zeroY);
 };
 
 
@@ -473,7 +480,10 @@ IconNodeGroup.prototype.draw = function(ctx) {
 
 
 IconNodeGroup.prototype.checkTap = function(tapx,tapy){
-	return checkPointInBox(tapx,tapy,this.x,this.y,this.w,this.h);	
+	if(this.isvisible)
+		return checkPointInBox(tapx,tapy,this.x,this.y,this.w,this.h);	
+	else
+		return  false;
 };
 
 IconNodeGroup.prototype.changeswipe = function(){
@@ -570,7 +580,10 @@ IconNode.prototype.setPos= function(x,y){
 };
 
 IconNode.prototype.checkTap = function(tapx,tapy){
-	return checkPointInBox(tapx,tapy,this.x,this.y,this.w,this.h);	
+	if(this.isvisible)
+		return checkPointInBox(tapx,tapy,this.x,this.y,this.w,this.h);	
+	else
+		return false;
 };
 
 IconNode.prototype.getDrawData = function(){
@@ -694,6 +707,8 @@ IconTxtBtn.prototype.setPos= function(x,y){
 };
 
 IconTxtBtn.prototype.checkTap = function(tapx,tapy){
+	if(!this.isvisible)
+		return false;
 	return checkPointInBox(tapx,tapy,this.x,this.y,this.w,this.h);	
 };
 
@@ -1024,33 +1039,33 @@ function HandleInfoMenu(name,x,y){
 	});
 	closeBtn.closeData = this;
 	
-	var destoryBtn = new IconTxtBtn(this.namesObj.btndestoryname,this.x+10,this.y+55,50,20,'img3048','拆除','white',function(){
+	var destoryBtn = new IconTxtBtn(this.namesObj.btndestoryname,this.x+10,this.y+55,50,20,'img3048',buttontextName.handle_destory,'white',function(){
 		this.closeData.hide(false);
 		
 		if(currentHandleNode.ntype == NodeTypeClass.floor)
 			delete floorpool[currentHandleNode.id];
 		if(currentHandleNode.ntype == NodeTypeClass.build)
 			deleteEntity(currentHandleNode.id);
+		new ToastInfo('mytoast',currentHandleNode.data.name+warntext.build_destory,-130,100,1500);
 		currentHandleNode = null;
-		new ToastInfo('mytoast','已经拆除此建筑！',-130,100,1500);
 	});
 	destoryBtn.closeData = this;
 	
-	var updateBtn = new IconTxtBtn(this.namesObj.btnupdatename,this.x+70,this.y+55,50,20,'img3044','升级','blue',function(){
+	var updateBtn = new IconTxtBtn(this.namesObj.btnupdatename,this.x+70,this.y+55,50,20,'img3044',buttontextName.handle_uplv,'blue',function(){
 		this.closeData.hide(false);
 		currentHandleNode.upLv();
-		new ToastInfo('mytoast','升级成功！',-130,100,1500);
+		new ToastInfo('mytoast',currentHandleNode.data.name+warntext.build_success,-130,100,1500);
 	});
 	updateBtn.closeData = this;
 	
-	var roateBtn = new IconTxtBtn(this.namesObj.btnroatename,this.x+130,this.y+55,50,20,'img3044','旋转','blue',function(){
+	var roateBtn = new IconTxtBtn(this.namesObj.btnroatename,this.x+130,this.y+55,50,20,'img3044',buttontextName.handle_rotate,'blue',function(){
 		this.closeData.hide(false);
 		currentHandleNode.isturn = !currentHandleNode.isturn;
-		new ToastInfo('mytoast',currentHandleNode.name+'旋转了方向',-130,100,800);
+		new ToastInfo('mytoast',currentHandleNode.data.name+warntext.build_rotate,-130,100,800);
 	});
 	roateBtn.closeData = this;
 	
-	var txttitle = new UItextNode(this.namesObj.titlename,'名称',this.x+10,this.y+15,'blue');
+	var txttitle = new UItextNode(this.namesObj.titlename,buttontextName.handle_title,this.x+10,this.y+15,'blue');
 }
 
 HandleInfoMenu.prototype.show = function(nodedata){
@@ -1207,12 +1222,113 @@ WindowPanel.prototype.hide = function(isvisible){
 };
 
 
-
-function easeFrom(pos) {
-	return Math.pow(pos,4);
+function ManNode(name,data,xpos,ypos){
+	this.isvisible = true;
+	this.xpos = xpos;
+	this.ypos = ypos;
+	this.name = name;
+	this.data = data;
+	this.id = increaseId ++;
+	this.frameIndex = 0;
+	this.frameSumTick = 0;
+	this.currentAction = 0;
+	this.isturn = true;
+	this.currentAction = 0;
+	this.frameFps = 200;
+	this.direct = Direct.down;
+	this.x = getPixByPosTile(xpos,ypos)[0];
+	this.y = getPixByPosTile(xpos,ypos)[1];
+	this.speed = 0.1;
 };
 
-function  easeOutCubic(pos){
-    return (Math.pow((pos-1), 3) +1)
+ManNode.prototype.setDirect = function(direct){
+	this.direct = direct;
+	switch(this.direct){
+		case Direct.down:
+			this.currentAction = 0;
+			this.isturn = false;
+			break;
+		case Direct.up:
+			this.currentAction = 1;
+			this.isturn = false;
+			break;
+		case Direct.left:
+			this.currentAction = 0;
+			this.isturn = true;
+			break;
+		case Direct.right:
+			this.currentAction = 1;
+			this.isturn = true;
+			break;
+	}
+	console.log(this.direct);
+}
+
+ManNode.prototype.update = function(){
+	switch(this.direct){
+		case Direct.up:
+			this.x -= 2*this.speed;
+			this.y -= this.speed;
+			break;
+		case Direct.down:
+			this.x += 2*this.speed;
+			this.y += this.speed;
+			break;
+		case Direct.right:
+			this.x += 2*this.speed;
+			this.y -= this.speed;
+			break;
+		case Direct.left:
+			this.x -= 2*this.speed;
+			this.y += this.speed;
+			break;
+	}
 };
 
+ManNode.prototype.setVisible = function(isvisible){
+	this.isvisible = isvisible;
+};
+
+
+ManNode.prototype.setPos = function(x,y){
+	this.x = x;
+	this.y = y;
+};
+
+EntityNode.prototype.setDepth = function(depth){
+	this.depth = depth;
+};
+
+
+ManNode.prototype.getFrame = function(){
+	if(this.data[0].length == 1){
+		var obj = this.data[0];
+		return obj[0];
+	}
+		
+	if(this.frameSumTick > this.frameFps){
+		this.frameSumTick = 0;
+		this.frameIndex++;
+	}else{
+		this.frameSumTick += bigfourgame.clock.getTick();
+	}
+	if(this.frameIndex >(this.data[this.currentAction].length -1)){
+		this.frameIndex = 0;
+	}
+	
+	return this.data[this.currentAction][this.frameIndex];
+};
+
+ManNode.prototype.draw = function(ctx){
+	this.update();
+	if(this.isturn)
+		drawTurnImg(ctx,this.getFrame(),this.x+zeroX-7,this.y+zeroY-22,true);
+	else
+		drawImg(ctx,this.getFrame(),this.x+zeroX-7,this.y+zeroY-22,true);
+};
+
+
+ManNode.prototype.getDrawData = function(){
+	var objdata = {id:this.id,name:this.getFrame(),x:this.x,y:this.y};
+	return objdata;
+};
