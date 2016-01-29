@@ -14,6 +14,8 @@ function BuildNode(name,type,buildtype,x,y,depth,floorspace,posx,posy){
 	this.isturn = false;
 	addEntityNode(this);
 	this.alpha = 1;
+	this.waiter = null;
+	this.furnitiure = null;
 }
 
 BuildNode.prototype.setAlpha = function(a){
@@ -48,6 +50,10 @@ BuildNode.prototype.draw = function(ctx) {
 		else
 			drawImg(ctx, item[this.lv + 1], x+zeroX, y+zeroY);
 		ctx.globalAlpha = 1;
+	}
+	if(this.waiter != null){
+		this.waiter.draw(ctx);
+		this.furnitiure.draw(ctx);
 	}
 };
 

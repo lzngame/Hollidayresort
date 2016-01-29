@@ -186,6 +186,7 @@ function panelDrag(ev) {
 				addEntityNode(new EntityFootNode('work',NodeTypeClass.entityitem,[['img259','img261','img263','img265','img267','img269']],xpix,ypix,ypix-baseRhombusHeight,1230,true,function(data){
 					var build = new BuildNode('house1',NodeTypeClass.build,currentBuildType,dataobj.x,dataobj.y,dataobj.y,dataobj.roundAr,dataobj.posx,dataobj.posy);
 					build.data = currentBuildData;
+					addWaiter(currentBuildData.housetype,build);
 				},{xp:x,yp:y,ar:dataobj.roundAr}));
 			}
 		}
@@ -342,10 +343,10 @@ function LayoutUI(ctx){
 	shopMenu = new WindowPanel('testwinpanel',55,100,250,300);
 	shopMenu.hide(false);
 	
-	testman = new ManNode('testman',[['img35','img37','img39'],['img42','img44','img46'],
-									 ['img924'],['img932']
-									 ],-9,30);
-	addEntityNode(testman);
+	//testman = new ManNode('testman',[['img35','img37','img39'],['img42','img44','img46'],
+	//								 ['img924'],['img932']
+	//								 ],-9,30);
+	//addEntityNode(testman);
 }
 
 var activeLeftIconnode = null;
@@ -510,8 +511,8 @@ function layoutGroups(){
 	i = 0;
 	for(var name in restaurantInfos){
 		var obj = restaurantInfos[name];
-		var x = Math.floor(i/7)*90 +2;
-		var y = (i % 7)*space + 55;
+		var x = Math.floor(i/6)*90 +2;
+		var y = (i % 6)*space + 55;
 		var room = new IconNode(obj.iconnodename,obj.url,x,y,iconSize.lefticon,iconSize.lefticon,'yellow','blue',function(name){
 			console.log(this.iconname);
 			currentHandleStatus = handleStatus.dragingbuild;
@@ -527,7 +528,7 @@ function layoutGroups(){
 		nodearray.push(room);
 		i++
 	}
-	addPool(new IconNodeGroup(lefticonInfos.restaurant.groupname,2,50,230,310,'#C0F56E','blue',nodearray,false,iconSize.lefticon+2));
+	addPool(new IconNodeGroup(lefticonInfos.restaurant.groupname,2,50,230,270,'#C0F56E','blue',nodearray,false,iconSize.lefticon+2));
 
 	nodearray = [];
 	i = 0;
@@ -557,6 +558,15 @@ function groupBack(icongroupname,parentname){
 	var parentIcon = iconPool[parentname];
 	parentIcon.active = false;
 	activeLeftIconnode = null;
+}
+
+function addWaiter(buildtype,build){ 
+	if(buildtype == buildTypes.bar){
+		var waiter = new EntityNode('barwaiter','waiter',[['img2326','img2328']],build.x+30,build.y-5,50,200);
+		build.waiter = waiter;
+		var tesk = new EntityNode('bartesk','tesk','img2412',build.x+15,build.y+2,50,200);
+		build.furnitiure = tesk;
+	}
 }
 
 

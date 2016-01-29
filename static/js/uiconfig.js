@@ -87,14 +87,20 @@ var IconNameTxts ={
 var buildTypes ={
 	cottage:1001,    //单间
 	lodge:1002,      //草屋
-	//houselv2:1002,
-	houselv3:1003,
-	houselv4:1004,
-	houselv5:1005,
-	houselv6:1006,
-	houselv7:1007,
+	sauna:1003,      //桑拿
+	bar:1004,        //酒吧
+	westrestaurant:1005,//西餐厅
+	fitness:1006,    //健身房
+	gamezone:1007,	 //游戏中心
+	chinarestaurant:1008,//中餐厅
+	japanrestaurant:1009,//寿司店
+	spa:1010,//spa
+	medical:1011,//医疗中心
+	market:1012,//超市
+	swimmingpool:1013,//泳池
+	golfyard:1014,//高尔夫球场
 	
-	receptioncenter:1008,
+	receptioncenter:1108,
 	
 	roomMiniIcecream:2001,
 	roomMiniHotdog:2002,
@@ -125,17 +131,83 @@ var builddata = {
 		rightwall:[75,-25,'img1554','img1554','img1554'],
 		furniture:[0,-12,'img1547','img1553','img1558']
 	},
-	//1002:{'img788':[0,0],'img1568':[0,-25],'img1567':[50,-25],'img2275':[5,-15]},
-	1003:{'img1749':[0,0]},//,'img1555':[0,-25],'img1554':[50,-25],'img1570':[5,-15]},
-	1004:{'img676':[0,0]},
-	1005:{'img664':[0,0]},
-	1006:{'img652':[0,0]},
-	1007:{'img646':[0,0]},
+	1003:{    //sauna
+		floor:[0,0,'img835','img804','img807'],
+		leftwall:[0,-20,'img1694','img1694','img1694'],
+		rightwall:[47,-20,'img1693','img1693','img1693'],
+		furniture1:[0,-11,'img1692','img1692','img1692'],
+		furniture2:[35,12,'img831','img831','img831']
+	},
+	1004:{    //bar
+		floor:[0,0,'img809','img819','img821'],
+		leftwall:[0,-25,'img1653','img1592','img1656'],
+		rightwall:[47,-24,'img1652','img1591','img1655'],
+		furniture:[5,-15,'img1651','img1651','img1651'],
+	},
+	1005:{    //westrestaurant
+		floor:[0,0,'img811','img829','img825'],
+		leftwall:[0,-25,'img1641','img1641','img1641'],
+		rightwall:[47,-24,'img1640','img1640','img1640'],
+		furniture1:[70,2,'img2368','img2368','img2368'],
+		furniture2:[50,7,'img2371','img2371','img2371'],
+		furniture3:[45,15,'img2370','img2370','img2370'],
+	},
+	1006:{    //fitness
+		floor:[0,0,'img819','img766','img768'],
+		leftwall:[0,-22,'img1715','img1715','img1715'],
+		rightwall:[47,-23,'img1714','img1714','img1714'],
+		furniture1:[5,0,'img1713','img1713','img1713'],
+		furniture2:[47,-6,'img1712','img1713','img1713'],
+		furniture3:[67,5,'img1712','img1713','img1713'],
+	},
+	1007:{    //gamezone
+		floor:[0,0,'img784','img788','img790'],
+		leftwall:[0,-25,'img1586','img1586','img1586'],
+		rightwall:[47,-24,'img1585','img1585','img1585'],
+		furniture:[5,-13,'img2263','img2265','img2270'],
+	},
+	1008:{    //chinarestaurant
+		floor:[0,0,'img813','img815','img815'],
+		leftwall:[0,-25,'img1555','img1555','img1555'],
+		rightwall:[47,-24,'img1554','img1554','img1554'],
+		furniture1:[70,2,'img2310','img2310','img2310'],
+		furniture2:[54,9,'img2305','img2305','img2305'],
+		furniture3:[49,17,'img2308','img2308','img2308'],
+	},
+	1009:{    //japanrestaurant
+		floor:[0,0,'img804','img807','img807'],
+		leftwall:[0,-25,'img1626','img1626','img1626'],
+		rightwall:[47,-24,'img1627','img1627','img1627'],
+		furniture1:[5,-5,'img2344','img2344','img2344'],
+		furniture2:[35,5,'img2353','img2353','img2353'],
+	},
+	1010:{    //sap
+		floor:[0,0,'img786','img786','img786'],
+		leftwall:[0,-25,'img1703','img1703','img1703'],
+		rightwall:[47,-24,'img1720','img1720','img1720'],
+		furniture:[25,-5,'img2718','img2718','img2718'],
+	},
 	
-	1008:{
-		floor:[0,0,'img285','img760','img762'],
-		leftwall:[0,-24,'img283','img283','img283'],
-		rightwall:[48,-24,'img282','img282','img282'],
+	1011:{  //medical
+		floor:[0,0,'img823','img825','img829'],
+		leftwall:[0,-24,'img1682','img1682','img1682'],
+		rightwall:[70,-23,'img1681','img1681','img1681'],
+		furniture:[44,-12,'img1679','img1679','img1679'],
+	},
+	1012:{  //market
+		floor:[0,0,'img825','img829','img829'],
+		leftwall:[0,-24,'img1671','img1671','img1671'],
+		rightwall:[70,-25,'img1670','img1670','img1670'],
+		furniture:[10,-10,'img1669','img1673','img1677'],
+	},
+	1013:{  //swimmingpool
+		floor:[0,0,'img797','img799','img801'],
+		leftwall:[0,-7,'img1614','img1614','img1614'],
+		rightwall:[100,-10,'img1615','img1615','img1615'],
+		furniture:[10,-20,'img1613','img1617','img1621'],
+	},
+	1014:{  //golfyard
+		floor:[0,0,'img774','img776','img762'],
 	},
 	
 	2001:{icecream:[7,-45,'img1603']},//icecream
@@ -231,20 +303,18 @@ var lawnInfos = {
 };
 
 var restaurantInfos = {
-	lv1restaurant:{iconnodename:'lv1_urant_noed',name:'桑拿室', housetype:buildTypes.houselv5,   price:500,note:'价格合适的瓷砖地板',url:'img2200',tileurl:'img2200',groupname:'RESTAURANT_GROUP',floorarea:9},
-	lv2restaurant:{iconnodename:'lv2_urant_noed',name:'西餐厅', housetype:buildTypes.houselv6,	 price:500,note:'漂亮的大理石地板',url:'img2222',tileurl:'img2222',groupname:'RESTAURANT_GROUP',floorarea:12},
-	lv3restaurant:{iconnodename:'lv3_urant_noed',name:'健身房', housetype:buildTypes.houselv7,    price:500,note:'舒适的木地板',url:'img2202',tileurl:'img2202',groupname:'RESTAURANT_GROUP',floorarea:16},
-	lv4restaurant:{iconnodename:'lv4_urant_noed',name:'酒吧',    price:500,note:'高档的红木地板',url:'img2208',groupname:'RESTAURANT_GROUP'},
-	lv5restaurant:{iconnodename:'lv5_urant_noed',name:'水疗馆',    price:500,note:'价格合适的瓷砖地板',url:'img2204',groupname:'RESTAURANT_GROUP'},
-	lv6restaurant:{iconnodename:'lv6_urant_noed',name:'游戏厅',  price:500,note:'漂亮的大理石地板',url:'img2206',groupname:'RESTAURANT_GROUP'},
-	lv7restaurant:{iconnodename:'lv7_urant_noed',name:'印度餐厅',      price:500,note:'舒适的木地板',url:'img2218',groupname:'RESTAURANT_GROUP'},
-	lv8restaurant:{iconnodename:'lv8_urant_noed',name:'日本料理',    price:500,note:'高档的红木地板',url:'img2220',groupname:'RESTAURANT_GROUP'},
-	lv9restaurant:{iconnodename:'lv9_urant_noed',name:'Spa店',    price:500,note:'高档的红木地板',url:'img2226',groupname:'RESTAURANT_GROUP'},
-	lv10restaurant:{iconnodename:'lv10_urant_noed',name:'医疗中心',    price:500,note:'价格合适的瓷砖地板',url:'img2216',groupname:'RESTAURANT_GROUP'},
-	lv11restaurant:{iconnodename:'lv11_urant_noed',name:'超市',  price:500,note:'漂亮的大理石地板',url:'img2210',groupname:'RESTAURANT_GROUP'},
-	lv12restaurant:{iconnodename:'lv12_urant_noed',name:'游泳池',      price:500,note:'舒适的木地板',url:'img2212',groupname:'RESTAURANT_GROUP'},
-	lv13estaurant:{iconnodename:'lv13_urant_noed',name:'高尔夫球场',    price:500,note:'高档的红木地板',url:'img2214',groupname:'RESTAURANT_GROUP'},
-
+	sauna:{iconnodename:'lv1_urant_noed',name:'桑拿室', housetype:buildTypes.sauna,   price:500,note:'客人放松身心的好地方',url:'img2200',tileurl:'img2200',groupname:'RESTAURANT_GROUP',floorarea:4},
+	westrestaurant:{iconnodename:'lv2_urant_noed',name:'西餐厅', housetype:buildTypes.westrestaurant,	 price:500,note:'美味的西餐',url:'img2222',tileurl:'img2222',groupname:'RESTAURANT_GROUP',floorarea:4},
+	fitness:{iconnodename:'lv3_urant_noed',name:'健身房', housetype:buildTypes.fitness,    price:500,note:'健身爱好者',url:'img2202',tileurl:'img2202',groupname:'RESTAURANT_GROUP',floorarea:4},
+	bar:{iconnodename:'lv4_urant_noed',name:'酒吧', housetype:buildTypes.bar,   price:500,note:'客人休闲娱乐的场所',url:'img2208',tileurl:'img2208',groupname:'RESTAURANT_GROUP',floorarea:4},
+	gamezone:{iconnodename:'lv6_urant_noed',name:'游戏厅', housetype:buildTypes.gamezone, price:500,note:'游戏厅',url:'img2206',tileurl:'img2206',groupname:'RESTAURANT_GROUP',floorarea:4},
+	chinarestaurant:{iconnodename:'lv7_urant_noed',name:'中餐厅', housetype:buildTypes.chinarestaurant,      price:500,note:'美味的中餐',url:'img2218',tileurl:'img2218',groupname:'RESTAURANT_GROUP',floorarea:4},
+	japanrestaurant:{iconnodename:'lv8_urant_noed',name:'日本料理', housetype:buildTypes.japanrestaurant,    price:500,note:'日本料理',url:'img2220',tileurl:'img2220',groupname:'RESTAURANT_GROUP',floorarea:4},
+	spa:{iconnodename:'lv9_urant_noed',name:'Spa店', housetype:buildTypes.spa,    price:500,note:'女士的最爱',url:'img2226',tileurl:'img2226',groupname:'RESTAURANT_GROUP',floorarea:4},
+  medical:{iconnodename:'lv10_urant_noed',name:'医疗中心', housetype:buildTypes.medical,    price:500,note:'医疗中心',url:'img2216',tileurl:'img2216',groupname:'RESTAURANT_GROUP',floorarea:9},
+	  market:{iconnodename:'lv10_urant_noed',name:'超市', housetype:buildTypes.market,    price:500,note:'购物天堂',url:'img2210',tileurl:'img2210',groupname:'RESTAURANT_GROUP',floorarea:9},   
+	  swimmingpool:{iconnodename:'lv10_urant_noed',name:'游泳池', housetype:buildTypes.swimmingpool,    price:500,note:'游泳爱好者',url:'img2212',tileurl:'img2212',groupname:'RESTAURANT_GROUP',floorarea:12},   
+	  	  golfyard:{iconnodename:'lv10_urant_noed',name:'高尔夫球场', housetype:buildTypes.golfyard,    price:500,note:'高尔夫球场',url:'img2214',tileurl:'img2214',groupname:'RESTAURANT_GROUP',floorarea:16},   
 };
 
 var miniroomInfos ={
