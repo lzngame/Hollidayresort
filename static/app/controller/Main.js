@@ -44,7 +44,7 @@ Ext.define('Resort.controller.Main',{
 		touch.on($(CANVASID),'drag dragstart dragend',panelDrag);
 		var ctx = $(CANVASID).getContext('2d');
 		currentHandleStatus = handleStatus.normal;
-		addEntityNode(new EntityNode('tmp',NodeTypeClass.entityitem,[['img432','img434','img436','img438']],110,210,50,30));
+		//addEntityNode(new EntityNode('tmp',NodeTypeClass.entityitem,[['img432','img434','img436','img438']],110,210,30));
 		var obj = getPixelByPos(7,4);
 		var xpix = obj.xpix;
 		var ypix = obj.ypix+baseRhombusHeight/2;
@@ -96,8 +96,7 @@ function initCanvas(){
 	canvas.height = stageHeight;
 	var ctx = canvas.getContext('2d');
 	
-	rightEdge = baseRhombusHeight* mapWTiles -stageWidth;
-	bottomEdge = baseRhombusHeight * mapHTiles -stageHeight;
+	setEdage();
 	console.log('tileWidth:%s tileHeight:%s',baseRhombusWidth.toString(),baseRhombusHeight.toString())
 }
 var dragzerox = 0;
@@ -137,12 +136,10 @@ function panelDrag(ev) {
 		var posy = 0;
 		var roundAr = null;
 		var dataobj = null;
-		//var posobj = getPixByPosTile(obj.posx,obj.posy);
-		//console.log('posobj:%d:%d',obj.posx,obj.posy);
-		if (ev.type == 'dragstart') {
+ 		if (ev.type == 'dragstart') {
 			tmpnode = new BuildNode('tmpnode',NodeTypeClass.build,currentBuildType,0,0,0);
+			tmpnode.data = currentBuildData;
 			tmpnode.setPos(x,y);
-			tmpnode.setDepth(y);
 			canbuild = true;
 		}
 		if (ev.type == 'drag') {
@@ -157,7 +154,8 @@ function panelDrag(ev) {
 				}
 			}
 			tmpnode.setPos(dataobj.x,dataobj.y);
-			tmpnode.setDepth(dataobj.y);
+			console.log(tmpnode.getDrawData());
+			console.log('----------------');
 		}
 		if (ev.type == 'dragend') {
 			delete entitys[tmpnode.id];
@@ -183,8 +181,8 @@ function panelDrag(ev) {
 				var obj = getPixByPosTile(xpos,ypos);
 				var xpix = obj[0];
 				var ypix = obj[1]+baseRhombusHeight/2;
-				addEntityNode(new EntityFootNode('work',NodeTypeClass.entityitem,[['img259','img261','img263','img265','img267','img269']],xpix,ypix,ypix-baseRhombusHeight,1230,true,function(data){
-					var build = new BuildNode('house1',NodeTypeClass.build,currentBuildType,dataobj.x,dataobj.y,dataobj.y,dataobj.roundAr,dataobj.posx,dataobj.posy);
+				addEntityNode(new EntityFootNode('work',NodeTypeClass.entityitem,[['img259','img261','img263','img265','img267','img269']],xpix,ypix,1230,true,function(data){
+					var build = new BuildNode('house1',NodeTypeClass.build,currentBuildType,dataobj.x,dataobj.y,dataobj.roundAr,dataobj.posx,dataobj.posy);
 					build.data = currentBuildData;
 					addWaiter(currentBuildData.housetype,build);
 				},{xp:x,yp:y,ar:dataobj.roundAr}));
@@ -235,6 +233,8 @@ function panelTap(ev){
 		
 		
 		currentHandleNode = getBuildNodeByPos(objtarget.posx,objtarget.posy);
+		if(currentHandleNode)
+			console.log('id:%d ~ posx:%d  posy:%d',currentHandleNode.id,currentHandleNode.posx,currentHandleNode.posy);
 		if(currentHandleNode != null){
 			if(currentHandleNode.ntype == NodeTypeClass.build){
 				handleInfoMenu.hide(true);
@@ -243,23 +243,23 @@ function panelTap(ev){
 				var x = obj[0];
 				var y = obj[1];
 				if(currentHandleNode.data.floorarea == 1){
-					nowHandleNodeSingle = new EntityNode('tmp1',NodeTypeClass.entityitem,[['img382','img384','img386']],x-baseRhombusHeight,y-baseRhombusHeight/2,1000,130);
+					nowHandleNodeSingle = new EntityNode('tmp1',NodeTypeClass.entityitem,[['img382','img384','img386']],x-baseRhombusHeight,y-baseRhombusHeight/2,130);
 					addEntityNode(nowHandleNodeSingle);
 				}
 				if(currentHandleNode.data.floorarea == 4){
-					nowHandleNodeFour = new EntityNode('tmp4',NodeTypeClass.entityitem,[['img374','img376','img378']],x-baseRhombusHeight,y-baseRhombusHeight,1000,130);
+					nowHandleNodeFour = new EntityNode('tmp4',NodeTypeClass.entityitem,[['img374','img376','img378']],x-baseRhombusHeight,y-baseRhombusHeight,130);
 					addEntityNode(nowHandleNodeFour);
 				}
 				if(currentHandleNode.data.floorarea == 6){
-					nowHandleNodeSix = new EntityNode('tmp6',NodeTypeClass.entityitem,[['img672','img674','img676']],x-baseRhombusHeight,y-1.5*baseRhombusHeight,1000,130);
+					nowHandleNodeSix = new EntityNode('tmp6',NodeTypeClass.entityitem,[['img672','img674','img676']],x-baseRhombusHeight,y-1.5*baseRhombusHeight,130);
 					addEntityNode(nowHandleNodeSix);
 				}
 				if(currentHandleNode.data.floorarea == 9){
-					nowHandleNode9 = new EntityNode('tmp9',NodeTypeClass.entityitem,[['img662','img664','img666']],x-baseRhombusHeight,y-1.5*baseRhombusHeight,1000,130);
+					nowHandleNode9 = new EntityNode('tmp9',NodeTypeClass.entityitem,[['img662','img664','img666']],x-baseRhombusHeight,y-1.5*baseRhombusHeight,130);
 					addEntityNode(nowHandleNode9);
 				}
 				if(currentHandleNode.data.floorarea == 12){
-					nowHandleNode12 = new EntityNode('tmp12',NodeTypeClass.entityitem,[['img652','img654','img656']],x-baseRhombusHeight,y-2*baseRhombusHeight,1000,130);
+					nowHandleNode12 = new EntityNode('tmp12',NodeTypeClass.entityitem,[['img652','img654','img656']],x-baseRhombusHeight,y-2*baseRhombusHeight,130);
 					addEntityNode(nowHandleNode12);
 				}
 				if(currentHandleNode.data.floorarea == 16){
@@ -276,7 +276,7 @@ function panelTap(ev){
 					var obj = getPixByPosTile(objtarget.posx,objtarget.posy);
 					var x = obj[0];
 					var y = obj[1];
-					nowHandleNodeSingle= new EntityNode('tmp',NodeTypeClass.entityitem,[['img382','img384','img386']],x-baseRhombusHeight,y-baseRhombusHeight/2,1000,130);
+					nowHandleNodeSingle= new EntityNode('tmp',NodeTypeClass.entityitem,[['img382','img384','img386']],x-baseRhombusHeight,y-baseRhombusHeight/2,130);
 					addEntityNode(nowHandleNodeSingle);
 				}
 			}
@@ -304,8 +304,8 @@ function panelTap(ev){
 }
 var testman = null;
 function LayoutUI(ctx){
-	var imgbg   = new ImageNode('moneybg','img3697',layoutconfig.headsize+1,1,stageWidth-layoutconfig.headsize,22);
-	var imgnode = new ImageNode('moneyicon','img302',layoutconfig.headsize+3,5,layoutconfig.moneyiconsize,layoutconfig.moneyiconsize);
+	var imgbg   = new PngNode('moneybg','img3697',layoutconfig.headsize+1,1,stageWidth-layoutconfig.headsize,22);
+	var imgnode = new PngNode('moneyicon','img302',layoutconfig.headsize+3,5,layoutconfig.moneyiconsize,layoutconfig.moneyiconsize);
 	var numnode = new PngNumNode('numnode','0.1+2--3:456789',layoutconfig.headsize+layoutconfig.moneyiconsize+5,5);
 	var lvstar = new LvNode('lvstar','img3252',layoutconfig.headsize+layoutconfig.moneyiconsize+5+100,5,1,layoutconfig.lvstarsize);
 	
@@ -322,8 +322,22 @@ function LayoutUI(ctx){
 	addPool(new IconInfoNode('btn3',stageWidth-3*64,23,64,22,'img3044','f18_18','f54_54',8,function(name){
 					console.log(this.iconname);
 					//Ext.Msg.alert('请先选择虫族');
-					//shopMenu.hide(true);
-					testman.setDirect(Direct.up);
+					shopMenu.hide(true);
+					shopMenu.addContentImg('img208',20,70,68,59);
+					shopMenu.addContentTxt('扩展为20×20',122,90,'yellow');
+					shopMenu.addContentTxt('需要花费 $ 25000',122,110,'yellow');
+					shopMenu.addContentBtn('购买','img3044',60,206,48,20,'black',function(){
+						console.log('extend map');
+						mapLvWidth = 21;
+						mapWTiles = 48;
+						mapHTiles = 30;
+						setEdage();
+						shopMenu.hide(false);
+					});
+					shopMenu.addContentBtn('取消','img3044',160,206,48,20,'black',function(){
+						shopMenu.hide(false);
+					});
+					//testman.setDirect(Direct.up);
 		},'yellow'));
 		
 		
@@ -349,10 +363,15 @@ function LayoutUI(ctx){
 	//addEntityNode(testman);
 }
 
+function setEdage(){
+	rightEdge = baseRhombusHeight* mapWTiles -stageWidth;
+	bottomEdge = baseRhombusHeight * mapHTiles -stageHeight;
+}
+
 var activeLeftIconnode = null;
 
 function layoutBottomTxtinfo(){
-	new ImageNode('txtbg','img3358bmp',47,stageHeight-70,stageWidth-47,30);
+	new PngNode('txtbg','img3358bmp',47,stageHeight-70,stageWidth-47,30);
 	txtinfo = new TxtNode('welcome','欢迎来到度假村世界游戏！','img3195','#676767',55,stageHeight-67,stageWidth - 47);
 }
 
@@ -369,7 +388,7 @@ function layourHandleInfo(){
 function layoutLeftIcons(ctx){
 	var space = 4;
 	var inity = 5;
-	var bg_lefticons   = new ShapeRoundrect('lefticonsbg',colors.lefticonsbg,'blue',1,layoutconfig.headsize+1,iconSize.lefticon+4,355,4);
+	var bg_lefticons   = new ShapeRect('lefticonsbg',colors.lefticonsbg,'blue',1,layoutconfig.headsize+1,iconSize.lefticon+4,355,4);
 	var dis = 0;
 	for(var name in lefticonInfos){
 		var obj = lefticonInfos[name];
@@ -423,10 +442,9 @@ function layoutGroups(){
 		var obj = plantInfos[name];
 		var plant = new IconNode(obj.iconnodename,obj.url,2,i*space+55,iconSize.lefticon,iconSize.lefticon,'yellow','blue',function(name){
 			console.log(this.iconname);
-			currentHandleStatus = handleStatus.plant;
-			var data = plantInfos[this.dataname];
-			currentBuildType = data.tileurl;
-			currentBuildData = data;
+			currentHandleStatus = handleStatus.dragingbuild;
+			currentBuildData = plantInfos[this.dataname];
+			currentBuildType = currentBuildData.housetype;
 			stopHandleBtn.show();
 			groupBack(this.groupname,lefticonInfos.plant.name);
 		});
@@ -562,9 +580,9 @@ function groupBack(icongroupname,parentname){
 
 function addWaiter(buildtype,build){ 
 	if(buildtype == buildTypes.bar){
-		var waiter = new EntityNode('barwaiter','waiter',[['img2326','img2328']],build.x+30,build.y-5,50,200);
+		var waiter = new EntityNode('barwaiter','waiter',[['img2326','img2328']],build.x+30,build.y-5,200);
 		build.waiter = waiter;
-		var tesk = new EntityNode('bartesk','tesk','img2412',build.x+15,build.y+2,50,200);
+		var tesk = new EntityNode('bartesk','tesk','img2412',build.x+15,build.y+2,200);
 		build.furnitiure = tesk;
 	}
 }

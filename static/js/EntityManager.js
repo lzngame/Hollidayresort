@@ -1,13 +1,12 @@
-function BuildNode(name,type,buildtype,x,y,depth,floorspace,posx,posy){
+function BuildNode(name,type,buildtype,x,y,floorspace,posx,posy){
 	this.name = name;
 	this.x = x;
 	this.y = y;
-	this.depth = depth;
 	this.isvisible = true;
 	this.id = increaseId++;
 	this.ntype = type;
 	this.buildtype = buildtype;
-	this.floorspace = floorspace;
+	this.floorspace = floorspace;	
 	this.posx = posx;
 	this.posy = posy;
 	this.lv = 1;
@@ -16,6 +15,7 @@ function BuildNode(name,type,buildtype,x,y,depth,floorspace,posx,posy){
 	this.alpha = 1;
 	this.waiter = null;
 	this.furnitiure = null;
+	this.data = null;
 }
 
 BuildNode.prototype.setAlpha = function(a){
@@ -27,12 +27,36 @@ BuildNode.prototype.IsInFloorspace = function(xpos,ypos){
 };
 
 BuildNode.prototype.getDrawData = function(){
+	var offsety = 1;
+	var w =1;
+	var h =1;
+	if(this.data.floorarea == 1){
+		offsety = 0;
+		w = 0;
+		h = 0;
+	}
+	if(this.data.floorarea == 6){
+		offsety = 1;
+		w = 2;
+		h = 1;
+	}
+	if(this.data.floorarea == 9){
+		offsety = 2;
+		w = 2;
+		h = 2;
+	}
+	if(this.data.floorarea == 16){
+		offsety = 3;
+		w = 3;
+		h = 3;
+	}
 	var objdata = { name:this.name,
 					id:this.id,
-					x:this.x,
-					y:this.y,
+					posx:this.posx,
+					posy:this.posy+offsety,
 					type:this.ntype,
-					depth:this.depth,
+					w:w,
+					h:h,
 					buildtype:this.buildtype
 					};
 	return objdata;
@@ -60,16 +84,20 @@ BuildNode.prototype.draw = function(ctx) {
 BuildNode.prototype.setPos = function(x,y){
 	this.x = x;
 	this.y = y;
+	var obj = getTilePos(x,y);
+	this.posx = obj.posx;
+	this.posy = obj.posy;
 };
 
 BuildNode.prototype.upLv = function(){
-	if(this.lv < 3)
+	if(this.lv < 3){
 		this.lv++;
-}
-
-BuildNode.prototype.setDepth = function(zindex){
-	this.depth = zindex;
+		return true;
+	}else{
+		return false;
+	}
 };
+
 
 function getSizeToMap(initw,inith){
 	var nw = Math.round(initw/initTileSize);
@@ -77,8 +105,7 @@ function getSizeToMap(initw,inith){
 	return {w:nw * baseRhombusHeight,h:nh*baseRhombusHeight};
 }
 
-function EntityNode(name,type,data,x,y,depth,frameFps){
-	this.depth = depth || DEFAULT_DEPTH;
+function EntityNode(name,type,data,x,y,frameFps){
 	this.frameFps = frameFps || DEFAULT_FPS;
 	this.isvisible = true;
 	this.x = x;
@@ -106,9 +133,6 @@ EntityNode.prototype.setPos = function(x,y){
 	this.y = y;
 };
 
-EntityNode.prototype.setDepth = function(depth){
-	this.depth = depth;
-};
 
 
 EntityNode.prototype.getFrame = function(){
@@ -139,12 +163,11 @@ EntityNode.prototype.draw = function(ctx){
 
 
 EntityNode.prototype.getDrawData = function(){
-	var objdata = {id:this.id,name:this.getFrame(),x:this.x,y:this.y,type:this.ntype,depth:this.depth};
+	var objdata = {id:this.id,name:this.getFrame(),x:this.x,y:this.y,type:this.ntype};
 	return objdata;
 };
 
-function EntityFootNode(name,type,data,x,y,depth,frameFps,autodel,lastFunc,lastdata){
-	this.depth = depth ;
+function EntityFootNode(name,type,data,x,y,frameFps,autodel,lastFunc,lastdata){
 	this.frameFps = frameFps ;
 	this.isvisible = true;
 	this.x = x;
@@ -181,10 +204,6 @@ EntityFootNode.prototype.setPos = function(x,y){
 	this.y = y;
 };
 
-EntityFootNode.prototype.setDepth = function(depth){
-	this.depth = depth;
-};
-
 EntityFootNode.prototype.getFrame = function(){
 	if(this.data[0].length == 1){
 		var obj = this.data[0];
@@ -219,7 +238,7 @@ EntityFootNode.prototype.getDrawData = function(){
 	var size = getPngSize(pngname);
 	var offsetx = this.x-size.w/2;
 	var offsety = this.y-size.h;
-	var objdata = {id:this.id,name:this.getFrame(),x:offsetx,y:offsety,type:this.ntype,depth:this.depth};
+	var objdata = {id:this.id,name:this.getFrame(),x:offsetx,y:offsety,type:this.ntype};
 	return objdata;
 };
 
@@ -274,12 +293,13 @@ ShapeCircle.prototype.draw = function(ctx){
 	drawCircle(ctx,this.x,this.y,this.data.r);
 };
 
-function ShapeRect(name,clr,borderclr,x,y,w,h){
+function ShapeRect(name,clr,borderclr,x,y,w,h,r){
 	this.name = name;
 	this.x = x;
 	this.y = y;
 	this.w = w;
 	this.h = h;
+	this.r = r;
 	this.clr = clr;
 	this.borderclr = borderclr;
 	layoutBgPool[name]= this;
@@ -290,29 +310,15 @@ ShapeRect.prototype.draw = function(ctx){
 	if(this.isvisible){
 		ctx.fillStyle = this.clr;
 		ctx.strokeStyle = this.borderclr;
-		ctx.fillRect(this.x,this.y,this.w,this.h);
-		ctx.strokeRect(this.x,this.y,this.w,this.h);
+		if(!this.r){
+			ctx.fillRect(this.x,this.y,this.w,this.h);
+			ctx.strokeRect(this.x,this.y,this.w,this.h);
+		}else{
+			ctx.roundRect(this.x,this.y,this.w,this.h,this.r).fill();
+			ctx.roundRect(this.x,this.y,this.w,this.h,this.r).stroke();
+		}
 	}
 };
-
-function ShapeRoundrect(name,clr,borderclr,x,y,w,h,r){
-	this.name = name;
-	this.x = x;
-	this.y = y;
-	this.w = w;
-	this.h = h;
-	this.r = r;
-	this.clr = clr;
-	this.borderclr = borderclr;
-	layoutBgPool[name] = this;
-}
-
-ShapeRoundrect.prototype.draw = function(ctx){
-	ctx.fillStyle = this.clr;
-	ctx.strokeStyle = this.borderclr;
-	ctx.roundRect(this.x,this.y,this.w,this.h,this.r).fill();
-	ctx.roundRect(this.x,this.y,this.w,this.h,this.r).stroke();
-}
 
 function LvNode(name,iconname,x,y,n,size){
 	this.x = x;
@@ -336,7 +342,7 @@ LvNode.prototype.setLv = function(n){
 	this.n = n;
 };
 
-function ImageNode(name,iconname,x,y,w,h){
+function PngNode(name,iconname,x,y,w,h){
 	this.name = name;
 	this.iconname = iconname;
 	this.x = x;
@@ -356,12 +362,12 @@ function ImageNode(name,iconname,x,y,w,h){
 	this.isvisible = true;
 }
 
-ImageNode.prototype.draw = function(ctx){
+PngNode.prototype.draw = function(ctx){
 	if(this.isvisible)
 		drawImg(ctx,this.iconname,this.x,this.y,false,this.w,this.h);
 };
 
-ImageNode.prototype.setImg = function(iconname){
+PngNode.prototype.setImg = function(iconname){
 	var png = getPngSize(iconname);
 	this.iconname = iconname;
 	this.w = png.w;
@@ -545,7 +551,6 @@ function IconNode(name,iconname,x,y,w,h,defaultBgclr,activeBgclr,handler,borderC
 	if(borderClr)
 		this.borderclr = borderClr;
 	this.handler = handler;
-	this.depth = 1000;
 	this.isvisible = true;
 	this.isdisable = true; 
 	this.groupname = '';
@@ -593,7 +598,7 @@ IconNode.prototype.checkTap = function(tapx,tapy){
 };
 
 IconNode.prototype.getDrawData = function(){
-	return {name:this.iconname,x:this.x,y:this.y,type:this.type,depth:this.depth};
+	return {name:this.iconname,x:this.x,y:this.y,type:this.type};
 };
 
 IconNode.prototype.deleteSelf = function(){
@@ -611,7 +616,6 @@ function ImgNode(name,iconname,x,y,w,h,handler,handlerdata){
 	this.ntype = NodeTypeClass.icon;
 	
 	this.handler = handler;
-	this.depth = 1000;
 	this.isvisible = true;
 	this.isdisable = true; 
 	addPool(this);
@@ -634,7 +638,7 @@ ImgNode.prototype.checkTap = function(tapx,tapy){
 };
 
 ImgNode.prototype.getDrawData = function(){
-	return {name:this.iconname,x:this.x,y:this.y,type:this.type,depth:this.depth};
+	return {name:this.iconname,x:this.x,y:this.y,type:this.type};
 };
 
 ImgNode.prototype.deleteSelf = function(){
@@ -655,7 +659,6 @@ function IconInfoNode(name,x,y,w,h,bgicon,txt1,txt2,num,handler){
 	this.num = num;
 	
 	this.handler = handler;
-	this.depth = 1000;
 	this.isvisible = true;
 }
 
@@ -691,7 +694,6 @@ function IconTxtBtn(name,x,y,w,h,bgicon,text,textclr,handler){
 	this.textclr = textclr;
 	
 	this.handler = handler;
-	this.depth = 1000;
 	this.isvisible = true;
 	iconPool[this.name] = this;
 }
@@ -904,7 +906,7 @@ function StopHandleMenu(name,x,y){
 	this.txt4name = 'StopMenu_txt_price';
 	
 	this.self = this;
-	new ImageNode(this.bgnodename,'img396',this.x,this.y,186,112);
+	new PngNode(this.bgnodename,'img396',this.x,this.y,186,112);
 	var stopBtn = new ImgNode(this.closenodename,'cancel',this.x+100,this.y+4,80,25,this.hide);
 	stopBtn.tapdata = this;
 	
@@ -913,7 +915,7 @@ function StopHandleMenu(name,x,y){
 	this.noteTxt =  new TxtNode(this.txt3name,'','','black',this.x+20,this.y+70,100);
 	this.priceTxt = new TxtNode(this.txt4name,'','','black',this.x+20,this.y+90,100);
 	
-	this.iconImg = new ImageNode(this.iconname,'img409',this.x+10,this.y+45);
+	this.iconImg = new PngNode(this.iconname,'img409',this.x+10,this.y+45);
 }
 
 StopHandleMenu.prototype.hide = function(tapdata){
@@ -1009,16 +1011,11 @@ PlantNode.prototype.getDrawData = function(){
 					x:this.x,
 					y:this.y,
 					type:this.ntype,
-					depth:this.depth,
 					buildtype:this.buildtype
 					};
 	return objdata;
 };
  
-PlantNode.prototype.setDepth = function(zindex){
-	this.depth = zindex;
-};
-
 function HandleInfoMenu(name,x,y){
 	this.name = name;
 	this.x = x;
@@ -1034,7 +1031,7 @@ function HandleInfoMenu(name,x,y){
 		btndestoryname:'icon_'+name+'_destoryname',
 		btnroatename:'icon_'+name+'_roatename',
 	}
-	new ImageNode(this.namesObj.bgheadname,'img3358bmp',this.x,this.y,205,30);
+	new PngNode(this.namesObj.bgheadname,'img3358bmp',this.x,this.y,205,30);
 	var alpha = 'rgba(200,200,200,0.5)';
 	new ShapeRect(this.namesObj.bgrect,alpha,'black',this.x+1,this.y+30,204,100);
 	
@@ -1047,7 +1044,8 @@ function HandleInfoMenu(name,x,y){
 	
 	var destoryBtn = new IconTxtBtn(this.namesObj.btndestoryname,this.x+10,this.y+55,50,20,'img3048',buttontextName.handle_destory,'white',function(){
 		this.closeData.hide(false);
-		
+		if(currentHandleNode == null)
+			debugger;
 		if(currentHandleNode.ntype == NodeTypeClass.floor)
 			delete floorpool[currentHandleNode.id];
 		if(currentHandleNode.ntype == NodeTypeClass.build)
@@ -1059,8 +1057,10 @@ function HandleInfoMenu(name,x,y){
 	
 	var updateBtn = new IconTxtBtn(this.namesObj.btnupdatename,this.x+70,this.y+55,50,20,'img3044',buttontextName.handle_uplv,'blue',function(){
 		this.closeData.hide(false);
-		currentHandleNode.upLv();
-		new ToastInfo('mytoast',currentHandleNode.data.name+warntext.build_success,-130,100,1500);
+		if(currentHandleNode.upLv())
+			new ToastInfo('mytoast',currentHandleNode.data.name+warntext.build_success,-130,100,1500);
+		else
+			new ToastInfo('mytoast',currentHandleNode.data.name+warntext.build_maxlv,-130,100,1500);
 	});
 	updateBtn.closeData = this;
 	
@@ -1131,7 +1131,8 @@ function ToastInfo(name,txt,initx,inity,timeout){
 	this.timeout = timeout;
 	this.x = initx;
 	this.y = inity;
-	this.w = 140;
+	this.space = 20;
+	this.w = this.txt.length*16 + this.space;
 	this.h = 30;
 	this.speed = 10;
 	this.targetx = stageWidth/2 - this.w/2;
@@ -1142,10 +1143,16 @@ function ToastInfo(name,txt,initx,inity,timeout){
 
 ToastInfo.prototype.draw = function(ctx){
 	this.update();
+	ctx.textAlign = 'start';
+	ctx.textBaseline = 'middle';
 	ctx.fillStyle = 'yellow';
-	ctx.fillRect(this.x,this.y,this.w,this.h);
-	ctx.fillStyle = 'red';
-	ctx.fillText(this.txt,this.x+20,this.y+15);
+	//ctx.fillRect(this.x,this.y,this.w,this.h);
+	ctx.fillStyle = 'rgba(0,51,0,0.8)';
+	ctx.roundRect(this.x,this.y,this.w,this.h,3).fill();
+	ctx.strokeStyle = 'green';
+	ctx.roundRect(this.x,this.y,this.w,this.h,3).stroke();
+	ctx.fillStyle = 'yellow';
+	ctx.fillText(this.txt,this.x+this.space,this.y+15);
 };
 
 ToastInfo.prototype.update = function(){
@@ -1186,30 +1193,28 @@ function WindowPanel(name,x,y,w,h){
 	this.x = x;
 	this.y = y;
 	this.ntype = NodeTypeClass.menu;
+	this.defaultid = 1000;
 	
 	this.namesObj = {
 		closename:'icon_'+name+'_closename',
 		titleheadname:name+'_bgheadname',
 		bgrect:name+'_bgrectname',
+		bgtoprect:name+'_bgtoprectname',
 		titlename:name+'_titlename',
-		btnpageupname:'icon_'+name+'_pageupname',
-		//btnpagedownname:'icon_'+name+'_pagedownname',
 	}
 
-	var alpha = 'rgba(200,200,230,0.8)';
-	new ShapeRect(this.namesObj.bgrect,alpha,'black',this.x,this.y,this.w,this.h);
-	new ImageNode(this.namesObj.titleheadname,'img3879',this.x+this.w/2-75,this.y+4,150,20);
+	var alpha = 'rgba(10,10,10,0.9)';
+	new ShapeRect(this.namesObj.bgrect,alpha,'black',this.x,this.y,this.w,this.h,4);
+	new ShapeRect(this.namesObj.bgtoprect,'#336600','#336600',this.x,this.y,this.w,30,4);
+	new PngNode(this.namesObj.titleheadname,'img247',this.x+this.w/2-75,this.y+4,150,20);
 	var closeBtn = new ImgNode(this.namesObj.closename,'img2997',this.x+this.w-25,this.y+4,20,20,function(){
 		this.closeData.hide(false);
 	});
 	closeBtn.closeData = this;
+	this.increaseId= 1000;
+	this.content = [];
 	
-	var pageupBtn = new ImgNode(this.namesObj.btnpageupname,'img3528',this.x+125,this.y+this.h-25,20,20,function(){
-		//this.closeData.hide(false);
-		console.log('pageup');
-	});
-	pageupBtn.closeData = this;
-	var txttitle = new UItextNode(this.namesObj.titlename,'商店',this.x+this.w/2-20,this.y+18,'blue');
+	var txttitle = new UItextNode(this.namesObj.titlename,'扩 展 面 积',this.x+this.w/2-20,this.y+15,'white');
 }
 
 WindowPanel.prototype.hide = function(isvisible){
@@ -1225,6 +1230,36 @@ WindowPanel.prototype.hide = function(isvisible){
 			layoutBgPool[tmpname].isvisible = isvisible;
 		}
 	}
+	for(var i=0;i<this.content.length;i++){
+		var name = this.content[i];
+		if(name.indexOf('icon') ==-1)
+			delete layoutBgPool[name];
+		else
+			delete iconPool[name];
+	}
+	this.content = [];
+	this.increaseId = this.defaultid;
+};
+
+WindowPanel.prototype.addContentImg = function(imgname,x,y,w,h){
+	this.increaseId++;
+	var name = this.increaseId.toString()+'_'+imgname;
+	var pngnode = new PngNode(name,imgname,this.x+x,this.y+y,w,h);
+	this.content.push(name);
+};
+
+WindowPanel.prototype.addContentTxt = function(txt,x,y,clr){
+	this.increaseId++;
+	var name = this.increaseId.toString()+'_'+'txt';
+	var txtnode = new UItextNode(name,txt,this.x+x,this.y+y,clr);
+	this.content.push(name);
+};
+
+WindowPanel.prototype.addContentBtn = function(txt,bgicon,x,y,w,h,clr,handler){
+	this.increaseId++;
+	var name = 'icon_'+this.increaseId.toString()+'_'+bgicon;
+	var btn = new IconTxtBtn(name,this.x+x,this.y+y,w,h,bgicon,txt,clr,handler);
+	this.content.push(name);
 };
 
 
@@ -1301,9 +1336,7 @@ ManNode.prototype.setPos = function(x,y){
 	this.y = y;
 };
 
-EntityNode.prototype.setDepth = function(depth){
-	this.depth = depth;
-};
+
 
 
 ManNode.prototype.getFrame = function(){

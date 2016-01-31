@@ -52,28 +52,56 @@ function updateDraw(ctx){
 			}
 			
 		}
-		
+
 function orderDepthNode(nodeA,nodeB){
-			/*if(nodeA.depth > nodeB.depth)	
-				return 1;
-			else if(nodeA.depth < nodeB.depth)
-				return -1;
-			else 
-				return 0;*/
-			if(nodeA.y > nodeB.y){
-				return 1;
-			}else if(nodeA.y < nodeB.y){
-				return -1;
-			}else{
-				if(nodeA.x < nodeB.x){
-					return 1
-				}else if(nodeA.x >nodeB.y){
-					return -1;
-				}else{
-					return 0;
-				}
-			}
+	if(checkIsInFan(nodeA,nodeB)){
+		return 1;
+	}
+	if(checkIsInFan(nodeB,nodeA)){
+		return -1;
+	}
+}
+
+function checkIsInFan(a,b){
+	if(b.posx+b.w >= a.posx && (b.posy-b.h) <= a.posy )
+		return true;
+	else 
+		return false;
+}
+
+function orderDepthNode2(nodeA,nodeB){
+		if(nodeA.posx < nodeB.posx && nodeA.posy >= (nodeB.posy-nodeB.h)){
+			return -1;
 		}
+		
+		//quadrant
+		if(nodeA.posx < nodeB.posx && nodeA.posy > nodeB.posy){
+			return 1;
+		}
+		if(nodeA.posx < nodeB.posx && nodeA.posy < nodeB.posy){
+			return 1;
+		}
+		
+		if(nodeA.posx > nodeB.posx && nodeA.posy < nodeB.posy){
+			return -1;
+		}
+		if(nodeA.posx > nodeB.posx && nodeA.posy > nodeB.posy){
+			return -1;
+		}
+		//axis
+		if(nodeA.posx == nodeB.posx && nodeA.posy > nodeB.posy){
+			return 1;
+		}
+		if(nodeA.posx == nodeB.posx && nodeA.posy < nodeB.posy){
+			return -1;
+		}
+		if(nodeA.posx > nodeB.posx && nodeA.posy == nodeB.posy){
+			return -1;
+		}
+		if(nodeA.posx < nodeB.posx && nodeA.posy == nodeB.posy){
+			return 1;
+		}
+}
 		
 
 

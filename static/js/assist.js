@@ -285,7 +285,11 @@ function isInRhombus4(x,y){
 }
 
 function easeFrom(pos) {
+	var dis = Math.pow(pos,4);
+	if(dis < 1)
+		return 2;
 	return Math.pow(pos,4);
+	
 };
 
 function  easeOutCubic(pos){
