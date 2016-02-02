@@ -1,13 +1,3 @@
-function checkRoundWall(node){
-	var round = getBuildWall(node);
-	for(var i=0;i<round.length;i++){
-		var item = getBuildNodeByPos(round[i][0],round[i][1]);
-		if(item != null && !item.isDraw)
-			return true;
-	}
-	return false;
-}
-
 function updateDraw(ctx){
 			for(var id in floorpool){
 				var floor = floorpool[id];
@@ -15,29 +5,33 @@ function updateDraw(ctx){
 			}
 			drawBackwall(ctx,wallImg,mapInitPosx-1,mapInitPosy-1,mapLvWidth+1,mapLvWidth+1);
 	
-			var hadDraw = 0;
-			while(buildNums > 0 && hadDraw < buildNums){
-				for(var id in entitys){ 
- 					var entity = entitys[id];  
- 					if(entity.ntype == NodeTypeClass.build && !entity.isDraw && entity.isbuild){
- 						if(!checkRoundWall(entity)){
- 							entity.draw(ctx);
- 							entity.isDraw = true;
- 							hadDraw++;
- 						}
- 					}
- 				}
-			}
-			hadDraw = 0;
-			
 			for(var id in entitys){ 
  				var entity = entitys[id];  
- 				if(entity.ntype == NodeTypeClass.build)
- 					entity.isDraw = false;
- 				if(entity.isvisible && !entity.isbuild){ 
- 					entity.draw(ctx);
+ 				if(entity.isvisible){ 
+ 					var dataObj = entity.getDrawData(); 
+ 					drawOrderPool.push(dataObj); 
  				} 
- 			}
+ 			} 
+
+			if(drawOrderPool.length > 0)
+				drawOrderPool.sort(orderDepthNode);
+				
+			for(var i=0;i<drawOrderPool.length;i++){
+				var data = drawOrderPool[i];
+
+				data.x = data.x + zeroX;
+				data.y = data.y + zeroY;
+				
+				var entity = entitys[drawOrderPool[i].id];
+				if(entity == null){
+					//debugger;
+					console.log('----------------- warring!------%d',drawOrderPool[i].id);
+				}else{
+					entitys[drawOrderPool[i].id].draw(ctx);
+				}
+				
+			}
+			
 			drawFrontwall(ctx,wallImg,mapInitPosx-1,mapInitPosy-1,mapLvWidth+1,mapLvWidth+1);
 			
 			for(var name in layoutBgPool){
@@ -58,15 +52,93 @@ function updateDraw(ctx){
 			}
 			
 		}
+function orderDepthNode2(nodeA,nodeB){
+	
+	return ((nodeA.y * 1000 + nodeA.x) - (nodeB.y *1000+nodeB.x));
+	/*if(nodeA.y < nodeB.y){
+		return -1;
+	}
+	if(nodeA.y == nodeB.y && nodeA.x > nodeB.x){
+		return -1;
+	}*/
+}
 
+function orderDepthNode(nodeA,nodeB){
+	if( (nodeB.posx + nodeB.w >= nodeA.posx && nodeB.posy <= nodeA.posy) ||
+		(nodeB.posy - nodeB.h <= nodeA.posy && nodeB.posx >= nodeA.posx)
+	){
+		return 1;
+	}
+	if( (nodeA.posx + nodeA.w >= nodeB.posx && nodeA.posy <= nodeB.posy) ||
+		(nodeA.posy - nodeA.h <= nodeB.posy && nodeA.posx >= nodeB.posx)
+	){
+		return -1;
+	}
+	if(((nodeA.y * 1000 + nodeA.x) - (nodeB.y *1000+nodeB.x)) > 0){
+		return 1;
+	}
+}
 
-function checkTwobox(a,b){
-	return (Math.abs(a.posx-b.posx) < (a.w+b.w)  && (Math.abs(a.posy -b.posy) < (a.h + b.h)));
+function orderDepthNode2(nodeA,nodeB){
+	if(checkIsInFan(nodeA,nodeB)){
+		return 1;
+	}
+	if(checkIsInFan(nodeB,nodeA)){
+		return -1;
+	}
+}
+
+function checkIsInFan(a,b){
+	if(b.posx+b.w >= a.posx && (b.posy-b.h) <= a.posy )
+	{
+		return true;
+	}else{
+		return false;
+	}
 }
 
 function checkTwobox(a,b){
 	return (Math.abs(a.posx-b.posx) < (a.w+b.w)  && (Math.abs(a.posy -b.posy) < (a.h + b.h)));
 }
+
+function checkTwobox(a,b){
+	return (Math.abs(a.posx-b.posx) < (a.w+b.w)  && (Math.abs(a.posy -b.posy) < (a.h + b.h)));
+}
+
+function orderDepthNode2(nodeA,nodeB){
+		if(nodeA.posx < nodeB.posx && nodeA.posy >= (nodeB.posy-nodeB.h)){
+			return -1;
+		}
+		
+		//quadrant
+		if(nodeA.posx < nodeB.posx && nodeA.posy > nodeB.posy){
+			return 1;
+		}
+		if(nodeA.posx < nodeB.posx && nodeA.posy < nodeB.posy){
+			return 1;
+		}
+		
+		if(nodeA.posx > nodeB.posx && nodeA.posy < nodeB.posy){
+			return -1;
+		}
+		if(nodeA.posx > nodeB.posx && nodeA.posy > nodeB.posy){
+			return -1;
+		}
+		//axis
+		if(nodeA.posx == nodeB.posx && nodeA.posy > nodeB.posy){
+			return 1;
+		}
+		if(nodeA.posx == nodeB.posx && nodeA.posy < nodeB.posy){
+			return -1;
+		}
+		if(nodeA.posx > nodeB.posx && nodeA.posy == nodeB.posy){
+			return -1;
+		}
+		if(nodeA.posx < nodeB.posx && nodeA.posy == nodeB.posy){
+			return 1;
+		}
+}
+		
 
 
 function drawImg(context,name,x,y,border,w,h){

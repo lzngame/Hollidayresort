@@ -123,13 +123,48 @@ function getFloorNodeByPos(xpos,ypos){
 	return null;
 }
 
-//取得该坐标建筑
+function getBuildWall(node){
+	var x = node.posx;
+	var y = node.posy;
+	switch(node.data.floorarea){
+		case 1:
+			return [[x,y-1],[x+1,y-1],[x+1,y]];
+		case 4:
+			return [[x,y-1],[x+1,y-1],[x+2,y-1],
+					[x+2,y],[x+2,y+1]];
+		case 6:
+			return [[x,y-1],[x+1,y-1],[x+2,y-1],[x+3,y-1],
+					[x+3,y],[x+3,y+1]];
+		case 9:
+			return [[x,y-1],[x+1,y-1],[x+2,y-1],[x+3,y-1],
+					[x+3,y],[x+3,y+1],[x+3,y+2]];
+		case 12:
+			return [[x,y-1],[x+1,y-1],[x+2,y-1],[x+3,y-1],[x+4,y-1],
+					[x+4,y],[x+4,y+1],[x+4,y+2]];
+		case 16:
+			return [[x,y-1],[x+1,y-1],[x+2,y-1],[x+3,y-1],[x+4,y-1],
+					[x+4,y],[x+4,y+1],[x+4,y+2],[x+4,y+3]];			
+	}
+}
+
+//取得该坐标上面的建筑
 function getBuildNodeByPos(xpos,ypos){
 	for(var id in entitys){
 		var node = entitys[id];
 		if(node.ntype == NodeTypeClass.build){
 			if(node.IsInFloorspace(xpos,ypos))
 				return node;
+		}
+	}
+	return null;
+}
+
+
+function getCoorBuildByPos(xpos,ypos){
+	for(var id in entitys){
+		var node = entitys[id];
+		if(node.posx == xpos && node.posy == ypos){
+			return node;
 		}
 	}
 }

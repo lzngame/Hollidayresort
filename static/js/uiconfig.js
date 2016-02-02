@@ -18,6 +18,8 @@ var screenTiles = 5;
 var zeroX = 0;
 var zeroY = 0;
 
+var wallImg = 'img263';
+
 var mapWTiles = 35;
 var mapHTiles = 30;
 
@@ -27,6 +29,8 @@ var mapLvWidth = 15;
 
 var rightEdge = 0;
 var bottomEdge = 0;
+
+var buildNums = 0;
 
 var btnGoplayTxt = '前往<br\>游戏';
 var btnGologinTxt = '返回<br\>注册';
@@ -361,6 +365,12 @@ var nowHandleNode12 = null;
 var nowHandleNode16 = null;
 var currentHandleNode = null;
 
+var manstatus ={
+	idle:'IDLE_STATE',
+	walk:'WALK_STATE',
+	SIT:'SIT_DOWN',
+};
+
 /*
  * 提示信息
  */
@@ -370,6 +380,8 @@ var warntext ={
 	build_rotate:'旋转方向',
 	build_success:'升级成功',
 	build_maxlv:'已经是最高级别',
+	build_drag:'拖动手指进行建造',
+	build_tap:'点击进行建造',
 };
 /*
  * 按钮文字
@@ -380,3 +392,8 @@ var buttontextName ={
 	handle_uplv:'升级',
 	handle_title:'名称：',
 }
+
+/*
+ * 透明效果
+ */
+var frontWallAlpha = 1;

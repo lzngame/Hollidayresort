@@ -44,7 +44,8 @@ Ext.define('Resort.controller.Main',{
 		touch.on($(CANVASID),'drag dragstart dragend',panelDrag);
 		var ctx = $(CANVASID).getContext('2d');
 		currentHandleStatus = handleStatus.normal;
-		//addEntityNode(new EntityNode('tmp',NodeTypeClass.entityitem,[['img432','img434','img436','img438']],110,210,30));
+		
+		addEntityNode(new EntityNode('tmp',NodeTypeClass.entityitem,[['img432','img434','img436','img438']],110,210,30));
 		var obj = getPixelByPos(7,4);
 		var xpix = obj.xpix;
 		var ypix = obj.ypix+baseRhombusHeight/2;
@@ -139,6 +140,7 @@ function panelDrag(ev) {
  		if (ev.type == 'dragstart') {
 			tmpnode = new BuildNode('tmpnode',NodeTypeClass.build,currentBuildType,0,0,0);
 			tmpnode.data = currentBuildData;
+			tmpnode.isbuild = false;
 			tmpnode.setPos(x,y);
 			canbuild = true;
 		}
@@ -181,10 +183,11 @@ function panelDrag(ev) {
 				var obj = getPixByPosTile(xpos,ypos);
 				var xpix = obj[0];
 				var ypix = obj[1]+baseRhombusHeight/2;
-				addEntityNode(new EntityFootNode('work',NodeTypeClass.entityitem,[['img259','img261','img263','img265','img267','img269']],xpix,ypix,1230,true,function(data){
+				addEntityNode(new EntityFootNode('work',NodeTypeClass.entityitem,[['img259','img261','img263','img265','img267','img269']],xpix,ypix,130,true,function(data){
 					var build = new BuildNode('house1',NodeTypeClass.build,currentBuildType,dataobj.x,dataobj.y,dataobj.roundAr,dataobj.posx,dataobj.posy);
 					build.data = currentBuildData;
 					addWaiter(currentBuildData.housetype,build);
+					buildNums++;
 				},{xp:x,yp:y,ar:dataobj.roundAr}));
 			}
 		}
@@ -312,12 +315,11 @@ function LayoutUI(ctx){
 		
 	addPool(new IconInfoNode('btn1',stageWidth-64,23,64,22,'img3044','f18_18','f54_54',120,function(name){
 					console.log(this.iconname);
-					testman.setDirect(Direct.left);
 		},'yellow'));
 	addPool(new IconInfoNode('btn2',stageWidth-2*64,23,64,22,'img3044','f18_18','f54_54',50,function(name){
 					console.log(this.iconname);
-					//new ShowInfoNode('tmpshowinf',100,100,100,150);
-					testman.setDirect(Direct.right);
+					orderDraw();
+					
 		},'yellow'));
 	addPool(new IconInfoNode('btn3',stageWidth-3*64,23,64,22,'img3044','f18_18','f54_54',8,function(name){
 					console.log(this.iconname);
@@ -337,13 +339,11 @@ function LayoutUI(ctx){
 					shopMenu.addContentBtn('取消','img3044',160,206,48,20,'black',function(){
 						shopMenu.hide(false);
 					});
-					//testman.setDirect(Direct.up);
 		},'yellow'));
 		
 		
 	addPool(new IconNode('Head','img300',0,0,50,50,'yellow','blue',function(name){
 		console.log(this.iconname);
-		testman.setDirect(Direct.down);
 		layoutBgPool['lvstar'].setLv(Math.round(Math.random()*10));
 		layoutBgPool['numnode'].setTxt(Math.floor(Math.random()*10000).toString());
 		},'red'));
@@ -357,10 +357,14 @@ function LayoutUI(ctx){
 	shopMenu = new WindowPanel('testwinpanel',55,100,250,300);
 	shopMenu.hide(false);
 	
-	//testman = new ManNode('testman',[['img35','img37','img39'],['img42','img44','img46'],
-	//								 ['img924'],['img932']
-	//								 ],-9,30);
-	//addEntityNode(testman);
+	testman = new ManNode('testman',[['img927','img37'],['img919','img1474'],
+									 ['img35','img37','img39'],['img917','img919','img921'],
+									 ['img924'],['img932'],
+									 ['img934']
+									 ],-9,30);
+	addEntityNode(testman);
+	testman.setAction(manstatus.walk);
+	testman.setDirect(Direct.up);
 }
 
 function setEdage(){
@@ -377,7 +381,7 @@ function layoutBottomTxtinfo(){
 
 
 function layourHandleInfo(){
-	stopHandleBtn =  new StopHandleMenu('test',stageWidth-188,stageHeight-112-40);
+	stopHandleBtn =  new StopHandleMenu('stop Handler',stageWidth-188,stageHeight-112-40);
 	stopHandleBtn.hide();
 	handleInfoMenu = new HandleInfoMenu('handleInfo',stageWidth - 205,stageHeight - 130-40);
 	handleInfoMenu.hide(false);
@@ -443,6 +447,7 @@ function layoutGroups(){
 		var plant = new IconNode(obj.iconnodename,obj.url,2,i*space+55,iconSize.lefticon,iconSize.lefticon,'yellow','blue',function(name){
 			console.log(this.iconname);
 			currentHandleStatus = handleStatus.dragingbuild;
+			frontWallAlpha = 0.3;
 			currentBuildData = plantInfos[this.dataname];
 			currentBuildType = currentBuildData.housetype;
 			stopHandleBtn.show();
@@ -464,6 +469,7 @@ function layoutGroups(){
 		var house = new IconNode(obj.iconnodename,obj.url,2,i*space+135,iconSize.lefticon,iconSize.lefticon,'yellow','blue',function(name){
 			console.log(this.iconname);
 			currentHandleStatus = handleStatus.dragingbuild;
+			frontWallAlpha = 0.3;
 			currentBuildData = houseInfos[this.dataname];
 			currentBuildType = currentBuildData.housetype;
 			stopHandleBtn.show();
@@ -487,6 +493,7 @@ function layoutGroups(){
 			currentHandleStatus = handleStatus.tile;
 			var data = carpetInfos[this.dataname];
 			currentBuildfloor = data.tileurl;
+			frontWallAlpha = 0.3;
 			currentBuildData = data;
 			stopHandleBtn.show();
 			groupBack(this.groupname,lefticonInfos.carpet.name);
@@ -513,6 +520,7 @@ function layoutGroups(){
 			var data = lawnInfos[this.dataname];
 			currentBuildfloor = data.tileurl;
 			currentBuildData = data;
+			frontWallAlpha = 0.3;
 			stopHandleBtn.show();
 			groupBack(this.groupname,lefticonInfos.lawn.name);
 		});
@@ -534,6 +542,7 @@ function layoutGroups(){
 		var room = new IconNode(obj.iconnodename,obj.url,x,y,iconSize.lefticon,iconSize.lefticon,'yellow','blue',function(name){
 			console.log(this.iconname);
 			currentHandleStatus = handleStatus.dragingbuild;
+			frontWallAlpha = 0.3;
 			currentBuildData = restaurantInfos[this.dataname];
 			currentBuildType = currentBuildData.housetype;
 			stopHandleBtn.show();
@@ -555,6 +564,7 @@ function layoutGroups(){
 		var miniroom = new IconNode(obj.iconnodename,obj.url,2,i*space+281,iconSize.lefticon,iconSize.lefticon,'yellow','blue',function(name){
 			console.log(this.iconname);
 			currentHandleStatus = handleStatus.dragingbuild;
+			frontWallAlpha = 0.3;
 			currentBuildData = miniroomInfos[this.dataname];
 			currentBuildType = currentBuildData.housetype;
 			stopHandleBtn.show();

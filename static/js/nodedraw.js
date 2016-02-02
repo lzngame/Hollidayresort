@@ -60,22 +60,19 @@ function drawBox(ctx,name,x1,y1,w,h){
 
 function drawBackwall(ctx,name,x,y,w,h){
 	ctx.globalAlpha = 1;
-	drawLine2(ctx,'img5',mapInitPosx+mapLvWidth,mapInitPosy-1,mapLvWidth+2,Direct.left);
-	drawLine2(ctx,'img5',mapInitPosx+mapLvWidth,mapInitPosy,mapLvWidth,Direct.down);
+	drawLine2(ctx,name,mapInitPosx+mapLvWidth,mapInitPosy-1,mapLvWidth+2,Direct.left);
+	drawLine2(ctx,name,mapInitPosx+mapLvWidth,mapInitPosy,mapLvWidth,Direct.down);
 	
 	ctx.globalAlpha = 1;
 }
 
 function drawFrontwall(ctx,name,x,y,w,h){
-	ctx.globalAlpha = 1;
-	//drawLine2(ctx,'img5',x,y,h,Direct.down);
-	//drawLine2(ctx,'img5',x+w,y+h,4,Direct.left);
-	//drawLine2(ctx,'img5',x+4,y+h,4,Direct.left);
+	ctx.globalAlpha = frontWallAlpha;
 	var doorwidth = 7;
 	var wallwidth = (mapLvWidth+2-doorwidth)/2;
-	drawLine2(ctx,'img5',mapInitPosx-1,mapInitPosy,mapLvWidth,Direct.down);
-	drawLine2(ctx,'img5',mapInitPosx+mapLvWidth,mapInitPosy+mapLvWidth,wallwidth,Direct.left);
-	drawLine2(ctx,'img5',mapInitPosx+mapLvWidth-doorwidth-wallwidth,mapInitPosy+mapLvWidth,wallwidth,Direct.left);
+	drawLine2(ctx,name,mapInitPosx-1,mapInitPosy,mapLvWidth,Direct.down);
+	drawLine2(ctx,name,mapInitPosx+mapLvWidth,mapInitPosy+mapLvWidth,wallwidth,Direct.left);
+	drawLine2(ctx,name,mapInitPosx+mapLvWidth-doorwidth-wallwidth,mapInitPosy+mapLvWidth,wallwidth,Direct.left);
 	
 	
 	ctx.globalAlpha = 1;
@@ -265,7 +262,7 @@ function drawRhombusMap2(ctx,mapw,maph,clr,clrborder){
 				clrr = 'blue';
 			drawRhombusCenter(ctx,x,y,baseRhombusWidth,baseRhombusHeight,clrr,clrborder);
 			ctx.fillStyle = 'white';
-			ctx.fillText(i.toString()+':'+j.toString(),x-10,y);
+			ctx.fillText(i.toString()+':'+j.toString(),x-15,y+4);
 		}
 	}
 }

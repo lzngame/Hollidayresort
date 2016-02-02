@@ -11,11 +11,13 @@ function BuildNode(name,type,buildtype,x,y,floorspace,posx,posy){
 	this.posy = posy;
 	this.lv = 1;
 	this.isturn = false;
-	addEntityNode(this);
 	this.alpha = 1;
 	this.waiter = null;
 	this.furnitiure = null;
 	this.data = null;
+	this.isDraw = false;
+	this.isbuild = true;
+	addEntityNode(this);
 }
 
 BuildNode.prototype.setAlpha = function(a){
@@ -50,6 +52,7 @@ BuildNode.prototype.getDrawData = function(){
 		w = 3;
 		h = 3;
 	}
+	var obj = getPixByPosTile(this.posx,this.posy);
 	var objdata = { name:this.name,
 					id:this.id,
 					posx:this.posx,
@@ -57,6 +60,8 @@ BuildNode.prototype.getDrawData = function(){
 					type:this.ntype,
 					w:w,
 					h:h,
+					x:obj[0],
+					y:obj[1]+2*baseRhombusHeight*h,
 					buildtype:this.buildtype
 					};
 	return objdata;
@@ -911,7 +916,7 @@ function StopHandleMenu(name,x,y){
 	stopBtn.tapdata = this;
 	
 	this.handleTxt = new TxtNode(this.txt1name,'','','yellow',this.x-35,this.y+25,100);
-	this.nameTxt =  new TxtNode(this.txt2name,'','','black',this.x+20,this.y+40,100);
+	this.nameTxt =  new TxtNode(this.txt2name,'','','black',this.x+24,this.y+44,100);
 	this.noteTxt =  new TxtNode(this.txt3name,'','','black',this.x+20,this.y+70,100);
 	this.priceTxt = new TxtNode(this.txt4name,'','','black',this.x+20,this.y+90,100);
 	
@@ -922,6 +927,7 @@ StopHandleMenu.prototype.hide = function(tapdata){
 	var isvisible = false;
 	if(tapdata != null){
 		currentHandleStatus = handleStatus.normal;
+		frontWallAlpha = 1;
 		layoutBgPool[tapdata.bgnodename].isvisible = isvisible;
 		iconPool[tapdata.closenodename].isvisible = isvisible;
 		layoutBgPool[tapdata.txt1name].isvisible = isvisible;
@@ -939,6 +945,7 @@ StopHandleMenu.prototype.hide = function(tapdata){
 		layoutBgPool[this.iconname].isvisible = isvisible;
 	}
 	currentHandleStatus = handleStatus.normal;
+	frontWallAlpha = 1;
 };
 
 StopHandleMenu.prototype.show = function(){
@@ -950,8 +957,10 @@ StopHandleMenu.prototype.show = function(){
 	layoutBgPool[this.txt3name].isvisible = isvisible;
 	layoutBgPool[this.txt4name].isvisible = isvisible;
 	layoutBgPool[this.iconname].isvisible = isvisible;
-	
-	layoutBgPool[this.txt1name].setTxt('空地板上面点击建造');
+	if(currentBuildData.groupname == "LAWN_GROUP" || currentBuildData.groupname == "CARPET_GROUP" )
+		layoutBgPool[this.txt1name].setTxt(warntext.build_tap);
+	else
+		layoutBgPool[this.txt1name].setTxt(warntext.build_drag);
 	layoutBgPool[this.txt2name].setTxt(currentBuildData.name);
 	layoutBgPool[this.txt3name].setTxt(currentBuildData.note);
 	layoutBgPool[this.txt4name].setTxt('$:'+currentBuildData.price.toString());
@@ -1048,8 +1057,11 @@ function HandleInfoMenu(name,x,y){
 			debugger;
 		if(currentHandleNode.ntype == NodeTypeClass.floor)
 			delete floorpool[currentHandleNode.id];
-		if(currentHandleNode.ntype == NodeTypeClass.build)
+		if(currentHandleNode.ntype == NodeTypeClass.build){
 			deleteEntity(currentHandleNode.id);
+			buildNums--;
+		}
+			
 		new ToastInfo('mytoast',currentHandleNode.data.name+warntext.build_destory,-130,100,1500);
 		currentHandleNode = null;
 	});
@@ -1262,7 +1274,9 @@ WindowPanel.prototype.addContentBtn = function(txt,bgicon,x,y,w,h,clr,handler){
 	this.content.push(name);
 };
 
-
+/*
+ * 人物
+ */
 function ManNode(name,data,xpos,ypos){
 	this.isvisible = true;
 	this.xpos = xpos;
@@ -1275,38 +1289,64 @@ function ManNode(name,data,xpos,ypos){
 	this.currentAction = 0;
 	this.isturn = true;
 	this.currentAction = 0;
-	this.frameFps = 200;
+	this.frameFps = 500;
 	this.direct = Direct.down;
 	this.x = getPixByPosTile(xpos,ypos)[0];
 	this.y = getPixByPosTile(xpos,ypos)[1];
-	this.speed = 0.1;
+	this.speed = 0;
+	this.action = manstatus.idle;
+};
+
+ManNode.prototype.setAction = function(action){
+	this.action = action;
+	switch(action){
+		case manstatus.idle:
+			if(this.direct == Direct.down){
+				this.currentAction = 0;
+				this.isturn = false;
+			}
+			if(this.direct == Direct.up){
+				this.currentAction = 1;
+				this.isturn = false;
+			}
+			if(this.direct == Direct.left){
+				this.currentAction = 0;
+				this.isturn = true;
+			}
+			if(this.direct == Direct.right){
+				this.currentAction = 1;
+				this.isturn = true;
+			}
+			break;
+		case manstatus.walk:
+			if(this.direct == Direct.down){
+				this.currentAction = 2;
+				this.isturn = false;
+			}
+			if(this.direct == Direct.up){
+				this.currentAction = 3;
+				this.isturn = false;
+			}
+			if(this.direct == Direct.left){
+				this.currentAction = 2;
+				this.isturn = true;
+			}
+			if(this.direct == Direct.right){
+				this.currentAction = 3;
+				this.isturn = true;
+			}
+			break;
+	}
 };
 
 ManNode.prototype.setDirect = function(direct){
 	this.direct = direct;
-	switch(this.direct){
-		case Direct.down:
-			this.currentAction = 0;
-			this.isturn = false;
-			break;
-		case Direct.up:
-			this.currentAction = 1;
-			this.isturn = false;
-			break;
-		case Direct.left:
-			this.currentAction = 0;
-			this.isturn = true;
-			break;
-		case Direct.right:
-			this.currentAction = 1;
-			this.isturn = true;
-			break;
-	}
+	this.setAction(this.action);
 	console.log(this.direct);
 }
 
 ManNode.prototype.update = function(){
-	switch(this.direct){
+	/*switch(this.direct){
 		case Direct.up:
 			this.x -= 2*this.speed;
 			this.y -= this.speed;
@@ -1323,21 +1363,17 @@ ManNode.prototype.update = function(){
 			this.x -= 2*this.speed;
 			this.y += this.speed;
 			break;
-	}
+	}*/
 };
 
 ManNode.prototype.setVisible = function(isvisible){
 	this.isvisible = isvisible;
 };
 
-
 ManNode.prototype.setPos = function(x,y){
 	this.x = x;
 	this.y = y;
 };
-
-
-
 
 ManNode.prototype.getFrame = function(){
 	if(this.data[0].length == 1){
@@ -1358,12 +1394,21 @@ ManNode.prototype.getFrame = function(){
 	return this.data[this.currentAction][this.frameIndex];
 };
 
+ManNode.prototype.getOffsetY = function(){
+	if(this.action == manstatus.idle){
+		if(this.frameIndex == 0)
+			return 1;
+		else	
+			return 0;
+	}
+}
+
 ManNode.prototype.draw = function(ctx){
 	this.update();
 	if(this.isturn)
-		drawTurnImg(ctx,this.getFrame(),this.x+zeroX-7,this.y+zeroY-22,true);
+		drawTurnImg(ctx,this.getFrame(),this.x+zeroX-7,this.y+this.getOffsetY()+zeroY-22,true);
 	else
-		drawImg(ctx,this.getFrame(),this.x+zeroX-7,this.y+zeroY-22,true);
+		drawImg(ctx,this.getFrame(),this.x+zeroX-7,this.y+this.getOffsetY()+zeroY-22,true);
 };
 
 
