@@ -88,6 +88,12 @@ function getOffsetXY(floorarea,xpos,ypos) {
 		posx = xpos - 1;
 		posy = ypos;
 		roundAr = getRound6ByLeftTop(posx, posy);
+	} else if (floorarea == 8) {
+		x = posobj[0] - 1.5 * baseRhombusWidth;
+		y = posobj[1] - 1 * baseRhombusHeight;
+		posx = xpos - 1;
+		posy = ypos - 1;
+		roundAr = getRound2x4ByLeftTop(posx, posy);
 	} else if (floorarea == 9) {
 		x = posobj[0] - 1.5 * baseRhombusWidth;
 		y = posobj[1] - 1.5 * baseRhombusHeight;
@@ -108,6 +114,16 @@ function getOffsetXY(floorarea,xpos,ypos) {
 		roundAr = getRound16ByLeftTop(posx, posy);
 	}
 	return {x:x,y:y,posx:posx,posy:posy,roundAr:roundAr};
+}
+
+/**
+ * 检查边界
+ */
+function checkEdage(xpos,ypos){
+	return (xpos < mapInitPosx ||
+		   xpos > mapInitPosx + mapLvWidth ||
+		   ypos < mapInitPosy ||
+		   ypos > mapInitPosy + mapLvWidth);
 }
 
 /*
@@ -135,6 +151,9 @@ function getBuildWall(node){
 		case 6:
 			return [[x,y-1],[x+1,y-1],[x+2,y-1],[x+3,y-1],
 					[x+3,y],[x+3,y+1]];
+		case 8:
+			return [[x,y-1],[x+1,y-1],[x+2,y-1],
+					[x+2,y],[x+2,y+1],[x+2,y+2],[x+2,y+3]];
 		case 9:
 			return [[x,y-1],[x+1,y-1],[x+2,y-1],[x+3,y-1],
 					[x+3,y],[x+3,y+1],[x+3,y+2]];
@@ -279,7 +298,7 @@ function getRound16ByLeftTop(xpos,ypos){
 	]
 }
 
-function getRound2x8ByLeftTop(xpos,ypos){
+function getRound2x4ByLeftTop(xpos,ypos){
 	return [
 		[xpos,ypos],  [xpos+1,ypos], 
 		[xpos,ypos+1],[xpos+1,ypos+1],

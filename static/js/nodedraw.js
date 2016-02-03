@@ -5,7 +5,7 @@ function drawBg(ctx,bgImg){
 			drawImg(ctx,bgImg,i*size.w+zeroX,j*size.h+zeroY);
 		}
 	}
-	drawBox(ctx,'img413',mapInitPosx-1,mapInitPosy-1,mapLvWidth+2,mapLvWidth+2);
+	//drawBox(ctx,'img413',mapInitPosx-1,mapInitPosy-1,mapLvWidth+2,mapLvWidth+2);
 	drawBox(ctx,'img686',mapInitPosx-2,mapInitPosy-2,mapLvWidth+4,mapLvWidth+4);
 	drawRect(ctx,currentTileType,mapInitPosx,mapInitPosy,mapLvWidth,mapLvWidth);
 	
@@ -68,7 +68,7 @@ function drawBackwall(ctx,name,x,y,w,h){
 
 function drawFrontwall(ctx,name,x,y,w,h){
 	ctx.globalAlpha = frontWallAlpha;
-	var doorwidth = 7;
+	
 	var wallwidth = (mapLvWidth+2-doorwidth)/2;
 	drawLine2(ctx,name,mapInitPosx-1,mapInitPosy,mapLvWidth,Direct.down);
 	drawLine2(ctx,name,mapInitPosx+mapLvWidth,mapInitPosy+mapLvWidth,wallwidth,Direct.left);

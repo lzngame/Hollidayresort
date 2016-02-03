@@ -82,7 +82,15 @@ BuildNode.prototype.draw = function(ctx) {
 	}
 	if(this.waiter != null){
 		this.waiter.draw(ctx);
+	}
+	if(this.waiter2 != null){
+		this.waiter2.draw(ctx);
+	}
+	if(this.furnitiure != null){
 		this.furnitiure.draw(ctx);
+	}
+	if(this.furnitiure2 != null){
+		this.furnitiure2.draw(ctx);
 	}
 };
 
@@ -92,6 +100,15 @@ BuildNode.prototype.setPos = function(x,y){
 	var obj = getTilePos(x,y);
 	this.posx = obj.posx;
 	this.posy = obj.posy;
+};
+
+BuildNode.prototype.setPosCoor = function(posx,posy){
+	var	dataobj = getOffsetXY(this.data.floorarea, posx, posy);
+	this.x = dataobj.x;
+	this.y = dataobj.y;
+	this.posx = dataobj.posx;
+	this.posy = dataobj.posy;
+	this.floorspace = dataobj.roundAr;
 };
 
 BuildNode.prototype.upLv = function(){
@@ -1277,10 +1294,12 @@ WindowPanel.prototype.addContentBtn = function(txt,bgicon,x,y,w,h,clr,handler){
 /*
  * 人物
  */
-function ManNode(name,data,xpos,ypos){
+function ManNode(name,data,x,y){
 	this.isvisible = true;
-	this.xpos = xpos;
-	this.ypos = ypos;
+	this.x = x;
+	this.y = y;
+	this.posx = getTilePos(x,y).posx;
+	this.posy = getTilePos(x,y).posy;
 	this.name = name;
 	this.data = data;
 	this.id = increaseId ++;
@@ -1291,8 +1310,6 @@ function ManNode(name,data,xpos,ypos){
 	this.currentAction = 0;
 	this.frameFps = 500;
 	this.direct = Direct.down;
-	this.x = getPixByPosTile(xpos,ypos)[0];
-	this.y = getPixByPosTile(xpos,ypos)[1];
 	this.speed = 0;
 	this.action = manstatus.idle;
 };
@@ -1301,6 +1318,7 @@ ManNode.prototype.setAction = function(action){
 	this.action = action;
 	switch(action){
 		case manstatus.idle:
+			this.speed = 0;
 			if(this.direct == Direct.down){
 				this.currentAction = 0;
 				this.isturn = false;
@@ -1319,6 +1337,7 @@ ManNode.prototype.setAction = function(action){
 			}
 			break;
 		case manstatus.walk:
+			this.speed = 0.1;
 			if(this.direct == Direct.down){
 				this.currentAction = 2;
 				this.isturn = false;
@@ -1346,7 +1365,13 @@ ManNode.prototype.setDirect = function(direct){
 }
 
 ManNode.prototype.update = function(){
-	/*switch(this.direct){
+	if(this.action == manstatus.walk){
+		this.setSpeed();
+	}
+};
+
+ManNode.prototype.setSpeed = function(){
+	switch(this.direct){
 		case Direct.up:
 			this.x -= 2*this.speed;
 			this.y -= this.speed;
@@ -1363,7 +1388,7 @@ ManNode.prototype.update = function(){
 			this.x -= 2*this.speed;
 			this.y += this.speed;
 			break;
-	}*/
+	}
 };
 
 ManNode.prototype.setVisible = function(isvisible){
@@ -1401,6 +1426,7 @@ ManNode.prototype.getOffsetY = function(){
 		else	
 			return 0;
 	}
+	return 0;
 }
 
 ManNode.prototype.draw = function(ctx){

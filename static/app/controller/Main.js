@@ -174,9 +174,14 @@ function panelDrag(ev) {
 					canbuild = false;
 					break;
 				}
+				if(checkEdage(ar[0],ar[1])){
+					console.log('超过边界，不能建造');
+					new ToastInfo('waringbuild',warntext.build_outarea,-130,100,500);
+					canbuild = false;
+					break;
+				}
 			}
 			if(canbuild){
-				
 				var o = dataobj.roundAr[0]
 				var xpos = o[0];
 				var ypos = o[1];
@@ -194,7 +199,35 @@ function panelDrag(ev) {
 	}
 }
 
+function addReceptioncenter(){
+	currentBuildData = restaurantInfos["receptioncenter"];
+	var	dataobj = getOffsetXY(currentBuildData.floorarea, 0, 0);
+	receptionCenter = new BuildNode('receptionCenter',NodeTypeClass.build,buildTypes.receptioncenter,dataobj.x,dataobj.y,dataobj.roundAr,dataobj.posx,dataobj.posy);
+	receptionCenter.data = currentBuildData;
+	addWaiter(currentBuildData.housetype,receptionCenter);
+	buildNums++;
+	setReceptionPos();
+};
 
+function setReceptionPos(){
+	var floorExist1 =  getFloorNodeByPos(receptionCenter.posx-1,receptionCenter.posy);
+	if(floorExist1 != null)
+		delete floorpool[floorExist1.id];
+	var floorExist2 =  getFloorNodeByPos(receptionCenter.posx,receptionCenter.posy+4);
+	if(floorExist2 != null)
+		delete floorpool[floorExist2.id];
+	
+	var wallwidth = (mapLvWidth+2-doorwidth)/2;
+	var posx = mapInitPosx+wallwidth+(doorwidth-2);
+	var posy = mapInitPosy+mapLvWidth-3;
+	receptionCenter.setPosCoor(posx,posy);
+	receptionCenter.waiter.setPos(receptionCenter.x +100,receptionCenter.y + 52);
+	receptionCenter.furnitiure.setPos(receptionCenter.x +79,receptionCenter.y + 28);
+	receptionCenter.waiter2.setPos(receptionCenter.x +33,receptionCenter.y + 22);
+	receptionCenter.furnitiure2.setPos(receptionCenter.x +5,receptionCenter.y);
+	var floor = new FloorNode('lawn',carpetInfos.carpet1.tileurl,receptionCenter.posx-1,receptionCenter.posy,carpetInfos.carpet1);
+	var floor = new FloorNode('lawn',carpetInfos.carpet1.tileurl,receptionCenter.posx,receptionCenter.posy+4,carpetInfos.carpet1);
+};
 
 function panelTap(ev){
 	var tapx = ev.position.x-zeroX;
@@ -335,6 +368,7 @@ function LayoutUI(ctx){
 						mapHTiles = 30;
 						setEdage();
 						shopMenu.hide(false);
+						setReceptionPos();
 					});
 					shopMenu.addContentBtn('取消','img3044',160,206,48,20,'black',function(){
 						shopMenu.hide(false);
@@ -363,8 +397,9 @@ function LayoutUI(ctx){
 									 ['img934']
 									 ],-9,30);
 	addEntityNode(testman);
-	testman.setAction(manstatus.walk);
+	testman.setAction(manstatus.idle);
 	testman.setDirect(Direct.up);
+	addReceptioncenter();
 }
 
 function setEdage(){
@@ -465,6 +500,7 @@ function layoutGroups(){
 	nodearray = [];
 	i = 0;
 	for(var name in houseInfos){
+		
 		var obj = houseInfos[name];
 		var house = new IconNode(obj.iconnodename,obj.url,2,i*space+135,iconSize.lefticon,iconSize.lefticon,'yellow','blue',function(name){
 			console.log(this.iconname);
@@ -506,7 +542,7 @@ function layoutGroups(){
 		nodearray.push(carpet);
 		i++
 	}
-	addPool(new IconNodeGroup(lefticonInfos.carpet.groupname,2,145,200,90,'#C0F56E','blue',nodearray,false,iconSize.lefticon+2));
+	addPool(new IconNodeGroup(lefticonInfos.carpet.groupname,2,145,200,130,'#C0F56E','blue',nodearray,false,iconSize.lefticon+2));
 	
 	nodearray = [];
 	i = 0;
@@ -536,6 +572,8 @@ function layoutGroups(){
 	nodearray = [];
 	i = 0;
 	for(var name in restaurantInfos){
+		if(name == 'receptioncenter')
+			continue;
 		var obj = restaurantInfos[name];
 		var x = Math.floor(i/6)*90 +2;
 		var y = (i % 6)*space + 55;
@@ -561,7 +599,7 @@ function layoutGroups(){
 	i = 0;
 	for(var name in miniroomInfos){
 		var obj = miniroomInfos[name];
-		var miniroom = new IconNode(obj.iconnodename,obj.url,2,i*space+281,iconSize.lefticon,iconSize.lefticon,'yellow','blue',function(name){
+		var miniroom = new IconNode(obj.iconnodename,obj.url,2,i*space+238,iconSize.lefticon,iconSize.lefticon,'yellow','blue',function(name){
 			console.log(this.iconname);
 			currentHandleStatus = handleStatus.dragingbuild;
 			frontWallAlpha = 0.3;
@@ -577,7 +615,7 @@ function layoutGroups(){
 		nodearray.push(miniroom);
 		i++
 	}
-	addPool(new IconNodeGroup(lefticonInfos.miniroom.groupname,2,276,200,130,'#C0F56E','blue',nodearray,false,iconSize.lefticon+2));
+	addPool(new IconNodeGroup(lefticonInfos.miniroom.groupname,2,236,200,170,'#C0F56E','blue',nodearray,false,iconSize.lefticon+2));
 }
 
 function groupBack(icongroupname,parentname){
@@ -590,10 +628,108 @@ function groupBack(icongroupname,parentname){
 
 function addWaiter(buildtype,build){ 
 	if(buildtype == buildTypes.bar){
-		var waiter = new EntityNode('barwaiter','waiter',[['img2326','img2328']],build.x+30,build.y-5,200);
+		var waiter = new ManNode('testman',[['img927','img37'],['img919','img1474'],
+									 ['img35','img37','img39'],['img917','img919','img921'],
+									 ['img924'],['img932'],
+									 ['img934']
+									 ],build.x+35,build.y+19);
+		waiter.setAction(manstatus.idle);
+		waiter.setDirect(Direct.down);
 		build.waiter = waiter;
 		var tesk = new EntityNode('bartesk','tesk','img2412',build.x+15,build.y+2,200);
 		build.furnitiure = tesk;
+	}
+	if(buildtype == buildTypes.chinarestaurant){
+		var waiter = new ManNode('testman',[['img927','img37'],['img919','img1474'],
+									 ['img35','img37','img39'],['img917','img919','img921'],
+									 ['img924'],['img932'],
+									 ['img934']
+									 ],build.x+31,build.y+17);
+		waiter.setAction(manstatus.idle);
+		waiter.setDirect(Direct.down);
+		build.waiter = waiter;
+		var tesk = new EntityNode('bartesk','tesk','img2412',build.x+15,build.y+2,200);
+		build.furnitiure = tesk;
+	}
+	if(buildtype == buildTypes.japanrestaurant){
+		var waiter = new ManNode('testman',[['img927','img37'],['img919','img1474'],
+									 ['img35','img37','img39'],['img917','img919','img921'],
+									 ['img924'],['img932'],
+									 ['img934']
+									 ],build.x+31,build.y+17);
+		waiter.setAction(manstatus.idle);
+		waiter.setDirect(Direct.down);
+		build.waiter = waiter;
+		var tesk = new EntityNode('bartesk','tesk','img2344',build.x+15,build.y+2,200);
+		build.furnitiure = tesk;
+	}
+	if(buildtype == buildTypes.westrestaurant){
+		var waiter = new ManNode('testman',[['img927','img37'],['img919','img1474'],
+									 ['img35','img37','img39'],['img917','img919','img921'],
+									 ['img924'],['img932'],
+									 ['img934']
+									 ],build.x+31,build.y+17);
+		waiter.setAction(manstatus.idle);
+		waiter.setDirect(Direct.down);
+		build.waiter = waiter;
+		var tesk = new EntityNode('bartesk','tesk','img2412',build.x+15,build.y+2,200);
+		build.furnitiure = tesk;
+	}
+	if(buildtype == buildTypes.market){
+		var waiter = new ManNode('testman',[['img927','img37'],['img919','img1474'],
+									 ['img35','img37','img39'],['img917','img919','img921'],
+									 ['img924'],['img932'],
+									 ['img934']
+									 ],build.x+59,build.y+54);
+		waiter.setAction(manstatus.idle);
+		waiter.setDirect(Direct.left);
+		build.waiter = waiter;
+		var tesk = new EntityNode('cashierdesk','desk','img2511',build.x+15+21,build.y+2+38,200);
+		build.furnitiure = tesk;
+	}
+	if(buildtype == buildTypes.medical){
+		var waiter = new ManNode('testman',[['img927','img37'],['img919','img1474'],
+									 ['img35','img37','img39'],['img917','img919','img921'],
+									 ['img924'],['img932'],
+									 ['img934']
+									 ],build.x+52,build.y+24);
+		waiter.setAction(manstatus.idle);
+		waiter.setDirect(Direct.down);
+		build.waiter = waiter;
+	}
+	if(buildtype == buildTypes.spa){
+		var waiter = new ManNode('testman',[['img927','img37'],['img919','img1474'],
+									 ['img35','img37','img39'],['img917','img919','img921'],
+									 ['img924'],['img932'],
+									 ['img934']
+									 ],build.x+37,build.y+9);
+		waiter.setAction(manstatus.idle);
+		waiter.setDirect(Direct.down);
+		build.waiter = waiter;
+	}
+	if(buildtype == buildTypes.receptioncenter){
+		var waiter = new ManNode('testman',[['img927','img37'],['img919','img1474'],
+									 ['img35','img37','img39'],['img917','img919','img921'],
+									 ['img924'],['img932'],
+									 ['img934']
+									 ],build.x+31,build.y+17);
+		waiter.setAction(manstatus.idle);
+		waiter.setDirect(Direct.down);
+		build.waiter = waiter;
+		var desk = new EntityNode('bartesk','tesk','img442',build.x+15,build.y+2,200);
+		desk.isturn = true;
+		build.furnitiure = desk;
+		
+		var waiter2 = new ManNode('testman',[['img927','img37'],['img919','img1474'],
+									 ['img35','img37','img39'],['img917','img919','img921'],
+									 ['img924'],['img932'],
+									 ['img934']
+									 ],build.x+31,build.y+17);
+		waiter2.setAction(manstatus.idle);
+		waiter2.setDirect(Direct.left);
+		build.waiter2 = waiter2;
+		var desk2 = new EntityNode('bartesk','tesk','img442',build.x+15,build.y+2,200);
+		build.furnitiure2 = desk2;
 	}
 }
 

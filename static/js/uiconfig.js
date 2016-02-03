@@ -15,6 +15,8 @@ var baseRhombusWidth = 48;
 var baseRhombusHeight = 24;
 var screenTiles = 5;
 
+var doorwidth = 5;
+
 var zeroX = 0;
 var zeroY = 0;
 
@@ -110,6 +112,7 @@ var buildTypes ={
 	roomMiniIcecream:2001,
 	roomMiniHotdog:2002,
 	roomMiniSagsage:2003,
+	roomMiniClearroom:2004,
 	
 	hyacinth:3001,//风信子
 	canna:3002,//美人蕉
@@ -183,7 +186,7 @@ var builddata = {
 		floor:[0,0,'img804','img807','img807'],
 		leftwall:[0,-25,'img1626','img1626','img1626'],
 		rightwall:[47,-24,'img1627','img1627','img1627'],
-		furniture1:[5,-5,'img2344','img2344','img2344'],
+		//furniture1:[5,-5,'img2344','img2344','img2344'],
 		furniture2:[35,5,'img2353','img2353','img2353'],
 	},
 	1010:{    //sap
@@ -214,10 +217,19 @@ var builddata = {
 	1014:{  //golfyard
 		floor:[0,0,'img774','img776','img762'],
 	},
+	1108:{    //receptioncenter
+		floor:[0,0,'img285','img760','img762'],
+		leftwall:[0,-21,'img283','img1544','img1541'],
+		rightwall:[47,-24,'img282','img1543','img1540'],
+		//furniture1:[70,2,'img2310','img2310','img2310'],
+		//furniture2:[54,9,'img2305','img2305','img2305'],
+		//furniture3:[49,17,'img2308','img2308','img2308'],
+	},
 	
 	2001:{icecream:[7,-45,'img1603']},//icecream
 	2002:{hotdog:[3,-30,'img1605']},
 	2003:{sausage:[8,-22,'img1607']},//sausage
+	2004:{clearroom:[3,-30,'img1611']}, //clearroom
 	
 	3001:{hyacinth:[18,-9,'img729']}, //风信子
 	3002:{canna:[14,-9,'img731']}, // 美人蕉
@@ -291,8 +303,9 @@ var houseInfos ={
 	lodge_house:{iconnodename:'lv2_house_noed',name:'度假屋', housetype:buildTypes.lodge,   price:2500,note:'风格独特的草屋 ',url:'img2198',tileurl:'img2198',groupname:'HOUSE_GROUP',floorarea:6},
 };
 var carpetInfos ={
-	lv1carpet:{iconnodename:'lv1_carpet_noed',name:'织花地毯',    price:1500,note:'价格合适的瓷砖地板',url:'img690',tileurl:'img690',groupname:'CARPET_GROUP'},
-	lv2carpet:{iconnodename:'lv2_carpet_noed',name:'织锦地毯',    price:2500,note:'价格合适的瓷砖地板',url:'img692',tileurl:'img692',groupname:'CARPET_GROUP'},
+	carpet1:{iconnodename:'lv1_carpet_noed',name:'条纹地毯',    price:1200,note:'价格合适的条纹地毯',url:'img284',tileurl:'img284',groupname:'CARPET_GROUP'},
+	carpet2:{iconnodename:'lv2_carpet_noed',name:'织花地毯',    price:1500,note:'典雅的织花地毯',url:'img690',tileurl:'img690',groupname:'CARPET_GROUP'},
+	carpet3:{iconnodename:'lv3_carpet_noed',name:'织锦地毯',    price:2500,note:'高档的织锦地毯',url:'img692',tileurl:'img692',groupname:'CARPET_GROUP'},
 };
 
 var lawnInfos = {
@@ -320,12 +333,16 @@ var restaurantInfos = {
 	market:{iconnodename:'lv10_urant_noed',name:'超市', housetype:buildTypes.market,    price:500,note:'购物天堂',url:'img2210',tileurl:'img2210',groupname:'RESTAURANT_GROUP',floorarea:9},   
 	swimmingpool:{iconnodename:'lv10_urant_noed',name:'游泳池', housetype:buildTypes.swimmingpool,    price:500,note:'游泳爱好者',url:'img2212',tileurl:'img2212',groupname:'RESTAURANT_GROUP',floorarea:12},   
 	golfyard:{iconnodename:'lv10_urant_noed',name:'高尔夫球场', housetype:buildTypes.golfyard,    price:500,note:'高尔夫球场',url:'img2214',tileurl:'img2214',groupname:'RESTAURANT_GROUP',floorarea:16},   
+	receptioncenter:{iconnodename:'lv11_urant_noed',name:'接待中心', housetype:buildTypes.receptioncenter,    price:500,note:'接待中心',url:'img2214',tileurl:'img2214',groupname:'RESTAURANT_GROUP',floorarea:8},   
 };
 
+//var  receptioncenter ={iconnodename:'lv11_urant_noed',name:'接待中心', housetype:buildTypes.golfyard,    price:500,note:'高尔夫球场',url:'img2214',tileurl:'img2214',groupname:'RESTAURANT_GROUP',floorarea:8};   
+var receptionCenter = null;
 var miniroomInfos ={
 	icecream_miniroom:{iconnodename:'icecream_miniroom_noed',name:'冰激凌店', housetype:buildTypes.roomMiniIcecream,    price:1500,note:'价格合适的瓷砖地板',url:'img2226',tileurl:'img1603',groupname:'MINIROOM_GROUP',floorarea:1},
 	hotdog_miniroom:{iconnodename:'hotdog_miniroom_noed',name:'热狗店',       housetype:buildTypes.roomMiniHotdog,  price:2500,note:'价格合适的瓷砖地板',url:'img2228',tileurl:'img1605',groupname:'MINIROOM_GROUP',floorarea:1},
 	sausage_miniroom:{iconnodename:'sausage_miniroom_noed',name:'墨西哥烤肠', housetype:buildTypes.roomMiniSagsage,   price:2500,note:'价格合适的瓷砖地板',url:'img2230',tileurl:'img1607',groupname:'MINIROOM_GROUP',floorarea:1},
+	clear_miniroom:{iconnodename:'clear_miniroom_noed',name:'保洁室',         housetype:buildTypes.roomMiniClearroom,  price:2500,note:'保洁人员工作室',url:'img460',tileurl:'img1611',groupname:'MINIROOM_GROUP',floorarea:1},
 };
 
 var bottomsize ={
@@ -376,6 +393,7 @@ var manstatus ={
  */
 var warntext ={
 	build_inarea:'建筑区域内有建筑物，不能建造',
+	build_outarea:'超出区域，不能建造',
 	build_destory:'已经拆除',
 	build_rotate:'旋转方向',
 	build_success:'升级成功',
