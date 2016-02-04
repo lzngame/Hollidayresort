@@ -13,7 +13,7 @@ function updateDraw(ctx){
 				var floor = floorpool[id];
 				floor.draw(ctx);
 			}
-			drawBackwall(ctx,wallImg,mapInitPosx-1,mapInitPosy-1,mapLvWidth+1,mapLvWidth+1);
+			drawBackwall(ctx,wallImg,mapInitPosx-1,mapInitPosy-1,userinfo.buildarealv.width+1,userinfo.buildarealv.width+1);
 	
 			var hadDraw = 0;
 			while(buildNums > 0 && hadDraw < buildNums){
@@ -38,7 +38,7 @@ function updateDraw(ctx){
  					entity.draw(ctx);
  				} 
  			}
-			drawFrontwall(ctx,wallImg,mapInitPosx-1,mapInitPosy-1,mapLvWidth+1,mapLvWidth+1);
+			drawFrontwall(ctx,wallImg,mapInitPosx-1,mapInitPosy-1,userinfo.buildarealv.width+1,userinfo.buildarealv.width+1);
 			
 			for(var name in layoutBgPool){
 				var itemnode = layoutBgPool[name];

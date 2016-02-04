@@ -28,7 +28,7 @@ BuildNode.prototype.IsInFloorspace = function(xpos,ypos){
 	return isInFloorspce(xpos,ypos,this.floorspace);
 };
 
-BuildNode.prototype.getDrawData = function(){
+/*BuildNode.prototype.getDrawData = function(){
 	var offsety = 1;
 	var w =1;
 	var h =1;
@@ -65,7 +65,7 @@ BuildNode.prototype.getDrawData = function(){
 					buildtype:this.buildtype
 					};
 	return objdata;
-};
+};*/
 
 BuildNode.prototype.draw = function(ctx) {
 	var databuild = builddata[this.buildtype];
@@ -121,11 +121,6 @@ BuildNode.prototype.upLv = function(){
 };
 
 
-function getSizeToMap(initw,inith){
-	var nw = Math.round(initw/initTileSize);
-	var nh = Math.round(inith/initTileSize);
-	return {w:nw * baseRhombusHeight,h:nh*baseRhombusHeight};
-}
 
 function EntityNode(name,type,data,x,y,frameFps){
 	this.frameFps = frameFps || DEFAULT_FPS;
@@ -184,10 +179,10 @@ EntityNode.prototype.draw = function(ctx){
 };
 
 
-EntityNode.prototype.getDrawData = function(){
+/*EntityNode.prototype.getDrawData = function(){
 	var objdata = {id:this.id,name:this.getFrame(),x:this.x,y:this.y,type:this.ntype};
 	return objdata;
-};
+};*/
 
 function EntityFootNode(name,type,data,x,y,frameFps,autodel,lastFunc,lastdata){
 	this.frameFps = frameFps ;
@@ -1085,11 +1080,16 @@ function HandleInfoMenu(name,x,y){
 	destoryBtn.closeData = this;
 	
 	var updateBtn = new IconTxtBtn(this.namesObj.btnupdatename,this.x+70,this.y+55,50,20,'img3044',buttontextName.handle_uplv,'blue',function(){
+		userinfo.money -= currentHandleNode.data.uplv2;
+		layoutBgPool['numnode'].setTxt(userinfo.money.toString());
 		this.closeData.hide(false);
 		if(currentHandleNode.upLv())
 			new ToastInfo('mytoast',currentHandleNode.data.name+warntext.build_success,-130,100,1500);
 		else
 			new ToastInfo('mytoast',currentHandleNode.data.name+warntext.build_maxlv,-130,100,1500);
+		if(currentHandleNode.buildtype == buildTypes.receptioncenter){
+			setReceptionPos();
+		}
 	});
 	updateBtn.closeData = this;
 	
@@ -1144,7 +1144,6 @@ HandleInfoMenu.prototype.hide = function(isvisible){
 		deleteEntity(nowHandleNode16);
 		nowHandleNode16 = null;
 	}
-	
 }
 
 /*

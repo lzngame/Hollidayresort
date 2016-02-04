@@ -56,8 +56,7 @@ Ext.define('Resort.controller.Main',{
 		
 		initUpdate(1,function(){
 			ctx.clearRect(0,0,stageWidth,stageHeight);
-			//
-			//drawRhombusMap2(ctx,mapWTiles,mapHTiles,'blue','red');
+			//drawRhombusMap2(ctx,userinfo.buildarealv.xEdageTileNums,userinfo.buildarealv.yEdageTileNums,'blue','red');
 			drawBg(ctx,'img162bmp');
 			//drawTileMap(ctx,currentTileType,mapWTiles,mapHTiles);
 			updateDraw(ctx);
@@ -156,8 +155,6 @@ function panelDrag(ev) {
 				}
 			}
 			tmpnode.setPos(dataobj.x,dataobj.y);
-			console.log(tmpnode.getDrawData());
-			console.log('----------------');
 		}
 		if (ev.type == 'dragend') {
 			delete entitys[tmpnode.id];
@@ -217,16 +214,25 @@ function setReceptionPos(){
 	if(floorExist2 != null)
 		delete floorpool[floorExist2.id];
 	
-	var wallwidth = (mapLvWidth+2-doorwidth)/2;
+	var wallwidth = (userinfo.buildarealv.width+2-doorwidth)/2;
 	var posx = mapInitPosx+wallwidth+(doorwidth-2);
-	var posy = mapInitPosy+mapLvWidth-3;
+	var posy = mapInitPosy+userinfo.buildarealv.width-3;
 	receptionCenter.setPosCoor(posx,posy);
 	receptionCenter.waiter.setPos(receptionCenter.x +100,receptionCenter.y + 52);
 	receptionCenter.furnitiure.setPos(receptionCenter.x +79,receptionCenter.y + 28);
 	receptionCenter.waiter2.setPos(receptionCenter.x +33,receptionCenter.y + 22);
 	receptionCenter.furnitiure2.setPos(receptionCenter.x +5,receptionCenter.y);
-	var floor = new FloorNode('lawn',carpetInfos.carpet1.tileurl,receptionCenter.posx-1,receptionCenter.posy,carpetInfos.carpet1);
-	var floor = new FloorNode('lawn',carpetInfos.carpet1.tileurl,receptionCenter.posx,receptionCenter.posy+4,carpetInfos.carpet1);
+	
+	var tiletype = null;
+	if(receptionCenter.lv == 1){
+		tiletype = carpetInfos.carpet1.tileurl;
+	}else if(receptionCenter.lv == 2){
+		tiletype = carpetInfos.carpet2.tileurl;
+	}else{
+		tiletype = carpetInfos.carpet3.tileurl;
+	}
+	var floor = new FloorNode('lawn',tiletype,receptionCenter.posx-1,receptionCenter.posy,carpetInfos.carpet1);
+	var floor = new FloorNode('lawn',tiletype,receptionCenter.posx,receptionCenter.posy+4,carpetInfos.carpet1);
 };
 
 function panelTap(ev){
@@ -340,52 +346,8 @@ function panelTap(ev){
 }
 var testman = null;
 function LayoutUI(ctx){
-	var imgbg   = new PngNode('moneybg','img3697',layoutconfig.headsize+1,1,stageWidth-layoutconfig.headsize,22);
-	var imgnode = new PngNode('moneyicon','img302',layoutconfig.headsize+3,5,layoutconfig.moneyiconsize,layoutconfig.moneyiconsize);
-	var numnode = new PngNumNode('numnode','0.1+2--3:456789',layoutconfig.headsize+layoutconfig.moneyiconsize+5,5);
-	var lvstar = new LvNode('lvstar','img3252',layoutconfig.headsize+layoutconfig.moneyiconsize+5+100,5,1,layoutconfig.lvstarsize);
-	
-		
-	addPool(new IconInfoNode('btn1',stageWidth-64,23,64,22,'img3044','f18_18','f54_54',120,function(name){
-					console.log(this.iconname);
-		},'yellow'));
-	addPool(new IconInfoNode('btn2',stageWidth-2*64,23,64,22,'img3044','f18_18','f54_54',50,function(name){
-					console.log(this.iconname);
-					orderDraw();
-					
-		},'yellow'));
-	addPool(new IconInfoNode('btn3',stageWidth-3*64,23,64,22,'img3044','f18_18','f54_54',8,function(name){
-					console.log(this.iconname);
-					//Ext.Msg.alert('请先选择虫族');
-					shopMenu.hide(true);
-					shopMenu.addContentImg('img208',20,70,68,59);
-					shopMenu.addContentTxt('扩展为20×20',122,90,'yellow');
-					shopMenu.addContentTxt('需要花费 $ 25000',122,110,'yellow');
-					shopMenu.addContentBtn('购买','img3044',60,206,48,20,'black',function(){
-						console.log('extend map');
-						mapLvWidth = 21;
-						mapWTiles = 48;
-						mapHTiles = 30;
-						setEdage();
-						shopMenu.hide(false);
-						setReceptionPos();
-					});
-					shopMenu.addContentBtn('取消','img3044',160,206,48,20,'black',function(){
-						shopMenu.hide(false);
-					});
-		},'yellow'));
-		
-		
-	addPool(new IconNode('Head','img300',0,0,50,50,'yellow','blue',function(name){
-		console.log(this.iconname);
-		layoutBgPool['lvstar'].setLv(Math.round(Math.random()*10));
-		layoutBgPool['numnode'].setTxt(Math.floor(Math.random()*10000).toString());
-		},'red'));
-	var bottomRightWidth = (stageWidth - bottomsize.rilisize -47)/4;
-	for(var i=0;i<4;i++){
-		addPool(new ImgNode('bottom'+i.toString(),'img3516',bottomsize.rilisize+47+i*bottomRightWidth,stageHeight-40,bottomRightWidth-2,38));
-	}
-	
+	layTopIconHead();	
+	layoutBottomFourButton();
 	layourHandleInfo();
 	
 	shopMenu = new WindowPanel('testwinpanel',55,100,250,300);
@@ -402,9 +364,81 @@ function LayoutUI(ctx){
 	addReceptioncenter();
 }
 
+function layTopIconHead(){
+	var imgbg   = new PngNode('moneybg','img3697',layoutconfig.headsize+1,1,stageWidth-layoutconfig.headsize,22);
+	var imgnode = new PngNode('moneyicon','img302',layoutconfig.headsize+3,5,layoutconfig.moneyiconsize,layoutconfig.moneyiconsize);
+	var numnode = new PngNumNode('numnode',userinfo.money,layoutconfig.headsize+layoutconfig.moneyiconsize+5,5);
+	var lvstar =  new LvNode('lvstar','img3252',layoutconfig.headsize+layoutconfig.moneyiconsize+5+100,userinfo.lv,1,layoutconfig.lvstarsize);
+	
+		
+	addPool(new IconInfoNode('btn1',stageWidth-64,23,64,22,'img3044','f18_18','f54_54',120,function(name){
+					console.log(this.iconname);
+		},'yellow'));
+	addPool(new IconInfoNode('btn2',stageWidth-2*64,23,64,22,'img3044','f18_18','f54_54',50,function(name){
+					console.log(this.iconname);
+					orderDraw();
+					
+		},'yellow'));
+	addPool(new IconInfoNode('btn3',stageWidth-3*64,23,64,22,'img3044','f18_18','f54_54',8,function(name){
+					console.log(this.iconname);
+		},'yellow'));
+		
+		
+	addPool(new IconNode('Head','img300',0,0,50,50,'yellow','blue',function(name){
+		console.log(this.iconname);
+		},'red'));
+	
+	inituserdata();
+}
+
+function inituserdata(){
+	layoutBgPool['lvstar'].setLv(userinfo.lv);
+	layoutBgPool['numnode'].setTxt(userinfo.money.toString());
+}
+
+function layoutBottomFourButton() {
+	var bottomRightWidth = 40;
+	addPool(new ImgNode('bottomSetconfig', 'img3516', bottomsize.rilisize + 47 + 0 * 40, stageHeight - 37, bottomRightWidth - 1, 38, function() {
+		var nextlv = null;
+		if (userinfo.buildarealv.lv == 1) {
+			nextlv = extendsBuildConfig.lv2;
+		} else if (userinfo.buildarealv.lv == 2) {
+			nextlv = extendsBuildConfig.lv3;
+		}
+		if (nextlv == null) {
+			new ToastInfo('mytoast', warntext.maxbuildarea, -130, 100, 1500);
+		} else {
+			shopMenu.hide(true);
+			shopMenu.addContentImg('img208', 20, 70, 68, 59);
+			shopMenu.addContentTxt(nextlv.note, 122, 90, 'yellow');
+			shopMenu.addContentTxt(nextlv.note2 + nextlv.price.toString(), 122, 110, 'yellow');
+			shopMenu.addContentBtn(buttontextName.buy, 'img3044', 60, 206, 48, 20, 'black', function() {
+				console.log('extend map');
+				userinfo.buildarealv = nextlv;
+				setEdage();
+				shopMenu.hide(false);
+				setReceptionPos();
+				new ToastInfo('mytoast', warntext.build_extend_success, -130, 100, 1500);
+			});
+			shopMenu.addContentBtn(buttontextName.cancel, 'img3044', 160, 206, 48, 20, 'black', function() {
+				shopMenu.hide(false);
+			});
+		}
+	}));
+	addPool(new ImgNode('bottomExtend', 'img3519', bottomsize.rilisize + 47 + 1 * 40, stageHeight - 37, bottomRightWidth - 1, 38, function() {
+		console.log(this.name);
+	}));
+	addPool(new ImgNode('bottomTemp1', 'img3522', bottomsize.rilisize + 47 + 2 * 40, stageHeight - 37, bottomRightWidth - 1, 38, function() {
+		console.log(this.name);
+	}));
+	addPool(new ImgNode('bottomTemp3', 'img3535', bottomsize.rilisize + 47 + 3 * 40, stageHeight - 37, bottomRightWidth - 1, 38, function() {
+		console.log(this.name);
+	}));
+}
+
 function setEdage(){
-	rightEdge = baseRhombusHeight* mapWTiles -stageWidth;
-	bottomEdge = baseRhombusHeight * mapHTiles -stageHeight;
+	rightEdge = baseRhombusHeight* userinfo.buildarealv.xEdageTileNums -stageWidth;
+	bottomEdge = baseRhombusHeight * userinfo.buildarealv.yEdageTileNums -stageHeight;
 }
 
 var activeLeftIconnode = null;
@@ -420,14 +454,13 @@ function layourHandleInfo(){
 	stopHandleBtn.hide();
 	handleInfoMenu = new HandleInfoMenu('handleInfo',stageWidth - 205,stageHeight - 130-40);
 	handleInfoMenu.hide(false);
-	
 }
 
 
 function layoutLeftIcons(ctx){
 	var space = 4;
 	var inity = 5;
-	var bg_lefticons   = new ShapeRect('lefticonsbg',colors.lefticonsbg,'blue',1,layoutconfig.headsize+1,iconSize.lefticon+4,355,4);
+	var bg_lefticons   = new ShapeRect('lefticonsbg',colors.lefticonsbg,'blue',1,layoutconfig.headsize+1,iconSize.lefticon+4,275,4);
 	var dis = 0;
 	for(var name in lefticonInfos){
 		var obj = lefticonInfos[name];
@@ -463,13 +496,19 @@ function layoutGroups(){
 		var obj = floorInfos[name];
 		var floor = new IconNode(obj.iconnodename,obj.url,2,i*space+55,iconSize.lefticon,iconSize.lefticon,'yellow','blue',function(name){
 			console.log(this.iconname);
-			currentTileType = this.floortype;
+			currentHandleStatus = handleStatus.tile;
+			var data = floorInfos[this.dataname];
+			currentBuildfloor = data.tileurl;
+			frontWallAlpha = 0.3;
+			currentBuildData = data;
+			stopHandleBtn.show();
 			groupBack(this.groupname,lefticonInfos.floor.name);
 		});
 		floor.txtdata.push(obj.name+"  $:"+obj.price.toString());
 		floor.txtdata.push(obj.note);
 		floor.floortype = obj.floortype;
 		floor.groupname = obj.groupname;
+		floor.dataname = name;
 		nodearray.push(floor);
 		i++
 	}
@@ -500,7 +539,6 @@ function layoutGroups(){
 	nodearray = [];
 	i = 0;
 	for(var name in houseInfos){
-		
 		var obj = houseInfos[name];
 		var house = new IconNode(obj.iconnodename,obj.url,2,i*space+135,iconSize.lefticon,iconSize.lefticon,'yellow','blue',function(name){
 			console.log(this.iconname);
@@ -536,7 +574,7 @@ function layoutGroups(){
 		});
 		carpet.txtdata.push(obj.name+"  $:"+obj.price.toString());
 		carpet.txtdata.push(obj.note);
-		carpet.lock = true;
+		//carpet.lock = true;
 		carpet.groupname = obj.groupname;
 		carpet.dataname = name;
 		nodearray.push(carpet);

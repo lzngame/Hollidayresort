@@ -5,9 +5,14 @@ function drawBg(ctx,bgImg){
 			drawImg(ctx,bgImg,i*size.w+zeroX,j*size.h+zeroY);
 		}
 	}
-	//drawBox(ctx,'img413',mapInitPosx-1,mapInitPosy-1,mapLvWidth+2,mapLvWidth+2);
-	drawBox(ctx,'img686',mapInitPosx-2,mapInitPosy-2,mapLvWidth+4,mapLvWidth+4);
-	drawRect(ctx,currentTileType,mapInitPosx,mapInitPosy,mapLvWidth,mapLvWidth);
+	drawBox(ctx,'img686',mapInitPosx-1,mapInitPosy-1,userinfo.buildarealv.width+2,userinfo.buildarealv.width+2);
+	drawBox(ctx,'img686',mapInitPosx-2,mapInitPosy-2,userinfo.buildarealv.width+4,userinfo.buildarealv.width+4);
+	if(currentHandleStatus != handleStatus.normal){
+		ctx.globalAlpha = 0.5;
+		drawRect(ctx,currentTileType,mapInitPosx,mapInitPosy,userinfo.buildarealv.width,userinfo.buildarealv.width);
+		ctx.globalAlpha = 1;
+	}
+
 	
 	//drawImg(ctx,'img1237',300+zeroX,258+zeroY);
 	//drawImg(ctx,'img208',300+zeroX,318+zeroY);
@@ -60,8 +65,8 @@ function drawBox(ctx,name,x1,y1,w,h){
 
 function drawBackwall(ctx,name,x,y,w,h){
 	ctx.globalAlpha = 1;
-	drawLine2(ctx,name,mapInitPosx+mapLvWidth,mapInitPosy-1,mapLvWidth+2,Direct.left);
-	drawLine2(ctx,name,mapInitPosx+mapLvWidth,mapInitPosy,mapLvWidth,Direct.down);
+	drawLine2(ctx,name,mapInitPosx+userinfo.buildarealv.width,mapInitPosy-1,userinfo.buildarealv.width+2,Direct.left);
+	drawLine2(ctx,name,mapInitPosx+userinfo.buildarealv.width,mapInitPosy,userinfo.buildarealv.width,Direct.down);
 	
 	ctx.globalAlpha = 1;
 }
@@ -69,10 +74,10 @@ function drawBackwall(ctx,name,x,y,w,h){
 function drawFrontwall(ctx,name,x,y,w,h){
 	ctx.globalAlpha = frontWallAlpha;
 	
-	var wallwidth = (mapLvWidth+2-doorwidth)/2;
-	drawLine2(ctx,name,mapInitPosx-1,mapInitPosy,mapLvWidth,Direct.down);
-	drawLine2(ctx,name,mapInitPosx+mapLvWidth,mapInitPosy+mapLvWidth,wallwidth,Direct.left);
-	drawLine2(ctx,name,mapInitPosx+mapLvWidth-doorwidth-wallwidth,mapInitPosy+mapLvWidth,wallwidth,Direct.left);
+	var wallwidth = (userinfo.buildarealv.width+2-doorwidth)/2;
+	drawLine2(ctx,name,mapInitPosx-1,mapInitPosy,userinfo.buildarealv.width,Direct.down);
+	drawLine2(ctx,name,mapInitPosx+userinfo.buildarealv.width,mapInitPosy+userinfo.buildarealv.width,wallwidth,Direct.left);
+	drawLine2(ctx,name,mapInitPosx+userinfo.buildarealv.width-doorwidth-wallwidth,mapInitPosy+userinfo.buildarealv.width,wallwidth,Direct.left);
 	
 	
 	ctx.globalAlpha = 1;

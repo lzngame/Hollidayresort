@@ -121,9 +121,9 @@ function getOffsetXY(floorarea,xpos,ypos) {
  */
 function checkEdage(xpos,ypos){
 	return (xpos < mapInitPosx ||
-		   xpos > mapInitPosx + mapLvWidth ||
+		   xpos > mapInitPosx + userinfo.buildarealv.width ||
 		   ypos < mapInitPosy ||
-		   ypos > mapInitPosy + mapLvWidth);
+		   ypos > mapInitPosy + userinfo.buildarealv.width);
 }
 
 /*
