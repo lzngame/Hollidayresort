@@ -99,7 +99,8 @@ var NodeTypeClass ={
 	build:'BUILDING_TILE',
 	num:'NUMBER_NODE',
 	floor:'FLOOR_NODE',
-	menu:'MENU_NODE'
+	menu:'MENU_NODE',
+	plant:'PLANT_NODE',
 };
 
 var Direct ={
@@ -289,78 +290,86 @@ var colors ={
 	lefticonactive:'#333333'
 };
 
-
+var GroupType ={
+	floor:'FLOOR_GROUP',
+	plant:'PLANT_GROUP',
+	house:'HOUSE_GROUP',
+	carpet:'CARPET_GROUP',
+	lawn:'LAWN_GROUP',
+	restaurant:'RESTAURANT_GROUP',
+	miniroom:'MINIROOM_GROUP',
+};
 
 var lefticonInfos ={
-	floor:{name:'FLOOR_ICON',url:'img452',groupname:'FLOOR_GROUP'},
-	plant:{name:'PLANT_ICON',url:'img3212',groupname:'PLANT_GROUP'},
-	house:{name:'HOUSE_ICON',url:'img450',groupname:'HOUSE_GROUP'},
-	carpet:{name:'CARPET',url:'img3154',groupname:'CARPET_GROUP'},
-	lawn:{name:'LAWN',url:'img3160',groupname:'LAWN_GROUP'},
-	restaurant:{name:'RESTAURANT_ICON',url:'img2196',groupname:'RESTAURANT_GROUP'},
-	miniroom:{name:'MINIROOM_ICON',url:'img2740',groupname:'MINIROOM_GROUP'},
+	floor:{name:'FLOOR_ICON',url:'img452',groupname:GroupType.floor},
+	plant:{name:'PLANT_ICON',url:'img3212',groupname:GroupType.plant},
+	house:{name:'HOUSE_ICON',url:'img450',groupname:GroupType.house},
+	carpet:{name:'CARPET',url:'img3154',groupname:GroupType.carpet},
+	lawn:{name:'LAWN',url:'img3160',groupname:GroupType.lawn},
+	restaurant:{name:'RESTAURANT_ICON',url:'img2196',groupname:GroupType.restaurant},
+	miniroom:{name:'MINIROOM_ICON',url:'img2740',groupname:GroupType.miniroom},
 };
 
 var floorInfos = {
-	lv1floor:{iconnodename:'lv1_floor_noed',name:'瓷砖地板',    price:500,note:'价格合适的瓷砖地板',url:'img694',tileurl:'img694',groupname:'FLOOR_GROUP'},
-	lv2floor:{iconnodename:'lv2_floor_noed',name:'深色大理石',  price:700,note:'漂亮的大理石地板',url:'img686',tileurl:'img686',groupname:'FLOOR_GROUP'},
-	lv3floor:{iconnodename:'lv3_floor_noed',name:'木地板',      price:1000,note:'舒适的木地板',url:'img697',tileurl:'img697',groupname:'FLOOR_GROUP'},
-	lv4floor:{iconnodename:'lv4_floor_noed',name:'红木地板',    price:1500,note:'高档的红木地板',url:'img699',tileurl:'img699',groupname:'FLOOR_GROUP'},
+	lv1floor:{iconnodename:'lv1_floor_noed',name:'瓷砖地板',    price:500,note:'价格合适的瓷砖地板',url:'img694',tileurl:'img694',groupname:GroupType.floor},
+	lv2floor:{iconnodename:'lv2_floor_noed',name:'深色大理石',  price:700,note:'漂亮的大理石地板',url:'img686',tileurl:'img686',groupname:GroupType.floor},
+	lv3floor:{iconnodename:'lv3_floor_noed',name:'木地板',      price:1000,note:'舒适的木地板',url:'img697',tileurl:'img697',groupname:GroupType.floor},
+	lv4floor:{iconnodename:'lv4_floor_noed',name:'红木地板',    price:1500,note:'高档的红木地板',url:'img699',tileurl:'img699',groupname:GroupType.floor},
 };
 var plantInfos = {
-	lv1plant:{iconnodename:'lv1_plant_noed',name:'风信子盆栽',  housetype:buildTypes.hyacinth  ,price:500,note:'价格合适的瓷砖地板',url:'img3209', tileurl:'img729',groupname:'PLANT_GROUP',floorarea:1},
-	lv2plant:{iconnodename:'lv2_plant_noed',name:'美人蕉盆栽',  housetype:buildTypes.canna  , 	  price:700,note:'漂亮的大理石地板',url:'img3212',tileurl:'img731',groupname:'PLANT_GROUP',floorarea:1},
-	lv3plant:{iconnodename:'lv3_plant_noed',name:'半夏盆栽',   housetype:buildTypes.pinellia  ,    price:800,note:'舒适的木地板',url:'img3215',tileurl:'img733',groupname:'PLANT_GROUP',floorarea:1},
-	lv4plant:{iconnodename:'lv4_plant_noed',name:'富贵竹盆栽',  housetype:buildTypes.bamboo  ,   price:1000,note:'高档的红木地板',url:'img3218',tileurl:'img735',groupname:'PLANT_GROUP',floorarea:1},
-	lv5plant:{iconnodename:'lv5_plant_noed',name:'雪松',    housetype:buildTypes.cedartree  , 		price:1500,note:'价格合适的瓷砖地板',url:'img3221',tileurl:'img737',groupname:'PLANT_GROUP',floorarea:1},
-	lv6plant:{iconnodename:'lv6_plant_noed',name:'梧桐树',  housetype:buildTypes.phoenixtree  , price:1700,note:'漂亮的大理石地板',url:'img3230',tileurl:'img739',groupname:'PLANT_GROUP',floorarea:1},
-	lv7plant:{iconnodename:'lv7_plant_noed',name:'枫树',  housetype:buildTypes.mapletree  ,     price:2000,note:'舒适的木地板',url:'img3227',tileurl:'img742',groupname:'PLANT_GROUP',floorarea:1},
-	lv8plant:{iconnodename:'lv8_plant_noed',name:'棕榈树',   housetype:buildTypes.windmillpalm  ,  price:2500,note:'高档的红木地板',url:'img3224',tileurl:'img2868',groupname:'PLANT_GROUP',floorarea:1},
+	lv1plant:{iconnodename:'lv1_plant_noed',name:'风信子盆栽',  housetype:buildTypes.hyacinth  ,price:500,note:'价格合适的瓷砖地板',url:'img3209', tileurl:'img729',groupname:GroupType.plant,floorarea:1},
+	lv2plant:{iconnodename:'lv2_plant_noed',name:'美人蕉盆栽',  housetype:buildTypes.canna  , 	  price:700,note:'漂亮的大理石地板',url:'img3212',tileurl:'img731',groupname:GroupType.plant,floorarea:1},
+	lv3plant:{iconnodename:'lv3_plant_noed',name:'半夏盆栽',   housetype:buildTypes.pinellia  ,    price:800,note:'舒适的木地板',url:'img3215',tileurl:'img733',groupname:GroupType.plant,floorarea:1},
+	lv4plant:{iconnodename:'lv4_plant_noed',name:'富贵竹盆栽',  housetype:buildTypes.bamboo  ,   price:1000,note:'高档的红木地板',url:'img3218',tileurl:'img735',groupname:GroupType.plant,floorarea:1},
+	lv5plant:{iconnodename:'lv5_plant_noed',name:'雪松',    housetype:buildTypes.cedartree  , 		price:1500,note:'价格合适的瓷砖地板',url:'img3221',tileurl:'img737',groupname:GroupType.plant,floorarea:1},
+	lv6plant:{iconnodename:'lv6_plant_noed',name:'梧桐树',  housetype:buildTypes.phoenixtree  , price:1700,note:'漂亮的大理石地板',url:'img3230',tileurl:'img739',groupname:GroupType.plant,floorarea:1},
+	lv7plant:{iconnodename:'lv7_plant_noed',name:'枫树',  housetype:buildTypes.mapletree  ,     price:2000,note:'舒适的木地板',url:'img3227',tileurl:'img742',groupname:GroupType.plant,floorarea:1},
+	lv8plant:{iconnodename:'lv8_plant_noed',name:'棕榈树',   housetype:buildTypes.windmillpalm  ,  price:2500,note:'高档的红木地板',url:'img3224',tileurl:'img2868',groupname:GroupType.plant,floorarea:1},
 };
 var houseInfos ={
-	cottage_house:{iconnodename:'lv1_house_noed',name:'标准公寓',housetype:buildTypes.cottage,price:1500,note:'价格合适的公寓住房',url:'img2196',tileurl:'img2196',groupname:'HOUSE_GROUP',floorarea:4,uplv2:1200,uplv3:3000},
-	lodge_house:{iconnodename:'lv2_house_noed',name:'度假屋', housetype:buildTypes.lodge,   price:2500,note:'风格独特的草屋 ',url:'img2198',tileurl:'img2198',groupname:'HOUSE_GROUP',floorarea:6,uplv2:1200,uplv3:3000},
+	cottage_house:{iconnodename:'lv1_house_noed',name:'标准公寓',housetype:buildTypes.cottage,price:1500,note:'价格合适的公寓住房',url:'img2196',tileurl:'img2196',groupname:GroupType.house,floorarea:4,uplv2:1200,uplv3:3000},
+	lodge_house:{iconnodename:'lv2_house_noed',name:'度假屋', housetype:buildTypes.lodge,   price:2500,note:'风格独特的草屋 ',url:'img2198',tileurl:'img2198',groupname:GroupType.house,floorarea:6,uplv2:1200,uplv3:3000},
 };
 var carpetInfos ={
-	carpet1:{iconnodename:'lv1_carpet_noed',name:'条纹地毯',    price:1200,note:'价格合适的条纹地毯',url:'img284',tileurl:'img284',groupname:'CARPET_GROUP'},
-	carpet2:{iconnodename:'lv2_carpet_noed',name:'织花地毯',    price:1500,note:'典雅的织花地毯',url:'img690',tileurl:'img690',groupname:'CARPET_GROUP'},
-	carpet3:{iconnodename:'lv3_carpet_noed',name:'织锦地毯',    price:2500,note:'高档的织锦地毯',url:'img692',tileurl:'img692',groupname:'CARPET_GROUP'},
+	carpet1:{iconnodename:'lv1_carpet_noed',name:'条纹地毯',    price:1200,note:'价格合适的条纹地毯',url:'img284',tileurl:'img284',groupname:GroupType.carpet},
+	carpet2:{iconnodename:'lv2_carpet_noed',name:'织花地毯',    price:1500,note:'典雅的织花地毯',url:'img690',tileurl:'img690',groupname:GroupType.carpet},
+	carpet3:{iconnodename:'lv3_carpet_noed',name:'织锦地毯',    price:2500,note:'高档的织锦地毯',url:'img692',tileurl:'img692',groupname:GroupType.carpet},
 };
 
 var lawnInfos = {
-	lv1lawn:{iconnodename:'lv1_lawn_noed',name:'草坪',    price:500,note:'价格合适的瓷砖地板',url:'img3160', tileurl:'img400',groupname:'LAWN_GROUP'},
-	lv2lawn:{iconnodename:'lv2_lawn_noed',name:'草坪',  	  price:500,note:'漂亮的大理石地板',  url:'img3163',tileurl:'img703',groupname:'LAWN_GROUP'},
-	lv3lawn:{iconnodename:'lv3_lawn_noed',name:'草坪',    price:500,note:'舒适的木地板',      url:'img3166',tileurl:'img705',groupname:'LAWN_GROUP'},
-	lv4lawn:{iconnodename:'lv4_lawn_noed',name:'草坪',    price:500,note:'高档的红木地板',    url:'img3169',tileurl:'img707',groupname:'LAWN_GROUP'},
-	lv5lawn:{iconnodename:'lv5_lawn_noed',name:'草坪',    price:500,note:'价格合适的瓷砖地板', url:'img3172',tileurl:'img709',groupname:'LAWN_GROUP'},
-	lv6lawn:{iconnodename:'lv6_lawn_noed',name:'草坪',    price:500,note:'漂亮的大理石地板',   url:'img3175',tileurl:'img711',groupname:'LAWN_GROUP'},
-	lv7lawn:{iconnodename:'lv7_lawn_noed',name:'草坪',    price:500,note:'舒适的木地板',       url:'img3178',tileurl:'img713',groupname:'LAWN_GROUP'},
-	lv8lawn:{iconnodename:'lv8_lawn_noed',name:'草坪',    price:500,note:'高档的红木地板',     url:'img3181',tileurl:'img715',groupname:'LAWN_GROUP'},
-	lv9lawn:{iconnodename:'lv9_lawn_noed',name:'草坪',    price:500,note:'高档的红木地板',     url:'img3184',tileurl:'img717',groupname:'LAWN_GROUP'},
+	lv1lawn:{iconnodename:'lv1_lawn_noed',name:'草坪',    price:500,note:'价格合适的瓷砖地板',url:'img3160', tileurl:'img400',groupname:GroupType.lawn},
+	lv2lawn:{iconnodename:'lv2_lawn_noed',name:'草坪',  	  price:500,note:'漂亮的大理石地板',  url:'img3163',tileurl:'img703',groupname:GroupType.lawn},
+	lv3lawn:{iconnodename:'lv3_lawn_noed',name:'草坪',    price:500,note:'舒适的木地板',      url:'img3166',tileurl:'img705',groupname:GroupType.lawn},
+	lv4lawn:{iconnodename:'lv4_lawn_noed',name:'草坪',    price:500,note:'高档的红木地板',    url:'img3169',tileurl:'img707',groupname:GroupType.lawn},
+	lv5lawn:{iconnodename:'lv5_lawn_noed',name:'草坪',    price:500,note:'价格合适的瓷砖地板', url:'img3172',tileurl:'img709',groupname:GroupType.lawn},
+	lv6lawn:{iconnodename:'lv6_lawn_noed',name:'草坪',    price:500,note:'漂亮的大理石地板',   url:'img3175',tileurl:'img711',groupname:GroupType.lawn},
+	lv7lawn:{iconnodename:'lv7_lawn_noed',name:'草坪',    price:500,note:'舒适的木地板',       url:'img3178',tileurl:'img713',groupname:GroupType.lawn},
+	lv8lawn:{iconnodename:'lv8_lawn_noed',name:'草坪',    price:500,note:'高档的红木地板',     url:'img3181',tileurl:'img715',groupname:GroupType.lawn},
+	lv9lawn:{iconnodename:'lv9_lawn_noed',name:'草坪',    price:500,note:'高档的红木地板',     url:'img3184',tileurl:'img717',groupname:GroupType.lawn},
 };
 
 var restaurantInfos = {
-	sauna:{iconnodename:'lv1_urant_noed',name:'桑拿室', housetype:buildTypes.sauna,   price:500,note:'客人放松身心的好地方',url:'img2200',tileurl:'img2200',groupname:'RESTAURANT_GROUP',floorarea:4,uplv2:1200,uplv3:3000},
-	westrestaurant:{iconnodename:'lv2_urant_noed',name:'西餐厅', housetype:buildTypes.westrestaurant,	 price:500,note:'美味的西餐',url:'img2222',tileurl:'img2222',groupname:'RESTAURANT_GROUP',floorarea:4,uplv2:1200,uplv3:3000},
-	fitness:{iconnodename:'lv3_urant_noed',name:'健身房', housetype:buildTypes.fitness,    price:500,note:'健身爱好者',url:'img2202',tileurl:'img2202',groupname:'RESTAURANT_GROUP',floorarea:4,uplv2:1200,uplv3:3000},
-	bar:{iconnodename:'lv4_urant_noed',name:'酒吧', housetype:buildTypes.bar,   price:500,note:'客人休闲娱乐的场所',url:'img2208',tileurl:'img2208',groupname:'RESTAURANT_GROUP',floorarea:4,uplv2:1200,uplv3:3000},
-	gamezone:{iconnodename:'lv6_urant_noed',name:'游戏厅', housetype:buildTypes.gamezone, price:500,note:'游戏厅',url:'img2206',tileurl:'img2206',groupname:'RESTAURANT_GROUP',floorarea:4,uplv2:1200,uplv3:3000},
-	chinarestaurant:{iconnodename:'lv7_urant_noed',name:'中餐厅', housetype:buildTypes.chinarestaurant,      price:500,note:'美味的中餐',url:'img2218',tileurl:'img2218',groupname:'RESTAURANT_GROUP',floorarea:4,uplv2:1200,uplv3:3000},
-	japanrestaurant:{iconnodename:'lv8_urant_noed',name:'日本料理', housetype:buildTypes.japanrestaurant,    price:500,note:'日本料理',url:'img2220',tileurl:'img2220',groupname:'RESTAURANT_GROUP',floorarea:4,uplv2:1200,uplv3:3000},
-	spa:{iconnodename:'lv9_urant_noed',name:'Spa店', housetype:buildTypes.spa,    price:500,note:'女士的最爱',url:'img2226',tileurl:'img2226',groupname:'RESTAURANT_GROUP',floorarea:4,uplv2:1200,uplv3:3000},
-    medical:{iconnodename:'lv10_urant_noed',name:'医疗中心', housetype:buildTypes.medical,    price:500,note:'医疗中心',url:'img2216',tileurl:'img2216',groupname:'RESTAURANT_GROUP',floorarea:9,uplv2:1200,uplv3:3000},
-	market:{iconnodename:'lv10_urant_noed',name:'超市', housetype:buildTypes.market,    price:500,note:'购物天堂',url:'img2210',tileurl:'img2210',groupname:'RESTAURANT_GROUP',floorarea:9,uplv2:1200,uplv3:3000},   
-	swimmingpool:{iconnodename:'lv10_urant_noed',name:'游泳池', housetype:buildTypes.swimmingpool,    price:500,note:'游泳爱好者',url:'img2212',tileurl:'img2212',groupname:'RESTAURANT_GROUP',floorarea:12,uplv2:1200,uplv3:3000},   
-	golfyard:{iconnodename:'lv10_urant_noed',name:'高尔夫球场', housetype:buildTypes.golfyard,    price:500,note:'高尔夫球场',url:'img2214',tileurl:'img2214',groupname:'RESTAURANT_GROUP',floorarea:16,uplv2:1200,uplv3:3000},   
-	receptioncenter:{iconnodename:'lv11_urant_noed',name:'接待中心', housetype:buildTypes.receptioncenter,    price:500,note:'接待中心',url:'img2214',tileurl:'img2214',groupname:'RESTAURANT_GROUP',floorarea:8,uplv2:1200,uplv3:3000},   
+	sauna:{iconnodename:'lv1_urant_noed',name:'桑拿室', housetype:buildTypes.sauna,   price:500,note:'客人放松身心的好地方',url:'img2200',tileurl:'img2200',groupname:GroupType.restaurant,floorarea:4,uplv2:1200,uplv3:3000},
+	westrestaurant:{iconnodename:'lv2_urant_noed',name:'西餐厅', housetype:buildTypes.westrestaurant,	 price:500,note:'美味的西餐',url:'img2222',tileurl:'img2222',groupname:GroupType.restaurant,floorarea:4,uplv2:1200,uplv3:3000},
+	fitness:{iconnodename:'lv3_urant_noed',name:'健身房', housetype:buildTypes.fitness,    price:500,note:'健身爱好者',url:'img2202',tileurl:'img2202',groupname:GroupType.restaurant,floorarea:4,uplv2:1200,uplv3:3000},
+	bar:{iconnodename:'lv4_urant_noed',name:'酒吧', housetype:buildTypes.bar,   price:500,note:'客人休闲娱乐的场所',url:'img2208',tileurl:'img2208',groupname:GroupType.restaurant,floorarea:4,uplv2:1200,uplv3:3000},
+	gamezone:{iconnodename:'lv6_urant_noed',name:'游戏厅', housetype:buildTypes.gamezone, price:500,note:'游戏厅',url:'img2206',tileurl:'img2206',groupname:GroupType.restaurant,floorarea:4,uplv2:1200,uplv3:3000},
+	chinarestaurant:{iconnodename:'lv7_urant_noed',name:'中餐厅', housetype:buildTypes.chinarestaurant,      price:500,note:'美味的中餐',url:'img2218',tileurl:'img2218',groupname:GroupType.restaurant,floorarea:4,uplv2:1200,uplv3:3000},
+	japanrestaurant:{iconnodename:'lv8_urant_noed',name:'日本料理', housetype:buildTypes.japanrestaurant,    price:500,note:'日本料理',url:'img2220',tileurl:'img2220',groupname:GroupType.restaurant,floorarea:4,uplv2:1200,uplv3:3000},
+	spa:{iconnodename:'lv9_urant_noed',name:'Spa店', housetype:buildTypes.spa,    price:500,note:'女士的最爱',url:'img2226',tileurl:'img2226',groupname:GroupType.restaurant,floorarea:4,uplv2:1200,uplv3:3000},
+    medical:{iconnodename:'lv10_urant_noed',name:'医疗中心', housetype:buildTypes.medical,    price:500,note:'医疗中心',url:'img2216',tileurl:'img2216',groupname:GroupType.restaurant,floorarea:9,uplv2:1200,uplv3:3000},
+	market:{iconnodename:'lv10_urant_noed',name:'超市', housetype:buildTypes.market,    price:500,note:'购物天堂',url:'img2210',tileurl:'img2210',groupname:GroupType.restaurant,floorarea:9,uplv2:1200,uplv3:3000},   
+	swimmingpool:{iconnodename:'lv10_urant_noed',name:'游泳池', housetype:buildTypes.swimmingpool,    price:500,note:'游泳爱好者',url:'img2212',tileurl:'img2212',groupname:GroupType.restaurant,floorarea:12,uplv2:1200,uplv3:3000},   
+	golfyard:{iconnodename:'lv10_urant_noed',name:'高尔夫球场', housetype:buildTypes.golfyard,    price:500,note:'高尔夫球场',url:'img2214',tileurl:'img2214',groupname:GroupType.restaurant,floorarea:16,uplv2:1200,uplv3:3000},   
+	receptioncenter:{iconnodename:'lv11_urant_noed',name:'接待中心', housetype:buildTypes.receptioncenter,    price:500,note:'接待中心',url:'img2214',tileurl:'img2214',groupname:GroupType.restaurant,floorarea:8,uplv2:1200,uplv3:3000},   
 };
 
 var receptionCenter = null;
 var miniroomInfos ={
-	icecream_miniroom:{iconnodename:'icecream_miniroom_noed',name:'冰激凌店', housetype:buildTypes.roomMiniIcecream,    price:1500,note:'价格合适的瓷砖地板',url:'img2226',tileurl:'img1603',groupname:'MINIROOM_GROUP',floorarea:1},
-	hotdog_miniroom:{iconnodename:'hotdog_miniroom_noed',name:'热狗店',       housetype:buildTypes.roomMiniHotdog,  price:2500,note:'价格合适的瓷砖地板',url:'img2228',tileurl:'img1605',groupname:'MINIROOM_GROUP',floorarea:1},
-	sausage_miniroom:{iconnodename:'sausage_miniroom_noed',name:'墨西哥烤肠', housetype:buildTypes.roomMiniSagsage,   price:2500,note:'价格合适的瓷砖地板',url:'img2230',tileurl:'img1607',groupname:'MINIROOM_GROUP',floorarea:1},
-	clear_miniroom:{iconnodename:'clear_miniroom_noed',name:'保洁室',         housetype:buildTypes.roomMiniClearroom,  price:2500,note:'保洁人员工作室',url:'img460',tileurl:'img1611',groupname:'MINIROOM_GROUP',floorarea:1,uplv2:1200,uplv3:3000},
+	icecream_miniroom:{iconnodename:'icecream_miniroom_noed',name:'冰激凌店', housetype:buildTypes.roomMiniIcecream,    price:1500,note:'价格合适的瓷砖地板',url:'img2226',tileurl:'img1603',groupname:GroupType.miniroom,floorarea:1},
+	hotdog_miniroom:{iconnodename:'hotdog_miniroom_noed',name:'热狗店',       housetype:buildTypes.roomMiniHotdog,  price:2500,note:'价格合适的瓷砖地板',url:'img2228',tileurl:'img1605',groupname:GroupType.miniroom,floorarea:1},
+	sausage_miniroom:{iconnodename:'sausage_miniroom_noed',name:'墨西哥烤肠', housetype:buildTypes.roomMiniSagsage,   price:2500,note:'价格合适的瓷砖地板',url:'img2230',tileurl:'img1607',groupname:GroupType.miniroom,floorarea:1},
+	clear_miniroom:{iconnodename:'clear_miniroom_noed',name:'保洁室',         housetype:buildTypes.roomMiniClearroom,  price:2500,note:'保洁人员工作室',url:'img460',tileurl:'img1611',groupname:GroupType.miniroom,floorarea:1,uplv2:1200,uplv3:3000},
 };
 
 var bottomsize ={

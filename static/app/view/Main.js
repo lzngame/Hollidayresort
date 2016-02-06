@@ -20,16 +20,7 @@ Ext.define('Resort.view.Main',{
 				height:20,
 				top:'40%',
 				left:'80%'
-			},
-			/*{
-				id:'btn_test',
-				xtype:'button',
-				text:'test1',
-				width:'20%',
-				height:20,
-				top:'10%',
-				left:'80%'
-			}*/
+			}
 		]
 	},
 	

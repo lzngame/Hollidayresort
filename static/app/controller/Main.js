@@ -22,15 +22,6 @@ Ext.define('Resort.controller.Main',{
 			},
 			btnlogin:{
 				tap:'on_btnlogin_tap',
-			},
-			btntest:{
-				tap:'on_btntest_tap'
-			},
-			btntest2:{
-				tap:'on_btntest2_tap'
-			},
-			btntest3:{
-				tap:'on_btntest3_tap'
 			}
 		},
 		routes:{
@@ -280,7 +271,7 @@ function panelTap(ev){
 		if(currentHandleNode != null){
 			if(currentHandleNode.ntype == NodeTypeClass.build){
 				handleInfoMenu.hide(true);
- 				handleInfoMenu.show(currentHandleNode.data);
+ 				handleInfoMenu.show(currentHandleNode);
 				var obj = getPixByPosTile(currentHandleNode.floorspace[0][0],currentHandleNode.floorspace[0][1]);
 				var x = obj[0];
 				var y = obj[1];
@@ -314,7 +305,7 @@ function panelTap(ev){
 			if(currentHandleNode != null){
 				if(currentHandleNode.ntype == NodeTypeClass.floor){
 					handleInfoMenu.hide(true);
-					handleInfoMenu.show(currentHandleNode.data);
+					handleInfoMenu.show(currentHandleNode);
 					var obj = getPixByPosTile(objtarget.posx,objtarget.posy);
 					var x = obj[0];
 					var y = obj[1];
@@ -467,6 +458,8 @@ function layoutLeftIcons(ctx){
 		var iconnode = new IconNode(obj.name,obj.url,3,(iconSize.lefticon+space)*dis+layoutconfig.headsize+inity,iconSize.lefticon,iconSize.lefticon,colors.lefticonbg,colors.lefticonactive,function(name){
 			console.log(this.name);
 			stopHandleBtn.hide();
+			if(handleInfoMenu.isvisible)
+				handleInfoMenu.hide(false);
 			this.active = !this.active;
 			var group = getTypeNode(this.groupname,NodeTypeClass.icongroup);
 			group.changeswipe();
