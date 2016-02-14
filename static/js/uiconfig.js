@@ -400,7 +400,9 @@ var currentBuildfloor = null;
 
 var stopHandleBtn = null;
 var handleInfoMenu = null;
-var shopMenu = null;
+var extendmapShopMenu = null;
+var propShopMenu = null;
+
 
 var nowHandleNodeSingle = null;
 var nowHandleNodeFour = null;
@@ -457,8 +459,42 @@ var buttontextName ={
 	handle_title:'名称：',
 	ok:'确定',
 	cancel:'取消',
-	buy:'购买'
+	buy:'购买',
+	extendmap_title:'扩展面积',
+	shop_title:'商   店',
+	prevpage:' << ',
+	nextpage:' >>',
 }
+
+
+/*
+ * 商店物品
+ */
+var shopProps = [
+	{name:'跑步机1',img:'img2312',note:'可以建造健身房,高于3*可以购买',price:5000},
+	{name:'跑步机2',img:'img2312',note:'可以建造健身房,高于3*可以购买',price:5000},
+	{name:'跑步机3',img:'img2312',note:'可以建造健身房,高于3*可以购买',price:5000},
+	{name:'跑步机4',img:'img2312',note:'可以建造健身房,高于3*可以购买',price:5000},
+	{name:'跑步机5',img:'img2312',note:'可以建造健身房,高于3*可以购买',price:5000},
+	{name:'跑步机6',img:'img2312',note:'可以建造健身房,高于3*可以购买',price:5000},
+	{name:'跑步机7',img:'img2312',note:'可以建造健身房,高于3*可以购买',price:5000},
+	{name:'跑步机8',img:'img2312',note:'可以建造健身房,高于3*可以购买',price:5000},
+	{name:'跑步机9',img:'img2312',note:'可以建造健身房,高于3*可以购买',price:5000},
+	{name:'跑步机10',img:'img2312',note:'可以建造健身房,高于3*可以购买',price:5000},
+	{name:'跑步机11',img:'img2312',note:'可以建造健身房,高于3*可以购买',price:5000},
+	{name:'跑步机12',img:'img2312',note:'可以建造健身房,高于3*可以购买',price:5000},
+	{name:'跑步机13',img:'img2312',note:'可以建造健身房,高于3*可以购买',price:5000},
+	{name:'跑步机14',img:'img2312',note:'可以建造健身房,高于3*可以购买',price:5000},
+	{name:'跑步机15',img:'img2312',note:'可以建造健身房,高于3*可以购买',price:5000},
+	{name:'跑步机16',img:'img2312',note:'可以建造健身房,高于3*可以购买',price:5000},
+	{name:'跑步机17',img:'img2312',note:'可以建造健身房,高于3*可以购买',price:5000},
+	{name:'跑步机18',img:'img2312',note:'可以建造健身房,高于3*可以购买',price:5000},
+	{name:'跑步机19',img:'img2312',note:'可以建造健身房,高于3*可以购买',price:5000},
+	{name:'跑步机20',img:'img2312',note:'可以建造健身房,高于3*可以购买',price:5000},
+	{name:'跑步机21',img:'img2312',note:'可以建造健身房,高于3*可以购买',price:5000},
+	
+];
+
 
 /*
  * 透明效果

@@ -214,7 +214,7 @@ ToastInfo.prototype.update = function(){
 /*
  * WindowPanel 控件
  */
-function WindowPanel(name,x,y,w,h){
+function WindowPanel(name,titletxt,x,y,w,h){
 	this.name = name;
 	this.x = x;
 	this.y = y;
@@ -247,7 +247,7 @@ function WindowPanel(name,x,y,w,h){
 	this.increaseId= 1000;
 	this.content = [];
 	
-	var txttitle = new UItextNode(this.namesObj.titlename,'扩 展 面 积',this.x+this.w/2-20,this.y+15,'white');
+	var txttitle = new UItextNode(this.namesObj.titlename,titletxt,this.x+this.w/2-20,this.y+15,'white');
 }
 
 WindowPanel.prototype.hide = function(isvisible){
@@ -288,10 +288,12 @@ WindowPanel.prototype.addContentTxt = function(txt,x,y,clr){
 	this.content.push(name);
 };
 
-WindowPanel.prototype.addContentBtn = function(txt,bgicon,x,y,w,h,clr,handler){
+WindowPanel.prototype.addContentBtn = function(txt,bgicon,x,y,w,h,clr,handler,data){
 	this.increaseId++;
 	var name = 'icon_'+this.increaseId.toString()+'_'+bgicon;
 	var btn = new IconTxtBtn(name,this.x+x,this.y+y,w,h,bgicon,txt,clr,handler);
+	if(data)
+		btn.data = data;
 	this.content.push(name);
 };
 
@@ -432,3 +434,113 @@ ShapeRect.prototype.setSize = function(x,y,w,h){
 	this.w = w;
 	this.h = h;
 };
+
+/**
+ * 商店 有上下页
+ */
+function ShopPanel(name,titletxt,x,y,w,h){
+	this.name = name;
+	this.winpanel = new WindowPanel('shoppanel',titletxt,x,y,w,h);
+	this.pagenum = 8;
+	this.initpage = 0;
+}
+
+ShopPanel.prototype.hide = function(isvisible){
+	this.winpanel.hide(isvisible);
+	if(!isvisible)
+		this.initpage = 0;
+};
+
+ShopPanel.prototype.pagedown = function(){
+	var total = Math.ceil(shopProps.length/this.data.pagenum);
+	if(this.data.initpage/this.data.pagenum >= total-1)
+		return;
+	this.data.initpage+=this.data.pagenum;
+	this.data.setdata();
+};
+
+ShopPanel.prototype.pageup = function(){
+	if(this.data.initpage == 0)
+		return;
+	this.data.initpage-=this.data.pagenum;
+	this.data.setdata();
+};
+
+ShopPanel.prototype.setdata = function(){
+	this.winpanel.hide(true);
+	this.winpanel.addContentBtn(buttontextName.prevpage, 'img3044', this.winpanel.w/2 -48-20, this.winpanel.h -25, 48, 20, 'black', this.pageup,this);
+	this.winpanel.addContentBtn(buttontextName.nextpage, 'img3044', this.winpanel.w/2+20, this.winpanel.h -25, 48, 20, 'black', this.pagedown,this);
+	var initx = 20;
+	var inity = 50;
+	var index = 0;
+	for(var i = this.initpage;i<this.initpage+this.pagenum;i++){
+			if(i >= shopProps.length-1)
+				return;
+			var obj = shopProps[i];
+			var y  = inity+index * 40;
+			this.winpanel.addContentImg(obj.img,initx,y,30,30);
+			this.winpanel.addContentTxt(obj.name,initx + 35,y+10,'white');
+			this.winpanel.addContentBtn(buttontextName.buy, 'img3044', initx+80, y+5, 48, 20, 'black', function() {
+				
+				console.log(this);
+			});
+			index++;
+		}
+};
+
+/**
+ * 经验条
+ */
+function ExpLine(name,clr,border,x,y,w,h){
+	this.name = name;
+	this.x = x;
+	this.y = y;
+	this.w = w;
+	this.h = h;
+	this.clr = clr;
+	this.border = border;
+}
+
+ExpLine.prototype.hide = function(isvisible){
+	this.winpanel.hide(isvisible);
+	if(!isvisible)
+		this.initpage = 0;
+};
+
+ShopPanel.prototype.pagedown = function(){
+	var total = Math.ceil(shopProps.length/this.data.pagenum);
+	if(this.data.initpage/this.data.pagenum >= total-1)
+		return;
+	this.data.initpage+=this.data.pagenum;
+	this.data.setdata();
+};
+
+ShopPanel.prototype.pageup = function(){
+	if(this.data.initpage == 0)
+		return;
+	this.data.initpage-=this.data.pagenum;
+	this.data.setdata();
+};
+
+ShopPanel.prototype.setdata = function(){
+	this.winpanel.hide(true);
+	this.winpanel.addContentBtn(buttontextName.prevpage, 'img3044', this.winpanel.w/2 -48-20, this.winpanel.h -25, 48, 20, 'black', this.pageup,this);
+	this.winpanel.addContentBtn(buttontextName.nextpage, 'img3044', this.winpanel.w/2+20, this.winpanel.h -25, 48, 20, 'black', this.pagedown,this);
+	var initx = 20;
+	var inity = 50;
+	var index = 0;
+	for(var i = this.initpage;i<this.initpage+this.pagenum;i++){
+			if(i >= shopProps.length-1)
+				return;
+			var obj = shopProps[i];
+			var y  = inity+index * 40;
+			this.winpanel.addContentImg(obj.img,initx,y,30,30);
+			this.winpanel.addContentTxt(obj.name,initx + 35,y+10,'white');
+			this.winpanel.addContentBtn(buttontextName.buy, 'img3044', initx+80, y+5, 48, 20, 'black', function() {
+				
+				console.log(this);
+			});
+			index++;
+		}
+};
+

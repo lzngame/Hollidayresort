@@ -341,8 +341,12 @@ function LayoutUI(ctx){
 	layoutBottomFourButton();
 	layourHandleInfo();
 	
-	shopMenu = new WindowPanel('testwinpanel',55,100,250,300);
-	shopMenu.hide(false);
+	extendmapShopMenu = new WindowPanel('extendsmap',buttontextName.extendmap_title,55,100,250,300);
+	extendmapShopMenu.hide(false);
+	
+	propShopMenu = new ShopPanel('shop',buttontextName.shop_title,55,30,260,400);
+	propShopMenu.hide(false);
+	
 	
 	testman = new ManNode('testman',[['img927','img37'],['img919','img1474'],
 									 ['img35','img37','img39'],['img917','img919','img921'],
@@ -362,7 +366,7 @@ function layTopIconHead(){
 	var lvstar =  new LvNode('lvstar','img3252',layoutconfig.headsize+layoutconfig.moneyiconsize+5+100,userinfo.lv,1,layoutconfig.lvstarsize);
 	
 		
-	addPool(new IconInfoNode('btn1',stageWidth-64,23,64,22,'img3044','f18_18','f54_54',120,function(name){
+	/*addPool(new IconInfoNode('btn1',stageWidth-64,23,64,22,'img3044','f18_18','f54_54',120,function(name){
 					console.log(this.iconname);
 		},'yellow'));
 	addPool(new IconInfoNode('btn2',stageWidth-2*64,23,64,22,'img3044','f18_18','f54_54',50,function(name){
@@ -372,7 +376,7 @@ function layTopIconHead(){
 		},'yellow'));
 	addPool(new IconInfoNode('btn3',stageWidth-3*64,23,64,22,'img3044','f18_18','f54_54',8,function(name){
 					console.log(this.iconname);
-		},'yellow'));
+		},'yellow'));*/
 		
 		
 	addPool(new IconNode('Head','img300',0,0,50,50,'yellow','blue',function(name){
@@ -399,25 +403,28 @@ function layoutBottomFourButton() {
 		if (nextlv == null) {
 			new ToastInfo('mytoast', warntext.maxbuildarea, -130, 100, 1500);
 		} else {
-			shopMenu.hide(true);
-			shopMenu.addContentImg('img208', 20, 70, 68, 59);
-			shopMenu.addContentTxt(nextlv.note, 122, 90, 'yellow');
-			shopMenu.addContentTxt(nextlv.note2 + nextlv.price.toString(), 122, 110, 'yellow');
-			shopMenu.addContentBtn(buttontextName.buy, 'img3044', 60, 206, 48, 20, 'black', function() {
+			extendmapShopMenu.hide(true);
+			propShopMenu.hide(false);
+			extendmapShopMenu.addContentImg('img208', 20, 70, 68, 59);
+			extendmapShopMenu.addContentTxt(nextlv.note, 122, 90, 'yellow');
+			extendmapShopMenu.addContentTxt(nextlv.note2 + nextlv.price.toString(), 122, 110, 'yellow');
+			extendmapShopMenu.addContentBtn(buttontextName.buy, 'img3044', 60, 206, 48, 20, 'black', function() {
 				console.log('extend map');
 				userinfo.buildarealv = nextlv;
 				setEdage();
-				shopMenu.hide(false);
+				extendmapShopMenu.hide(false);
 				setReceptionPos();
 				new ToastInfo('mytoast', warntext.build_extend_success, -130, 100, 1500);
 			});
-			shopMenu.addContentBtn(buttontextName.cancel, 'img3044', 160, 206, 48, 20, 'black', function() {
-				shopMenu.hide(false);
+			extendmapShopMenu.addContentBtn(buttontextName.cancel, 'img3044', 160, 206, 48, 20, 'black', function() {
+				extendmapShopMenu.hide(false);
 			});
 		}
 	}));
 	addPool(new ImgNode('bottomExtend', 'img3519', bottomsize.rilisize + 47 + 1 * 40, stageHeight - 37, bottomRightWidth - 1, 38, function() {
-		console.log(this.name);
+		console.log('购买道具');
+		extendmapShopMenu.hide(false);
+		propShopMenu.setdata();
 	}));
 	addPool(new ImgNode('bottomTemp1', 'img3522', bottomsize.rilisize + 47 + 2 * 40, stageHeight - 37, bottomRightWidth - 1, 38, function() {
 		console.log(this.name);
