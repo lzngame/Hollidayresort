@@ -276,10 +276,10 @@ var iconSize ={
 };
 
 var resortclockdata ={
-	days:0,
+	days:1,
 	hours:0,
 	minitues:0,
-	timespace:30,
+	timespace:10,
 };
 
 var colors ={
@@ -397,11 +397,12 @@ var wallImg = 'img5';
 
 var currentBuildfloor = null;
 
-
+//全局变量
 var stopHandleBtn = null;
 var handleInfoMenu = null;
 var extendmapShopMenu = null;
 var propShopMenu = null;
+var userExpline = null;
 
 
 var nowHandleNodeSingle = null;
@@ -423,7 +424,7 @@ var manstatus ={
  * 用户信息
  */
 var userinfo = {
-	money:100000,
+	money:5000,
 	lv:4,
 	id:1001010,
 	name:'开罗酒店CEO',
@@ -500,3 +501,13 @@ var shopProps = [
  * 透明效果
  */
 var frontWallAlpha = 1;
+
+
+function checkCost(price){
+	if(userinfo.money < price){
+		new ToastInfo('waringbuild',warntext.noenoughmoney,-130,100,500);
+		return false;
+	}else{
+		return true;
+	}
+};

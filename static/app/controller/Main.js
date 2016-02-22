@@ -116,6 +116,10 @@ function panelDrag(ev) {
 			dragzeroy = 0;
 		}
 	}else if(currentHandleStatus == handleStatus.dragingbuild){
+		if(!checkCost(currentBuildData.price)){
+			return;
+		}
+		
 		var tapx = ev.position.x-zeroX;
 		var tapy = ev.position.y-zeroY;
 		var sceneX = ev.position.x;
@@ -174,13 +178,17 @@ function panelDrag(ev) {
 				var xpos = o[0];
 				var ypos = o[1];
 				var obj = getPixByPosTile(xpos,ypos);
-				var xpix = obj[0];
-				var ypix = obj[1]+baseRhombusHeight/2;
-				addEntityNode(new EntityFootNode('work',NodeTypeClass.entityitem,[['img259','img261','img263','img265','img267','img269']],xpix,ypix,130,true,function(data){
+				//var xpix = obj[0];
+				//var ypix = obj[1]+baseRhombusHeight/2;
+				
+				
+				addEntityNode(new EntityFootNode('work',NodeTypeClass.entityitem,[['img259','img261','img263','img265','img267','img269']],dataobj.x+baseRhombusHeight,dataobj.y,130,true,function(data){
 					var build = new BuildNode('house1',NodeTypeClass.build,currentBuildType,dataobj.x,dataobj.y,dataobj.roundAr,dataobj.posx,dataobj.posy);
 					build.data = currentBuildData;
 					addWaiter(currentBuildData.housetype,build);
 					buildNums++;
+					userinfo.money -= currentBuildData.price;
+					setUiUserdata();
 				},{xp:x,yp:y,ar:dataobj.roundAr}));
 			}
 		}
@@ -248,7 +256,7 @@ function panelTap(ev){
 			for(var i=0;i<itemnode.icons.length;i++){
 				var iconnode = itemnode.icons[i];
 				if(iconnode.checkTap(sceneX,sceneY)){
-					iconnode.handler();
+					iconnode.handler(iconnode.tapdata);
 					return;
 				}
 			}
@@ -306,6 +314,7 @@ function panelTap(ev){
 				if(currentHandleNode.ntype == NodeTypeClass.floor){
 					handleInfoMenu.hide(true);
 					handleInfoMenu.show(currentHandleNode);
+					groupBack();
 					var obj = getPixByPosTile(objtarget.posx,objtarget.posy);
 					var x = obj[0];
 					var y = obj[1];
@@ -317,6 +326,13 @@ function panelTap(ev){
 	}
 	
 	if(currentHandleStatus == handleStatus.tile){
+		if(!checkCost(currentBuildData.price)){
+			return;
+		}
+		else{
+			userinfo.money -= currentBuildData.price;
+			setUiUserdata();
+		}
 		var floorExist =  getFloorNodeByPos(objtarget.posx,objtarget.posy);
 		if(floorExist == null){
 			var floor = new FloorNode('lawn',currentBuildfloor,objtarget.posx,objtarget.posy,currentBuildData);
@@ -348,6 +364,8 @@ function LayoutUI(ctx){
 	propShopMenu.hide(false);
 	
 	
+	
+	
 	testman = new ManNode('testman',[['img927','img37'],['img919','img1474'],
 									 ['img35','img37','img39'],['img917','img919','img921'],
 									 ['img924'],['img932'],
@@ -364,8 +382,8 @@ function layTopIconHead(){
 	var imgnode = new PngNode('moneyicon','img302',layoutconfig.headsize+3,5,layoutconfig.moneyiconsize,layoutconfig.moneyiconsize);
 	var numnode = new PngNumNode('numnode',userinfo.money,layoutconfig.headsize+layoutconfig.moneyiconsize+5,5);
 	var lvstar =  new LvNode('lvstar','img3252',layoutconfig.headsize+layoutconfig.moneyiconsize+5+100,userinfo.lv,1,layoutconfig.lvstarsize);
-	
-		
+	userExpline = new ExpLine('userexp','red','yellow','blue',layoutconfig.headsize+1,23,stageWidth-layoutconfig.headsize,5,500,1000);
+	addPool(userExpline);
 	/*addPool(new IconInfoNode('btn1',stageWidth-64,23,64,22,'img3044','f18_18','f54_54',120,function(name){
 					console.log(this.iconname);
 		},'yellow'));
@@ -383,10 +401,10 @@ function layTopIconHead(){
 		console.log(this.iconname);
 		},'red'));
 	
-	inituserdata();
+	setUiUserdata();
 }
 
-function inituserdata(){
+function setUiUserdata(){
 	layoutBgPool['lvstar'].setLv(userinfo.lv);
 	layoutBgPool['numnode'].setTxt(userinfo.money.toString());
 }
@@ -405,6 +423,10 @@ function layoutBottomFourButton() {
 		} else {
 			extendmapShopMenu.hide(true);
 			propShopMenu.hide(false);
+			stopHandleBtn.hide();
+			if(handleInfoMenu.isvisible)
+				handleInfoMenu.hide(false);
+			groupBack();
 			extendmapShopMenu.addContentImg('img208', 20, 70, 68, 59);
 			extendmapShopMenu.addContentTxt(nextlv.note, 122, 90, 'yellow');
 			extendmapShopMenu.addContentTxt(nextlv.note2 + nextlv.price.toString(), 122, 110, 'yellow');
@@ -424,6 +446,10 @@ function layoutBottomFourButton() {
 	addPool(new ImgNode('bottomExtend', 'img3519', bottomsize.rilisize + 47 + 1 * 40, stageHeight - 37, bottomRightWidth - 1, 38, function() {
 		console.log('购买道具');
 		extendmapShopMenu.hide(false);
+		groupBack();
+		if(handleInfoMenu.isvisible)
+				handleInfoMenu.hide(false);
+		stopHandleBtn.hide();
 		propShopMenu.setdata();
 	}));
 	addPool(new ImgNode('bottomTemp1', 'img3522', bottomsize.rilisize + 47 + 2 * 40, stageHeight - 37, bottomRightWidth - 1, 38, function() {
@@ -464,6 +490,8 @@ function layoutLeftIcons(ctx){
 		var obj = lefticonInfos[name];
 		var iconnode = new IconNode(obj.name,obj.url,3,(iconSize.lefticon+space)*dis+layoutconfig.headsize+inity,iconSize.lefticon,iconSize.lefticon,colors.lefticonbg,colors.lefticonactive,function(name){
 			console.log(this.name);
+			extendmapShopMenu.hide(false);
+			propShopMenu.hide(false);
 			stopHandleBtn.hide();
 			if(handleInfoMenu.isvisible)
 				handleInfoMenu.hide(false);
@@ -490,178 +518,87 @@ function layoutLeftIcons(ctx){
 function layoutGroups(){
 	var space = 44;
 	
-	var nodearray = [];
-	var i = 0;
-	for(var name in floorInfos){
-		var obj = floorInfos[name];
-		var floor = new IconNode(obj.iconnodename,obj.url,2,i*space+55,iconSize.lefticon,iconSize.lefticon,'yellow','blue',function(name){
-			console.log(this.iconname);
-			currentHandleStatus = handleStatus.tile;
-			var data = floorInfos[this.dataname];
-			currentBuildfloor = data.tileurl;
-			frontWallAlpha = 0.3;
-			currentBuildData = data;
-			stopHandleBtn.show();
-			groupBack(this.groupname,lefticonInfos.floor.name);
-		});
-		floor.txtdata.push(obj.name+"  $:"+obj.price.toString());
-		floor.txtdata.push(obj.note);
-		floor.floortype = obj.floortype;
-		floor.groupname = obj.groupname;
-		floor.dataname = name;
-		nodearray.push(floor);
-		i++
-	}
-	addPool(new IconNodeGroup(lefticonInfos.floor.groupname,2,50,200,190,'#C0F56E','blue',nodearray,false,iconSize.lefticon+2));
-	
-	nodearray = [];
-	i = 0;
-	for(var name in plantInfos){
-		var obj = plantInfos[name];
-		var plant = new IconNode(obj.iconnodename,obj.url,2,i*space+55,iconSize.lefticon,iconSize.lefticon,'yellow','blue',function(name){
-			console.log(this.iconname);
-			currentHandleStatus = handleStatus.dragingbuild;
-			frontWallAlpha = 0.3;
-			currentBuildData = plantInfos[this.dataname];
-			currentBuildType = currentBuildData.housetype;
-			stopHandleBtn.show();
-			groupBack(this.groupname,lefticonInfos.plant.name);
-		});
-		plant.txtdata.push(obj.name+"  $:"+obj.price.toString());
-		plant.txtdata.push(obj.note);
-		plant.groupname = obj.groupname;
-		plant.dataname = name;
-		nodearray.push(plant);
-		i++
-	}
-	addPool(new IconNodeGroup(lefticonInfos.plant.groupname,2,50,200,354,'#C0F56E','blue',nodearray,false,iconSize.lefticon+2));
-	
-	nodearray = [];
-	i = 0;
-	for(var name in houseInfos){
-		var obj = houseInfos[name];
-		var house = new IconNode(obj.iconnodename,obj.url,2,i*space+135,iconSize.lefticon,iconSize.lefticon,'yellow','blue',function(name){
-			console.log(this.iconname);
-			currentHandleStatus = handleStatus.dragingbuild;
-			frontWallAlpha = 0.3;
-			currentBuildData = houseInfos[this.dataname];
-			currentBuildType = currentBuildData.housetype;
-			stopHandleBtn.show();
-			groupBack(this.groupname,lefticonInfos.house.name);
-		});
-		house.txtdata.push(obj.name+"  $:"+obj.price.toString());
-		house.txtdata.push(obj.note);
-		house.groupname = obj.groupname;
-		house.dataname = name;
-		nodearray.push(house);
-		i++
-	}
-	addPool(new IconNodeGroup(lefticonInfos.house.groupname,2,130,200,90,'#C0F56E','blue',nodearray,false,iconSize.lefticon+2));
-	
-	nodearray = [];
-	i = 0;
-	for(var name in carpetInfos){
-		var obj = carpetInfos[name];
-		var carpet = new IconNode(obj.iconnodename,obj.url,2,i*space+150,iconSize.lefticon,iconSize.lefticon,'yellow','blue',function(name){
-			console.log(this.iconname);
-			currentHandleStatus = handleStatus.tile;
-			var data = carpetInfos[this.dataname];
-			currentBuildfloor = data.tileurl;
-			frontWallAlpha = 0.3;
-			currentBuildData = data;
-			stopHandleBtn.show();
-			groupBack(this.groupname,lefticonInfos.carpet.name);
-		});
-		carpet.txtdata.push(obj.name+"  $:"+obj.price.toString());
-		carpet.txtdata.push(obj.note);
-		//carpet.lock = true;
-		carpet.groupname = obj.groupname;
-		carpet.dataname = name;
-		nodearray.push(carpet);
-		i++
-	}
-	addPool(new IconNodeGroup(lefticonInfos.carpet.groupname,2,145,200,130,'#C0F56E','blue',nodearray,false,iconSize.lefticon+2));
-	
-	nodearray = [];
-	i = 0;
-	for(var name in lawnInfos){
-		var obj = lawnInfos[name];
-		var x = Math.floor(i/5)*90 +2;
-		var y = (i % 5)*space + 155;
-		var lawn = new IconNode(obj.iconnodename,obj.url,x,y,iconSize.lefticon,iconSize.lefticon,'yellow','blue',function(name){
-			console.log(this.iconname);
-			currentHandleStatus = handleStatus.tile;
-			var data = lawnInfos[this.dataname];
-			currentBuildfloor = data.tileurl;
-			currentBuildData = data;
-			frontWallAlpha = 0.3;
-			stopHandleBtn.show();
-			groupBack(this.groupname,lefticonInfos.lawn.name);
-		});
-		lawn.txtdata.push(obj.name);
-		lawn.txtdata.push("$:"+obj.price.toString());
-		lawn.groupname = obj.groupname;
-		lawn.dataname = name;
-		nodearray.push(lawn);
-		i++
-	}
-	addPool(new IconNodeGroup(lefticonInfos.lawn.groupname,2,148,200,220,'#C0F56E','blue',nodearray,false,iconSize.lefticon+2));
-	
-	nodearray = [];
-	i = 0;
-	for(var name in restaurantInfos){
-		if(name == 'receptioncenter')
-			continue;
-		var obj = restaurantInfos[name];
-		var x = Math.floor(i/6)*90 +2;
-		var y = (i % 6)*space + 55;
-		var room = new IconNode(obj.iconnodename,obj.url,x,y,iconSize.lefticon,iconSize.lefticon,'yellow','blue',function(name){
-			console.log(this.iconname);
-			currentHandleStatus = handleStatus.dragingbuild;
-			frontWallAlpha = 0.3;
-			currentBuildData = restaurantInfos[this.dataname];
-			currentBuildType = currentBuildData.housetype;
-			stopHandleBtn.show();
-			groupBack(this.groupname,lefticonInfos.restaurant.name);
-		});
-		room.txtdata.push(obj.name);
-		room.txtdata.push("$:"+obj.price.toString());
-		room.groupname = obj.groupname;
-		room.dataname = name;
-		nodearray.push(room);
-		i++
-	}
-	addPool(new IconNodeGroup(lefticonInfos.restaurant.groupname,2,50,230,270,'#C0F56E','blue',nodearray,false,iconSize.lefticon+2));
-
-	nodearray = [];
-	i = 0;
-	for(var name in miniroomInfos){
-		var obj = miniroomInfos[name];
-		var miniroom = new IconNode(obj.iconnodename,obj.url,2,i*space+238,iconSize.lefticon,iconSize.lefticon,'yellow','blue',function(name){
-			console.log(this.iconname);
-			currentHandleStatus = handleStatus.dragingbuild;
-			frontWallAlpha = 0.3;
-			currentBuildData = miniroomInfos[this.dataname];
-			currentBuildType = currentBuildData.housetype;
-			stopHandleBtn.show();
-			groupBack(this.groupname,lefticonInfos.miniroom.name);
-		});
-		miniroom.txtdata.push(obj.name+"  $:"+obj.price.toString());
-		miniroom.txtdata.push(obj.note);
-		miniroom.groupname = obj.groupname;
-		miniroom.dataname = name;
-		nodearray.push(miniroom);
-		i++
-	}
-	addPool(new IconNodeGroup(lefticonInfos.miniroom.groupname,2,236,200,170,'#C0F56E','blue',nodearray,false,iconSize.lefticon+2));
+	AddHandleIcons(floorInfos,2,55,space,lefticonInfos.floor.groupname,2,50,200,180,LeftIconsHandlerTap);
+	AddHandleIcons(plantInfos,2,55,space,lefticonInfos.plant.groupname,2,50,200,354,LeftIconsHandler);
+	AddHandleIcons(houseInfos,2,135,space,lefticonInfos.house.groupname,2,130,200,90,LeftIconsHandler);
+	AddHandleIcons(miniroomInfos,2,238,space,lefticonInfos.miniroom.groupname,2,236,200,170,LeftIconsHandler);
+	AddHandleIcons(restaurantInfos,2,55,space,lefticonInfos.restaurant.groupname,2,50,230,268,LeftIconsHandler,6,90);
+	AddHandleIcons(carpetInfos,2,159,space,lefticonInfos.carpet.groupname,2,145,200,138,LeftIconsHandlerTap);
+	AddHandleIcons(lawnInfos,2,155,space,lefticonInfos.lawn.groupname,2,148,200,222,LeftIconsHandlerTap,5,90);
 }
 
-function groupBack(icongroupname,parentname){
-	var group = getTypeNode(icongroupname,NodeTypeClass.icongroup);
-	group.changeswipe();
-	var parentIcon = iconPool[parentname];
-	parentIcon.active = false;
-	activeLeftIconnode = null;
+function AddHandleIcons(dataObj,initx,inity,custspace,grouptype,groupinitx,groupinity,groupw,grouph,handler,rows,spacew){
+	var nodearray = [];
+	var i = 0;
+	var multip = false;
+	if(!rows){
+		rows = 1;
+		spacew = 0;
+	}else{
+		multip = true;
+	}
+	for(var name in dataObj){
+		if(name == 'receptioncenter')
+			continue;
+		var x = Math.floor(i/rows)*spacew +initx;
+		if(rows > 1)
+			var y = (i % rows)*custspace + inity; 
+		else
+			var y = i * custspace + inity;
+		var obj = dataObj[name];
+		var house = new IconNode(obj.iconnodename,obj.url, x,y,iconSize.lefticon,iconSize.lefticon,'yellow','blue',handler);
+		if(!multip){
+			house.txtdata.push(obj.name+"  $:"+obj.price.toString());
+			house.txtdata.push(obj.note);
+		}else{
+			house.txtdata.push(obj.name);
+			house.txtdata.push("$:"+obj.price.toString());
+		}
+		
+		house.groupname = obj.groupname;
+		house.dataname = name;
+		house.tapdata = dataObj;
+		nodearray.push(house);
+		i++;
+	}
+	addPool(new IconNodeGroup(grouptype,groupinitx,groupinity,groupw,grouph,'#C0F56E','blue',nodearray,false,iconSize.lefticon+2));
+}
+
+function LeftIconsHandler(infosojb) {
+	if (!checkCost(infosojb[this.dataname].price)){
+		groupBack();
+		return;
+	}
+		
+	currentHandleStatus = handleStatus.dragingbuild;
+	frontWallAlpha = 0.3;
+	currentBuildData = infosojb[this.dataname];
+	currentBuildType = currentBuildData.housetype;
+	stopHandleBtn.show();
+	groupBack();
+}
+
+function LeftIconsHandlerTap(infosojb) {
+	if (!checkCost(infosojb[this.dataname].price)){
+		groupBack();
+		return;
+	}
+	currentHandleStatus = handleStatus.tile;
+	frontWallAlpha = 0.3;
+	currentBuildData = infosojb[this.dataname];
+	currentBuildfloor = currentBuildData.tileurl;
+	stopHandleBtn.show();
+	groupBack();
+}
+
+function groupBack(){
+	if(activeLeftIconnode){
+		var group = getTypeNode(activeLeftIconnode.groupname,NodeTypeClass.icongroup);
+		group.changeswipe();
+		var parentIcon = iconPool[activeLeftIconnode.name];
+		parentIcon.active = false;
+		activeLeftIconnode = null;
+	}
 }
 
 function addWaiter(buildtype,build){ 

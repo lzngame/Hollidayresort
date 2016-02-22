@@ -18,6 +18,7 @@ function BuildNode(name,type,buildtype,x,y,floorspace,posx,posy){
 	this.isDraw = false;
 	this.isbuild = true;
 	addEntityNode(this);
+	this.exp = 0;
 }
 
 BuildNode.prototype.setAlpha = function(a){
@@ -40,6 +41,9 @@ BuildNode.prototype.draw = function(ctx) {
 		else
 			drawImg(ctx, item[this.lv + 1], x+zeroX, y+zeroY);
 		ctx.globalAlpha = 1;
+		
+		if(this.expline)
+			this.expline.draw(ctx);
 	}
 	if(this.waiter != null){
 		this.waiter.draw(ctx);
@@ -385,6 +389,9 @@ function addPool(itemnode){
 		case NodeTypeClass.icon:
 			iconPool[name] = itemnode;
 			break;
+		default:
+			layoutBgPool[name] = itemnode;
+			break;
 	}
 	return itemnode;
 }
@@ -407,6 +414,7 @@ function IconNodeGroup(name,x,y,w,h,bgclr,borderclr,icons,isvisible,targetDis){
 	this.isdisable = true;
 	this.isvisible = isvisible;
 	this.swipespeed = 12;
+	
 }
 
 IconNodeGroup.prototype.draw = function(ctx) {
@@ -511,6 +519,7 @@ function IconNode(name,iconname,x,y,w,h,defaultBgclr,activeBgclr,handler,borderC
 	this.txtclr ='black';
 	this.txtdata = [];
 	this.lock = false;
+	this.tapdata = null;
 }
 
 IconNode.prototype.draw = function(ctx){
@@ -751,7 +760,7 @@ ResortClock.prototype.update = function(ctx){
 	drawImg(ctx,'iPhone-Calendar',this.x+50,this.y+12,false,15,15);
 	drawImg(ctx,'iPhone-Clock',this.x+50,this.y+30,false,15,15);
 	drawImg(ctx,'f43_43',this.x+70,this.y+14);
-	drawNumSt(ctx,'365',this.x+95,this.y+15);
+	drawNumSt(ctx,this.days.toString(),this.x+95,this.y+15);
 	drawImg(ctx,'f46_46',this.x+125,this.y+14);
 	drawImg(ctx,imgstar,this.x,this.y);
 	drawNumSt(ctx,this.hours.toString()+":"+this.minitues.toString(),this.x+90,this.y+31);

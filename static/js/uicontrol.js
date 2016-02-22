@@ -15,12 +15,11 @@ function HandleInfoMenu(name,x,y){
 		btnupdatename:'icon_'+name+'_updatename',
 		btndestoryname:'icon_'+name+'_destoryname',
 		btnroatename:'icon_'+name+'_roatename',
+		explinename:name+'_explinename'
 	}
 	new PngNode(this.namesObj.bgheadname,'img3358bmp',this.x,this.y,205,30);
 	var alpha = 'rgba(200,200,200,0.5)';
 	new ShapeRect(this.namesObj.bgrect,alpha,'black',this.x+1,this.y+30,204,100);
-	
-	
 	
 	var closeBtn = new ImgNode(this.namesObj.closename,'img2997',this.x+175,this.y+2,20,20,function(){
 		this.closeData.hide(false);
@@ -64,6 +63,8 @@ function HandleInfoMenu(name,x,y){
 	});
 	roateBtn.closeData = this;
 	
+	var expline = new ExpLine(this.namesObj.explinename,'red','white','black',this.x+2,this.y+30,204,5,0,1000);
+	addPool(expline);
 	var txttitle = new UItextNode(this.namesObj.titlename,'',this.x+10,this.y+15,'blue');
 	var txtnote  = new UItextNode(this.namesObj.notename,'',this.x+10,this.y+25,'blue');
 	var txtlv  = new UItextNode(this.namesObj.lvname,'',this.x+100,this.y+15,'yellow','red');
@@ -491,56 +492,33 @@ ShopPanel.prototype.setdata = function(){
 /**
  * 经验条
  */
-function ExpLine(name,clr,border,x,y,w,h){
+function ExpLine(name,frontclr,backclr,borderclr,x,y,w,h,currentvalue,total){
 	this.name = name;
 	this.x = x;
 	this.y = y;
 	this.w = w;
 	this.h = h;
-	this.clr = clr;
-	this.border = border;
+	this.frontclr = frontclr;
+	this.backclr = backclr;
+	this.borderclr = borderclr;
+	this.total = total;
+	this.valuewidth = 0;
+	this.reset(currentvalue);
+	this.isvisible = true;
 }
 
-ExpLine.prototype.hide = function(isvisible){
-	this.winpanel.hide(isvisible);
-	if(!isvisible)
-		this.initpage = 0;
+ExpLine.prototype.draw = function(ctx){
+	if(this.isvisible){
+		ctx.fillStyle = this.backclr;
+		ctx.fillRect(this.x,this.y,this.w,this.h);
+		ctx.fillStyle = this.frontclr;
+		ctx.fillRect(this.x,this.y,this.valuewidth,this.h);
+		ctx.strokeStyle = this.borderclr;
+		ctx.strokeRect(this.x,this.y,this.w,this.h);
+	}
 };
 
-ShopPanel.prototype.pagedown = function(){
-	var total = Math.ceil(shopProps.length/this.data.pagenum);
-	if(this.data.initpage/this.data.pagenum >= total-1)
-		return;
-	this.data.initpage+=this.data.pagenum;
-	this.data.setdata();
+ExpLine.prototype.reset = function(val){
+	this.currentvalue = val;
+	this.valuewidth = (this.currentvalue * this.w)/this.total; 
 };
-
-ShopPanel.prototype.pageup = function(){
-	if(this.data.initpage == 0)
-		return;
-	this.data.initpage-=this.data.pagenum;
-	this.data.setdata();
-};
-
-ShopPanel.prototype.setdata = function(){
-	this.winpanel.hide(true);
-	this.winpanel.addContentBtn(buttontextName.prevpage, 'img3044', this.winpanel.w/2 -48-20, this.winpanel.h -25, 48, 20, 'black', this.pageup,this);
-	this.winpanel.addContentBtn(buttontextName.nextpage, 'img3044', this.winpanel.w/2+20, this.winpanel.h -25, 48, 20, 'black', this.pagedown,this);
-	var initx = 20;
-	var inity = 50;
-	var index = 0;
-	for(var i = this.initpage;i<this.initpage+this.pagenum;i++){
-			if(i >= shopProps.length-1)
-				return;
-			var obj = shopProps[i];
-			var y  = inity+index * 40;
-			this.winpanel.addContentImg(obj.img,initx,y,30,30);
-			this.winpanel.addContentTxt(obj.name,initx + 35,y+10,'white');
-			this.winpanel.addContentBtn(buttontextName.buy, 'img3044', initx+80, y+5, 48, 20, 'black', function() {
-				
-				console.log(this);
-			});
-			index++;
-		}
-};
-
