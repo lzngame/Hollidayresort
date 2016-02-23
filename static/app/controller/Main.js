@@ -432,7 +432,12 @@ function layoutBottomFourButton() {
 			extendmapShopMenu.addContentTxt(nextlv.note2 + nextlv.price.toString(), 122, 110, 'yellow');
 			extendmapShopMenu.addContentBtn(buttontextName.buy, 'img3044', 60, 206, 48, 20, 'black', function() {
 				console.log('extend map');
+				if(!checkCost(nextlv.price)){
+					return;
+				}
+				userinfo.money -= nextlv.price;
 				userinfo.buildarealv = nextlv;
+				setUiUserdata();
 				setEdage();
 				extendmapShopMenu.hide(false);
 				setReceptionPos();

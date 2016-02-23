@@ -18,7 +18,7 @@ function BuildNode(name,type,buildtype,x,y,floorspace,posx,posy){
 	this.isDraw = false;
 	this.isbuild = true;
 	addEntityNode(this);
-	this.exp = 0;
+	this.exp = 40;
 }
 
 BuildNode.prototype.setAlpha = function(a){
@@ -85,7 +85,31 @@ BuildNode.prototype.upLv = function(){
 	}
 };
 
+BuildNode.prototype.ismaxlv = function(){
+	return this.lv == 3;
+};
 
+BuildNode.prototype.getServicePrice = function(){
+	var price = 0;
+	if(!this.data.lv1day)
+		return price;
+	if(this.lv == 1)
+		price = this.data.lv1day;
+	else if(this.lv == 2)
+		price = this.data.lv2day;
+	else
+		price = this.data.lv3day;
+	return price;
+};
+
+BuildNode.prototype.getServiceNote = function(){
+	var price = this.getServicePrice();
+	if(price == 0){
+		return warntext.servicenote+":"+warntext.freeservice;
+	}else{
+		return warntext.servicenote+":"+price.toString();
+	}
+};
 
 function EntityNode(name,type,data,x,y,frameFps){
 	this.frameFps = frameFps || DEFAULT_FPS;

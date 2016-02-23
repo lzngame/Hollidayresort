@@ -15,7 +15,8 @@ function HandleInfoMenu(name,x,y){
 		btnupdatename:'icon_'+name+'_updatename',
 		btndestoryname:'icon_'+name+'_destoryname',
 		btnroatename:'icon_'+name+'_roatename',
-		explinename:name+'_explinename'
+		explinename:name+'_explinename',
+		servicename:name+'_servicename',
 	}
 	new PngNode(this.namesObj.bgheadname,'img3358bmp',this.x,this.y,205,30);
 	var alpha = 'rgba(200,200,200,0.5)';
@@ -26,7 +27,7 @@ function HandleInfoMenu(name,x,y){
 	});
 	closeBtn.closeData = this;
 	
-	var destoryBtn = new IconTxtBtn(this.namesObj.btndestoryname,this.x+10,this.y+55,50,20,'img3048',buttontextName.handle_destory,'white',function(){
+	var destoryBtn = new IconTxtBtn(this.namesObj.btndestoryname,this.x+10,this.y+105,50,20,'img3048',buttontextName.handle_destory,'white',function(){
 		this.closeData.hide(false);
 		if(currentHandleNode == null)
 			debugger;
@@ -42,21 +43,34 @@ function HandleInfoMenu(name,x,y){
 	});
 	destoryBtn.closeData = this;
 	
-	var updateBtn = new IconTxtBtn(this.namesObj.btnupdatename,this.x+70,this.y+55,50,20,'img3044',buttontextName.handle_uplv,'blue',function(){
-		userinfo.money -= currentHandleNode.data.uplv2;
-		layoutBgPool['numnode'].setTxt(userinfo.money.toString());
-		this.closeData.hide(false);
-		if(currentHandleNode.upLv())
-			new ToastInfo('mytoast',currentHandleNode.data.name+warntext.build_success,-130,100,1500);
-		else
+	var updateBtn = new IconTxtBtn(this.namesObj.btnupdatename,this.x+70,this.y+105,50,20,'img3044',buttontextName.handle_uplv,'blue',function(){
+		if(currentHandleNode.ismaxlv()){
 			new ToastInfo('mytoast',currentHandleNode.data.name+warntext.build_maxlv,-130,100,1500);
+			return;
+		}
+		this.closeData.hide(false);
+		var upprice = 0;
+		if(currentHandleNode.lv == 1)
+			upprice = currentHandleNode.data.uplv2;
+		else
+			upprice = currentHandleNode.data.uplv3;
+		if(checkCost(upprice)){
+			if(currentHandleNode.upLv()){
+				new ToastInfo('mytoast',currentHandleNode.data.name+warntext.build_success,-130,100,1500);
+				userinfo.money -= upprice;
+				layoutBgPool['numnode'].setTxt(userinfo.money.toString());
+			}else{
+				new ToastInfo('mytoast',currentHandleNode.data.name+warntext.build_maxlv,-130,100,1500);
+			}
+		}
+			
 		if(currentHandleNode.buildtype == buildTypes.receptioncenter){
 			setReceptionPos();
 		}
 	});
 	updateBtn.closeData = this;
 	
-	var roateBtn = new IconTxtBtn(this.namesObj.btnroatename,this.x+130,this.y+55,50,20,'img3044',buttontextName.handle_rotate,'blue',function(){
+	var roateBtn = new IconTxtBtn(this.namesObj.btnroatename,this.x+130,this.y+105,50,20,'img3044',buttontextName.handle_rotate,'blue',function(){
 		this.closeData.hide(false);
 		currentHandleNode.isturn = !currentHandleNode.isturn;
 		new ToastInfo('mytoast',currentHandleNode.data.name+warntext.build_rotate,-130,100,800);
@@ -66,8 +80,9 @@ function HandleInfoMenu(name,x,y){
 	var expline = new ExpLine(this.namesObj.explinename,'red','white','black',this.x+2,this.y+30,204,5,0,1000);
 	addPool(expline);
 	var txttitle = new UItextNode(this.namesObj.titlename,'',this.x+10,this.y+15,'blue');
-	var txtnote  = new UItextNode(this.namesObj.notename,'',this.x+10,this.y+25,'blue');
+	var txtnote  = new UItextNode(this.namesObj.notename,'',this.x+10,this.y+55,'blue');
 	var txtlv  = new UItextNode(this.namesObj.lvname,'',this.x+100,this.y+15,'yellow','red');
+	var txtservice = new UItextNode(this.namesObj.servicename,'',this.x+10,this.y+85,'blue');
 }
 
 HandleInfoMenu.prototype.show = function(handlenode){
@@ -99,6 +114,7 @@ HandleInfoMenu.prototype.show = function(handlenode){
 	}
 	layoutBgPool[this.namesObj.titlename].settxt(handlenode.data.name);
 	layoutBgPool[this.namesObj.notename].settxt(handlenode.data.note);
+	layoutBgPool[this.namesObj.servicename].settxt(handlenode.getServiceNote());
 };
 
 HandleInfoMenu.prototype.getLvtxt = function(handlenode){
