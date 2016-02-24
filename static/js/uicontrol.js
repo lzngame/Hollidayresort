@@ -538,3 +538,8 @@ ExpLine.prototype.reset = function(val){
 	this.currentvalue = val;
 	this.valuewidth = (this.currentvalue * this.w)/this.total; 
 };
+
+ExpLine.prototype.setTotal = function(total){
+	this.total = total;
+	this.reset(this.currentvalue);
+};

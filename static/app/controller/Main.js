@@ -30,6 +30,8 @@ Ext.define('Resort.controller.Main',{
 	},
 	onmainActivate:function(newactiveitem,thisself,oldactiveitem,eopts){
 		console.log('mainview activate');
+		
+		resortclock = new ResortClock('resortclock',0,stageHeight -47);
 		initCanvas();
 		touch.on($(CANVASID),'tap',panelTap);
 		touch.on($(CANVASID),'drag dragstart dragend',panelDrag);
@@ -41,9 +43,10 @@ Ext.define('Resort.controller.Main',{
 		var xpix = obj.xpix;
 		var ypix = obj.ypix+baseRhombusHeight/2;
 		LayoutUI(ctx);
-		resortclock = new ResortClock('resortclock',0,stageHeight -47);
+		
 		layoutLeftIcons();
 		layoutGroups();
+		layoutBottomTxtinfo();
 		
 		initUpdate(1,function(){
 			ctx.clearRect(0,0,stageWidth,stageHeight);
@@ -193,6 +196,8 @@ function panelDrag(ev) {
 			}
 		}
 	}
+	
+	checkTask();
 }
 
 function addReceptioncenter(){
@@ -350,7 +355,20 @@ function panelTap(ev){
 			new ToastInfo('waringbuild',warntext.build_inarea,-130,100,500);
 		}
 	}
+	
+	checkTask();
 }
+
+function checkTask(){
+	var func = taskfuncs[userinfo.currentTaskIndex];
+	if(func()){
+		console.log('任务完成');
+		userinfo.currentTaskIndex++;
+		userinfo.money += 1000;
+		setUiUserdata();
+	}
+};
+
 var testman = null;
 function LayoutUI(ctx){
 	layTopIconHead();	
@@ -382,7 +400,7 @@ function layTopIconHead(){
 	var imgnode = new PngNode('moneyicon','img302',layoutconfig.headsize+3,5,layoutconfig.moneyiconsize,layoutconfig.moneyiconsize);
 	var numnode = new PngNumNode('numnode',userinfo.money,layoutconfig.headsize+layoutconfig.moneyiconsize+5,5);
 	var lvstar =  new LvNode('lvstar','img3252',layoutconfig.headsize+layoutconfig.moneyiconsize+5+100,userinfo.lv,1,layoutconfig.lvstarsize);
-	userExpline = new ExpLine('userexp','red','yellow','blue',layoutconfig.headsize+1,23,stageWidth-layoutconfig.headsize,5,500,1000);
+	userExpline = new ExpLine('userexp','red','yellow','blue',layoutconfig.headsize+1,23,stageWidth-layoutconfig.headsize,5,userinfo.currentexp,lvexp[userinfo.lv]);
 	addPool(userExpline);
 	/*addPool(new IconInfoNode('btn1',stageWidth-64,23,64,22,'img3044','f18_18','f54_54',120,function(name){
 					console.log(this.iconname);
@@ -407,6 +425,7 @@ function layTopIconHead(){
 function setUiUserdata(){
 	layoutBgPool['lvstar'].setLv(userinfo.lv);
 	layoutBgPool['numnode'].setTxt(userinfo.money.toString());
+	userExpline.reset(userinfo.currentexp);
 }
 
 function layoutBottomFourButton() {
@@ -473,8 +492,8 @@ function setEdage(){
 var activeLeftIconnode = null;
 
 function layoutBottomTxtinfo(){
-	new PngNode('txtbg','img3358bmp',47,stageHeight-70,stageWidth-47,30);
-	txtinfo = new TxtNode('welcome','欢迎来到度假村世界游戏！','img3195','#676767',55,stageHeight-67,stageWidth - 47);
+	new PngNode('txtbg','img3358bmp',47,stageHeight-63,stageWidth-47,30);
+	txtinfo = new TxtNode('welcome','欢迎来到度假村世界游戏！','img3195','yellow',55,stageHeight-60,stageWidth - 47);
 }
 
 

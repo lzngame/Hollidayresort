@@ -279,7 +279,7 @@ var resortclockdata ={
 	days:1,
 	hours:0,
 	minitues:0,
-	timespace:10,
+	timespace:30,
 };
 
 var colors ={
@@ -424,15 +424,20 @@ var manstatus ={
  * 用户信息
  */
 var userinfo = {
-	money:125000,
-	lv:4,
+	money:15000,
+	lv:1,
 	id:1001010,
 	name:'开罗酒店CEO',
 	buildarealv:extendsBuildConfig.lv1,
 	currentday:0,
 	currenthour:0,
+	currentexp:0,
+	currentTaskIndex:0,
 };
 
+var lvexp =[
+  100,100,200,250,300,350,400,500,700,1000,1500,2500,3500
+];
 
 /*
  * 提示信息
@@ -468,6 +473,8 @@ var buttontextName ={
 	prevpage:' << ',
 	nextpage:' >>',
 }
+
+
 
 
 /*
@@ -513,3 +520,44 @@ function checkCost(price){
 		return true;
 	}
 };
+
+var tasks = [
+	'种植4棵植物',
+	'拥有1栋客房',
+	'建设一种设施',
+];
+
+var taskfuncs = [
+	task1Check,
+	task2Check,
+	task3Check,
+];
+
+function task1Check() {
+	var target = 0;
+	for (var id in entitys) {
+		var entity = entitys[id];
+		if (entity.ntype == NodeTypeClass.build && entity.data.groupname == GroupType.plant){
+			target++;
+			if(target >= 4)
+				return true;
+		}
+	}
+	return false;
+}
+
+function task2Check() {
+	var target = 0;
+	for (var id in entitys) {
+		var entity = entitys[id];
+		if (entity.ntype == NodeTypeClass.build && entity.data.housetype == buildTypes.cottage){
+			target++;
+			return true;
+		}
+	}
+	return false;
+}
+
+function task3Check() {
+	return false;
+}

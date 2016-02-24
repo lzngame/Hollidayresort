@@ -19,6 +19,8 @@ function BuildNode(name,type,buildtype,x,y,floorspace,posx,posy){
 	this.isbuild = true;
 	addEntityNode(this);
 	this.exp = 40;
+	this.buildday = resortclock.getDays();
+	this.currentday = this.buildday;       
 }
 
 BuildNode.prototype.setAlpha = function(a){
@@ -57,6 +59,7 @@ BuildNode.prototype.draw = function(ctx) {
 	if(this.furnitiure2 != null){
 		this.furnitiure2.draw(ctx);
 	}
+	this.update();
 };
 
 BuildNode.prototype.setPos = function(x,y){
@@ -82,6 +85,22 @@ BuildNode.prototype.upLv = function(){
 		return true;
 	}else{
 		return false;
+	}
+};
+
+BuildNode.prototype.update = function(){
+	if(this.currentday != resortclock.getDays()){
+		this.buildday++;
+		this.currentday = resortclock.getDays();
+		userinfo.money += this.getServicePrice();
+		userinfo.currentexp += 1;
+		if(userinfo.currentexp >= lvexp[userinfo.lv]){
+			userinfo.currentexp = 0;
+			userinfo.lv ++;
+			userExpline.setTotal(lvexp[userinfo.lv]);
+			userExpline.reset(0);
+		}
+		setUiUserdata();
 	}
 };
 
@@ -790,7 +809,19 @@ ResortClock.prototype.update = function(ctx){
 	drawNumSt(ctx,this.hours.toString()+":"+this.minitues.toString(),this.x+90,this.y+31);
 	//ctx.fillStyle = clr;
 	//ctx.fillText(st,this.x+2,this.y+20);
-}
+};
+
+ResortClock.prototype.getMiniters = function(){
+	return this.minitues;
+};
+
+ResortClock.prototype.getHours = function(){
+	return this.hours;
+};
+
+ResortClock.prototype.getDays = function(){
+	return this.days;
+};
 
 
 function FloorNode(name,iconname,xpos,ypos,data){
