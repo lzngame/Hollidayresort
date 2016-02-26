@@ -130,8 +130,8 @@ function checkEdage(xpos,ypos){
  * 取得该坐标地板Node
  */
 function getFloorNodeByPos(xpos,ypos){
-	for(var id in floorpool){
-		var floor = floorpool[id];
+	for(var gid in floorpool){
+		var floor = floorpool[gid];
 		if(floor.xpos == xpos && floor.ypos== ypos){
 			return floor;
 		}
@@ -168,8 +168,8 @@ function getBuildWall(node){
 
 //取得该坐标上面的建筑
 function getBuildNodeByPos(xpos,ypos){
-	for(var id in entitys){
-		var node = entitys[id];
+	for(var gid in entitys){
+		var node = entitys[gid];
 		if(node.ntype == NodeTypeClass.build){
 			if(node.IsInFloorspace(xpos,ypos))
 				return node;
@@ -180,8 +180,8 @@ function getBuildNodeByPos(xpos,ypos){
 
 
 function getCoorBuildByPos(xpos,ypos){
-	for(var id in entitys){
-		var node = entitys[id];
+	for(var gid in entitys){
+		var node = entitys[gid];
 		if(node.posx == xpos && node.posy == ypos){
 			return node;
 		}
@@ -239,8 +239,8 @@ function getCloseTile(tapx,tapy){
 }
 
 function GetPosInBuild(xpos,ypos){
-	for (var id in entitys) {
-		var item = entitys[id];
+	for (var gid in entitys) {
+		var item = entitys[gid];
 		if (item.ntype == NodeTypeClass.build) {
 			var floorspace = item.floorspace;
 			if(floorspace != null){

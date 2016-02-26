@@ -9,16 +9,16 @@ function checkRoundWall(node){
 }
 
 function updateDraw(ctx){
-			for(var id in floorpool){
-				var floor = floorpool[id];
+			for(var gid in floorpool){
+				var floor = floorpool[gid];
 				floor.draw(ctx);
 			}
 			drawBackwall(ctx,wallImg,mapInitPosx-1,mapInitPosy-1,userinfo.buildarealv.width+1,userinfo.buildarealv.width+1);
 	
 			var hadDraw = 0;
 			while(buildNums > 0 && hadDraw < buildNums){
-				for(var id in entitys){ 
- 					var entity = entitys[id];  
+				for(var gid in entitys){ 
+ 					var entity = entitys[gid];  
  					if(entity.ntype == NodeTypeClass.build && !entity.isDraw && entity.isbuild){
  						if(!checkRoundWall(entity)){
  							entity.draw(ctx);
@@ -30,8 +30,8 @@ function updateDraw(ctx){
 			}
 			hadDraw = 0;
 			
-			for(var id in entitys){ 
- 				var entity = entitys[id];  
+			for(var gid in entitys){ 
+ 				var entity = entitys[gid];  
  				if(entity.ntype == NodeTypeClass.build)
  					entity.isDraw = false;
  				if(entity.isvisible && !entity.isbuild){ 
@@ -56,7 +56,6 @@ function updateDraw(ctx){
 			while(drawOrderPool.length >0){
 				drawOrderPool.pop();
 			}
-			
 		}
 
 

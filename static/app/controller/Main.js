@@ -155,7 +155,7 @@ function panelDrag(ev) {
 			tmpnode.setPos(dataobj.x,dataobj.y);
 		}
 		if (ev.type == 'dragend') {
-			delete entitys[tmpnode.id];
+			delete entitys[tmpnode.gid];
 			tmpnode = null;
 			var canbuild = true;
 			dataobj = getOffsetXY(currentBuildData.floorarea,obj.posx,obj.posy);
@@ -213,10 +213,10 @@ function addReceptioncenter(){
 function setReceptionPos(){
 	var floorExist1 =  getFloorNodeByPos(receptionCenter.posx-1,receptionCenter.posy);
 	if(floorExist1 != null)
-		delete floorpool[floorExist1.id];
+		delete floorpool[floorExist1.gid];
 	var floorExist2 =  getFloorNodeByPos(receptionCenter.posx,receptionCenter.posy+4);
 	if(floorExist2 != null)
-		delete floorpool[floorExist2.id];
+		delete floorpool[floorExist2.gid];
 	
 	var wallwidth = (userinfo.buildarealv.width+2-doorwidth)/2;
 	var posx = mapInitPosx+wallwidth+(doorwidth-2);
@@ -275,12 +275,12 @@ function panelTap(ev){
 		var obj = getCloseTile(tapx - zeroX, tapy - zeroY);
 		var item = GetPosInBuild(obj[0],obj[1]);
 		if(item != null)
-		   console.log('find:%d-%s',item.id,item.name);
+		   console.log('find:%d-%s',item.gid,item.name);
 		
 		
 		currentHandleNode = getBuildNodeByPos(objtarget.posx,objtarget.posy);
 		if(currentHandleNode)
-			console.log('id:%d ~ posx:%d  posy:%d',currentHandleNode.id,currentHandleNode.posx,currentHandleNode.posy);
+			console.log('gid:%d ~ posx:%d  posy:%d',currentHandleNode.gid,currentHandleNode.posx,currentHandleNode.posy);
 		if(currentHandleNode != null){
 			if(currentHandleNode.ntype == NodeTypeClass.build){
 				handleInfoMenu.hide(true);
@@ -342,7 +342,7 @@ function panelTap(ev){
 		if(floorExist == null){
 			var floor = new FloorNode('lawn',currentBuildfloor,objtarget.posx,objtarget.posy,currentBuildData);
 		}else{
-			delete floorpool[floorExist.id];
+			delete floorpool[floorExist.gid];
 			var floor = new FloorNode('lawn',currentBuildfloor,objtarget.posx,objtarget.posy,currentBuildData);
 		}
 	}
@@ -362,10 +362,11 @@ function panelTap(ev){
 function checkTask(){
 	var func = taskfuncs[userinfo.currentTaskIndex];
 	if(func()){
-		console.log('任务完成');
+		var award = taskawards[userinfo.currentTaskIndex];
 		userinfo.currentTaskIndex++;
-		userinfo.money += 1000;
+		userinfo.money += award;
 		setUiUserdata();
+		new ToastInfo('waringbuild',warntext.taskfinished+award.toString(),-130,100,500);
 	}
 };
 
@@ -420,6 +421,8 @@ function layTopIconHead(){
 		},'red'));
 	
 	setUiUserdata();
+	
+	bgaudio.play();
 }
 
 function setUiUserdata(){
@@ -492,7 +495,6 @@ function setEdage(){
 var activeLeftIconnode = null;
 
 function layoutBottomTxtinfo(){
-	new PngNode('txtbg','img3358bmp',47,stageHeight-63,stageWidth-47,30);
 	txtinfo = new TxtNode('welcome','欢迎来到度假村世界游戏！','img3195','yellow',55,stageHeight-60,stageWidth - 47);
 }
 
@@ -517,6 +519,7 @@ function layoutLeftIcons(ctx){
 			extendmapShopMenu.hide(false);
 			propShopMenu.hide(false);
 			stopHandleBtn.hide();
+			txtinfo.hide(false);
 			if(handleInfoMenu.isvisible)
 				handleInfoMenu.hide(false);
 			this.active = !this.active;

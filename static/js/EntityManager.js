@@ -3,7 +3,7 @@ function BuildNode(name,type,buildtype,x,y,floorspace,posx,posy){
 	this.x = x;
 	this.y = y;
 	this.isvisible = true;
-	this.id = increaseId++;
+	this.gid = increaseId++;
 	this.ntype = type;
 	this.buildtype = buildtype;
 	this.floorspace = floorspace;	
@@ -140,7 +140,7 @@ function EntityNode(name,type,data,x,y,frameFps){
 		this.data = data;
 	else
 		this.data = [[data]];
-	this.id = increaseId ++;
+	this.gid = increaseId ++;
 	this.frameIndex = 0;
 	this.frameSumTick = 0;
 	this.currentAction = 0;
@@ -188,7 +188,7 @@ EntityNode.prototype.draw = function(ctx){
 
 
 /*EntityNode.prototype.getDrawData = function(){
-	var objdata = {id:this.id,name:this.getFrame(),x:this.x,y:this.y,type:this.ntype};
+	var objdata = {gid:this.gid,name:this.getFrame(),x:this.x,y:this.y,type:this.ntype};
 	return objdata;
 };*/
 
@@ -202,7 +202,7 @@ function EntityFootNode(name,type,data,x,y,frameFps,autodel,lastFunc,lastdata){
 		this.data = data;
 	else
 		this.data = [[data]];
-	this.id = increaseId ++;
+	this.gid = increaseId ++;
 	this.frameIndex = 0;
 	this.frameSumTick = 0;
 	this.currentAction = 0;
@@ -247,7 +247,7 @@ EntityFootNode.prototype.getFrame = function(){
 			this.lastFunc(this.lastFuncdata);
 		}
 		if(this.autodel){
-			delete entitys[this.id]
+			delete entitys[this.gid]
 		}
 	}
 	
@@ -263,22 +263,22 @@ EntityFootNode.prototype.getDrawData = function(){
 	var size = getPngSize(pngname);
 	var offsetx = this.x-size.w/2;
 	var offsety = this.y-size.h;
-	var objdata = {id:this.id,name:this.getFrame(),x:offsetx,y:offsety,type:this.ntype};
+	var objdata = {gid:this.gid,name:this.getFrame(),x:offsetx,y:offsety,type:this.ntype};
 	return objdata;
 };
 
 
 function addEntityNode(entityitem){
-	var id = entityitem.id;
-	entitys[id] = entityitem;
-	return id;
+	var gid = entityitem.gid;
+	entitys[gid] = entityitem;
+	return gid;
 }
 
-function deleteEntity(id){
-	if(typeof(id)=='number')
-		delete entitys[id];
+function deleteEntity(gid){
+	if(typeof(gid)=='number')
+		delete entitys[gid];
 	else
-		delete entitys[id.id];
+		delete entitys[gid.gid];
 }
 
 function getTypeNode(name,typeclass){
@@ -372,50 +372,6 @@ PngNode.prototype.setImg = function(iconname){
 	this.iconname = iconname;
 	this.w = png.w;
 	this.h = png.h;
-}
-
-function TxtNode(name,txt,iconhead,clr,x,y,w){
-	this.name = name;
-	this.txt = txt;
-	this.initx = x;
-	this.x = x;
-	this.y = y;
-	this.clr = clr;
-	this.w = w;
-	this.iconhead = iconhead;
-	layoutBgPool[name] = this;
-	this.speed = 1;
-	this.circle = false;
-	this.isvisible = true;
-}
-
-TxtNode.prototype.draw = function(ctx) {
-	if (this.isvisible) {
-		ctx.fillStyle = this.clr;
-		this.run();
-		if (this.iconhead)
-			drawImg(ctx, this.iconhead, this.x, this.y);
-		ctx.fillText(this.txt, this.x + 40, this.y + 12);
-	}
-};
-
-TxtNode.prototype.run = function(stop) {
-	if (this.circle) {
-		this.x += this.speed;
-		if (this.x > this.initx + this.w) {
-			this.x = this.initx;
-		}
-	}
-};
-
-TxtNode.prototype.setTxt =  function(txt,iconhead,circle){
-	this.txt = txt;
-	this.iconhead = iconhead;
-	this.circle = circle;
-}
-
-TxtNode.prototype.setPos = function(x){
-	this.x = x;
 }
 
 
@@ -542,7 +498,7 @@ IconNodeGroup.prototype.setPos = function(x,y){
 
 
 function IconNode(name,iconname,x,y,w,h,defaultBgclr,activeBgclr,handler,borderClr){
-	this.id = increaseId++;
+	this.gid = increaseId++;
 	this.name = name;
 	this.iconname = iconname;
 	this.x = x;
@@ -611,7 +567,7 @@ IconNode.prototype.deleteSelf = function(){
 };
 
 function ImgNode(name,iconname,x,y,w,h,handler,handlerdata){
-	this.id = increaseId++;
+	this.gid = increaseId++;
 	this.name = name;
 	this.iconname = iconname;
 	this.x = x;
@@ -651,7 +607,7 @@ ImgNode.prototype.deleteSelf = function(){
 };
 
 function IconInfoNode(name,x,y,w,h,bgicon,txt1,txt2,num,handler){
-	this.id = increaseId++;
+	this.gid = increaseId++;
 	this.name = name;
 	this.bgicon = bgicon;
 	this.x = x;
@@ -687,7 +643,7 @@ IconInfoNode.prototype.checkTap = function(tapx,tapy){
 
 
 function IconTxtBtn(name,x,y,w,h,bgicon,text,textclr,handler){
-	this.id = increaseId++;
+	this.gid = increaseId++;
 	this.name = name;
 	this.bgicon = bgicon;
 	this.x = x;
@@ -825,7 +781,7 @@ ResortClock.prototype.getDays = function(){
 
 
 function FloorNode(name,iconname,xpos,ypos,data){
-	this.id = increaseId++;
+	this.gid = increaseId++;
 	this.name = name;
 	this.iconname = iconname;
 	this.xpos = xpos;
@@ -834,7 +790,7 @@ function FloorNode(name,iconname,xpos,ypos,data){
 	this.y = getPixByPosTile(xpos,ypos)[1];
 	this.ntype = NodeTypeClass.floor;
 	this.data = data;
-	floorpool[this.id] = this;
+	floorpool[this.gid] = this;
 }
 
 FloorNode.prototype.draw = function(ctx){
@@ -851,14 +807,14 @@ FloorNode.prototype.checkTap = function(tapx,tapy){
 };
 
 FloorNode.prototype.deleteSelf = function(){
-	delete floorpool[this.id];
+	delete floorpool[this.gid];
 };
 
 
 function PlantNode(name,type,frames,xpos,ypos,center,data){
 	this.name = name;
 	this.isvisible = true;
-	this.id = increaseId++;
+	this.gid = increaseId++;
 	this.ntype = type;
 	if(typeof(frames)=='object'){
 		var png = frames[0][0];
@@ -876,7 +832,7 @@ function PlantNode(name,type,frames,xpos,ypos,center,data){
 	else
 		var y = this.y - this.h;
 	this.body = new EntityNode(name,type,frames,this.x-this.w/2,y,ypos,330);
-	this.entityid = this.body.id;
+	this.entityid = this.body.gid;
 	addEntityNode(this);
 	this.floorspace = [[xpos,ypos]];
 	this.data = data;
@@ -899,7 +855,7 @@ PlantNode.prototype.IsInFloorspace = function(xpos,ypos){
 
 PlantNode.prototype.getDrawData = function(){
 	var objdata = { name:this.name,
-					id:this.id,
+					gid:this.gid,
 					x:this.x,
 					y:this.y,
 					type:this.ntype,
@@ -919,7 +875,7 @@ function ManNode(name,data,x,y){
 	this.posy = getTilePos(x,y).posy;
 	this.name = name;
 	this.data = data;
-	this.id = increaseId ++;
+	this.gid = increaseId ++;
 	this.frameIndex = 0;
 	this.frameSumTick = 0;
 	this.currentAction = 0;
@@ -1056,6 +1012,6 @@ ManNode.prototype.draw = function(ctx){
 
 
 ManNode.prototype.getDrawData = function(){
-	var objdata = {id:this.id,name:this.getFrame(),x:this.x,y:this.y};
+	var objdata = {gid:this.gid,name:this.getFrame(),x:this.x,y:this.y};
 	return objdata;
 };

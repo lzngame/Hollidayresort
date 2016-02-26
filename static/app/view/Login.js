@@ -7,7 +7,8 @@
 			{
 				id:'loginpanel',
 				xtype:'panel',
-				style:'background-color:#456789',
+				//style:'background-color:#456789',
+				style:'background:#000000 url("static/img/face.png") no-repeat center center fixed',
 				height:'100%',
 				width:'100%'
 			},

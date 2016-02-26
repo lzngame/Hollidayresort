@@ -32,9 +32,9 @@ function HandleInfoMenu(name,x,y){
 		if(currentHandleNode == null)
 			debugger;
 		if(currentHandleNode.ntype == NodeTypeClass.floor)
-			delete floorpool[currentHandleNode.id];
+			delete floorpool[currentHandleNode.gid];
 		if(currentHandleNode.ntype == NodeTypeClass.build){
-			deleteEntity(currentHandleNode.id);
+			deleteEntity(currentHandleNode.gid);
 			buildNums--;
 		}
 			
@@ -359,10 +359,10 @@ function StopHandleMenu(name,x,y){
 	var stopBtn = new ImgNode(this.closenodename,'cancel',this.x+100,this.y+4,80,25,this.hide);
 	stopBtn.tapdata = this;
 	
-	this.handleTxt = new TxtNode(this.txt1name,'','','yellow',this.x-35,this.y+25,100);
-	this.nameTxt =  new TxtNode(this.txt2name,'','','black',this.x+24,this.y+44,100);
-	this.noteTxt =  new TxtNode(this.txt3name,'','','black',this.x+20,this.y+70,100);
-	this.priceTxt = new TxtNode(this.txt4name,'','','black',this.x+20,this.y+90,100);
+	this.handleTxt = new UItextNode(this.txt1name,'',this.x+55,this.y+40,'yellow');
+	this.nameTxt =   new UItextNode(this.txt2name,'',this.x+55,this.y+60,'black');
+	this.noteTxt =   new UItextNode(this.txt3name,'',this.x+50,this.y+85,'black');
+	this.priceTxt =  new UItextNode(this.txt4name,'',this.x+50,this.y+105,'black');
 	
 	this.iconImg = new PngNode(this.iconname,'img409',this.x+10,this.y+45);
 }
@@ -390,10 +390,11 @@ StopHandleMenu.prototype.hide = function(tapdata){
 	}
 	currentHandleStatus = handleStatus.normal;
 	frontWallAlpha = 1;
+	if(txtinfo)
+		txtinfo.hide(true);
 };
 
 StopHandleMenu.prototype.show = function(){
-	
 	var isvisible = true;
 	layoutBgPool[this.bgnodename].isvisible = isvisible;
 	iconPool[this.closenodename].isvisible = isvisible;
@@ -403,12 +404,12 @@ StopHandleMenu.prototype.show = function(){
 	layoutBgPool[this.txt4name].isvisible = isvisible;
 	layoutBgPool[this.iconname].isvisible = isvisible;
 	if(currentBuildData.groupname == "LAWN_GROUP" || currentBuildData.groupname == "CARPET_GROUP" )
-		layoutBgPool[this.txt1name].setTxt(warntext.build_tap);
+		layoutBgPool[this.txt1name].settxt(warntext.build_tap);
 	else
-		layoutBgPool[this.txt1name].setTxt(warntext.build_drag);
-	layoutBgPool[this.txt2name].setTxt(currentBuildData.name);
-	layoutBgPool[this.txt3name].setTxt(currentBuildData.note);
-	layoutBgPool[this.txt4name].setTxt('$:'+currentBuildData.price.toString());
+		layoutBgPool[this.txt1name].settxt(warntext.build_drag);
+	layoutBgPool[this.txt2name].settxt(currentBuildData.name);
+	layoutBgPool[this.txt3name].settxt(currentBuildData.note);
+	layoutBgPool[this.txt4name].settxt('$:'+currentBuildData.price.toString());
 	layoutBgPool[this.iconname].setImg(currentBuildData.tileurl);
 };
 
@@ -543,3 +544,63 @@ ExpLine.prototype.setTotal = function(total){
 	this.total = total;
 	this.reset(this.currentvalue);
 };
+
+
+/**
+ * 下方提示文字
+ */
+function TxtNode(name,txt,iconhead,clr,x,y,w){
+	this.name = name;
+	this.txt = txt;
+	this.initx = x;
+	this.x = x;
+	this.y = y;
+	this.clr = clr;
+	this.w = w;
+	this.iconhead = iconhead;
+	layoutBgPool[name] = this;
+	this.speed = 1;
+	this.circle = false;
+	this.isvisible = true;
+	this.showTime = 0;	
+}
+
+TxtNode.prototype.draw = function(ctx) {
+	if (this.isvisible) {
+		ctx.fillStyle = 'rgba(200,200,200,0.8)';
+		ctx.fillRect(47,stageHeight-63,stageWidth-47,30)
+		ctx.fillStyle = this.clr;
+		this.run();
+		if (this.iconhead)
+			drawImg(ctx, this.iconhead, this.x, this.y);
+		ctx.fillText(this.txt, this.x + 40, this.y + 12);
+		this.showTime++;
+	}
+};
+
+TxtNode.prototype.hide = function(visual){
+	this.isvisible = visual;
+	if(this.isvisible){
+		this.setTxt(tasks[userinfo.currentTaskIndex]);
+	}
+};
+
+TxtNode.prototype.run = function(stop) {
+	if (this.circle) {
+		this.x += this.speed;
+		if (this.x > this.initx + this.w) {
+			this.x = this.initx;
+		}
+	}
+};
+
+TxtNode.prototype.setTxt =  function(txt,iconhead,circle){
+	this.txt = txt;
+	this.iconhead = iconhead;
+	this.circle = circle;
+}
+
+TxtNode.prototype.setPos = function(x){
+	this.x = x;
+}
+
